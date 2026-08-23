@@ -1,0 +1,3 @@
+# Pivot from Technical Backtesting to Portfolio Growth Intelligence
+
+We pivoted the product from an indicator-based strategy backtesting engine (for day traders) to an AI-driven Portfolio & Stock Growth Intelligence platform for retail investors. The evaluation panel highlighted that non-finance retail users find indicator strategies (MA/RSI/Bollinger) impenetrable and want clear answers to "where should I invest, how much will it grow, and why should I trust this over a bank?". This decision preserves our core machine learning forecasting and regime detection while delivering accessible, explainable portfolio recommendations.

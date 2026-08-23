@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>QuantNiti — AI-Driven Regime-Adaptive Portfolio & Quant Intelligence</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Design Tokens & Glassmorphism Styles -->
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Main Shell Container -->
+  <div class="app-container" id="appContainer">
+    
+    <!-- Top Sticky Header -->
+    <header class="app-header">
+      <div class="brand-badge">
+        <div class="brand-logo-icon">
+          <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">QuantNiti</h1>
+          <div class="text-[10px] text-slate-400 font-medium">NIFTY 50 AI Intelligence</div>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <!-- Live Market Regime Pill -->
+        <div id="headerRegimeBadge" class="regime-pill-badge regime-bull cursor-pointer" onclick="switchTab('quantlab')" title="Click to view Regime Radar">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="headerRegimeText">Bull Market</span>
+        </div>
+        
+        <!-- Viewport Mode Toggle (Mobile / Expanded) -->
+        <button id="viewToggleBtn" class="btn-ghost !p-2 !rounded-lg text-slate-400 hover:text-white" title="Toggle Responsive View" onclick="toggleViewportMode()">
+          <i data-lucide="maximize-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Tab Content Area -->
+    <main class="app-content">
+      
+      <!-- ======================================================== -->
+      <!-- TAB 1: GROW (AI Portfolio Baskets & Trust Card)         -->
+      <!-- ======================================================== -->
+      <section id="tab-grow" class="tab-panel active">
+        <!-- 3-Step Wizard Card -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
+                AI Portfolio Basket
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">Regime-aware NIFTY 50 allocation wizard</p>
+            </div>
+            <span class="text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">
+              HRP + Black-Litterman
+            </span>
+          </div>
+
+          <!-- Step 1: Capital Amount -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-medium">1. Investment Capital</span>
+              <span id="capitalDisplay" class="font-bold text-indigo-300 text-sm">₹50,000</span>
+            </div>
+            <input 
+              type="range" 
+              id="capitalSlider" 
+              min="10000" 
+              max="500000" 
+              step="5000" 
+              value="50000" 
+              class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              oninput="updateCapitalDisplay(this.value)"
+            >
+            <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+              <span>₹10,000</span>
+              <span>₹2,50,000</span>
+              <span>₹5,00,000</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Time Horizon -->
+          <div class="mb-4">
+            <span class="text-xs text-slate-300 font-medium block mb-1.5">2. Investment Horizon</span>
+            <div class="flex gap-2">
+              <button class="chip-btn" data-horizon="1M" onclick="selectHorizon('1M')">1 Month</button>
+              <button class="chip-btn" data-horizon="3M" onclick="selectHorizon('3M')">3 Months</button>
+              <button class="chip-btn active" data-horizon="6M" onclick="selectHorizon('6M')">6 Months</button>
+              <button class="chip-btn" data-horizon="12M" onclick="selectHorizon('12M')">1 Year</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Risk Persona -->
+          <div class="mb-5">
+            <span class="text-xs text-slate-300 font-medium block mb-1.5">3. Risk Persona</span>
+            <div class="segmented-control">
+              <button class="segment-btn" data-persona="Conservative" onclick="selectRiskPersona('Conservative')">
+                Conservative
+              </button>
+              <button class="segment-btn active" data-persona="Balanced" onclick="selectRiskPersona('Balanced')">
+                Balanced
+              </button>
+              <button class="segment-btn" data-persona="Aggressive" onclick="selectRiskPersona('Aggressive')">
+                Aggressive
+              </button>
+            </div>
+          </div>
+
+          <!-- Generate Action Button -->
+          <button id="generateBasketBtn" class="btn-primary" onclick="generateBasket()">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            Generate AI Recommended Basket
+          </button>
+        </div>
+
+        <!-- Basket Results Container -->
+        <div id="basketResultSection" class="mt-4 flex flex-col gap-4">
+          <!-- Loading Skeleton -->
+          <div id="basketLoading" class="glass-card p-6 hidden text-center">
+            <div class="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <div class="text-sm font-medium text-slate-300">Optimizing Regime-Aware Risk Parity...</div>
+            <div class="text-xs text-slate-500 mt-1">Simulating 10,000 Monte Carlo paths</div>
+          </div>
+
+          <!-- Generated Basket View -->
+          <div id="basketCard" class="glass-card p-5 hidden">
+            <!-- Header & Allocation Donut -->
+            <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Recommended Allocation</h3>
+                <div id="basketRegimeContext" class="text-xs text-emerald-400 font-medium mt-0.5">Optimized for Bull Regime</div>
+              </div>
+              <button class="btn-ghost !text-xs !py-1 !px-2.5" onclick="openOrderSheetModal()">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                Order Sheet
+              </button>
+            </div>
+
+            <!-- Chart & Legend -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center mb-4">
+              <div class="relative w-44 h-44 mx-auto">
+                <canvas id="basketAllocationChart"></canvas>
+              </div>
+              <div id="basketStockList" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Injected Stock Pills -->
+              </div>
+            </div>
+
+            <!-- 3-Tier Rupee Growth Scenarios -->
+            <div class="mb-4">
+              <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Probabilistic Rupee Growth</div>
+              <div class="flex flex-col gap-2" id="rupeeTierContainer">
+                <!-- Injected Tiers -->
+              </div>
+            </div>
+
+            <!-- 4-Pillar Explainable AI Trust Card -->
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3.5 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i>
+                  <span class="text-xs font-bold text-white">Explainable AI Trust Card</span>
+                </div>
+                <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  0% Commissions
+                </span>
+              </div>
+              <div id="trustPillarsContainer" class="trust-pillar-grid">
+                <!-- Injected 4 Pillars -->
+              </div>
+            </div>
+
+            <!-- Bank FD & NIFTY Comparison -->
+            <div class="bg-slate-900/40 border border-slate-800/60 rounded-xl p-3.5 mb-4">
+              <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Outperformance vs Alternatives</div>
+              <div id="benchmarkComparisonList" class="flex flex-col gap-2">
+                <!-- Injected Alternatives -->
+              </div>
+            </div>
+
+            <!-- 1-Click Action: Activate into Virtual Portfolio -->
+            <div class="flex gap-2">
+              <button id="activatePortfolioBtn" class="btn-emerald flex-1" onclick="activateBasketToPortfolio()">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                Track in Virtual Paper Portfolio
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 2: EXPLORE (Stock Intelligence & 360° Profiles)     -->
+      <!-- ======================================================== -->
+      <section id="tab-explore" class="tab-panel">
+        <!-- Search & Filter Header -->
+        <div class="glass-card p-4 mb-4">
+          <div class="relative mb-3">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            <input 
+              type="text" 
+              id="stockSearchInput" 
+              placeholder="Search NIFTY 50 stock (e.g. RELIANCE, INFY)..."
+              class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              oninput="filterStocks()"
+            >
+          </div>
+
+          <!-- Sector Filter Pills -->
+          <div class="chip-group" id="sectorFilterChips">
+            <button class="chip-btn active" data-sector="" onclick="filterBySector('')">All Sectors</button>
+            <button class="chip-btn" data-sector="Information Technology" onclick="filterBySector('Information Technology')">IT</button>
+            <button class="chip-btn" data-sector="Financial Services" onclick="filterBySector('Financial Services')">Banking & Fin</button>
+            <button class="chip-btn" data-sector="Energy" onclick="filterBySector('Energy')">Energy</button>
+            <button class="chip-btn" data-sector="Automobile" onclick="filterBySector('Automobile')">Auto</button>
+            <button class="chip-btn" data-sector="Consumer Goods" onclick="filterBySector('Consumer Goods')">FMCG</button>
+            <button class="chip-btn" data-sector="Healthcare" onclick="filterBySector('Healthcare')">Pharma</button>
+            <button class="chip-btn" data-sector="Metals" onclick="filterBySector('Metals')">Metals</button>
+          </div>
+        </div>
+
+        <!-- Stock Cards List Grid -->
+        <div id="exploreStockGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Injected Stock Cards -->
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 3: QUANT LAB (Regime Radar & Backtest Studio)       -->
+      <!-- ======================================================== -->
+      <section id="tab-quantlab" class="tab-panel">
+        <!-- Market Regime Radar Card -->
+        <div class="glass-card p-5 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4 text-cyan-400"></i>
+                Market Regime Radar
+              </h2>
+              <p class="text-xs text-slate-400">Unsupervised GMM & Rolling Volatility</p>
+            </div>
+            <span id="radarRegimeBadge" class="regime-pill-badge regime-bull">
+              Low-Vol Bull (84%)
+            </span>
+          </div>
+
+          <!-- Probability Bars -->
+          <div class="space-y-2 mb-3">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-emerald-400 font-medium">Low-Volatility Bull</span>
+                <span id="radarBullProb" class="font-bold text-slate-300">72%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarBullBar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 72%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-amber-400 font-medium">Sideways Consolidation</span>
+                <span id="radarSidewaysProb" class="font-bold text-slate-300">18%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarSidewaysBar" class="bg-amber-500 h-1.5 rounded-full" style="width: 18%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-rose-400 font-medium">High-Volatility Bear</span>
+                <span id="radarBearProb" class="font-bold text-slate-300">10%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarBearBar" class="bg-rose-500 h-1.5 rounded-full" style="width: 10%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="radarDescription" class="text-xs text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+            Market exhibits steady upward drift with subdued realized volatility. Favorable for momentum & quality factor allocations.
+          </div>
+        </div>
+
+        <!-- Strategy Backtest Studio Form -->
+        <div class="glass-card p-5 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2 mb-3">
+            <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-400"></i>
+            Technical Strategy Backtesting Studio
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Asset Symbol</label>
+              <select id="backtestSymbolSelect" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                <option value="^NSEI">NIFTY 50 Benchmark (^NSEI)</option>
+                <option value="RELIANCE">RELIANCE</option>
+                <option value="TCS">TCS</option>
+                <option value="INFY">INFY</option>
+                <option value="HDFCBANK">HDFCBANK</option>
+                <option value="ICICIBANK">ICICIBANK</option>
+                <option value="ITC">ITC</option>
+                <option value="LT">L&T</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Strategy Rule</label>
+              <select id="backtestStrategySelect" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                <option value="Buy & Hold">Buy & Hold</option>
+                <option value="Moving Average Crossover">Moving Average Crossover (20/50)</option>
+                <option value="RSI Mean Reversion">RSI Mean Reversion (30/70)</option>
+                <option value="Bollinger Band Breakout">Bollinger Band Breakout (20, 2.0)</option>
+                <option value="Dual Momentum">Dual Momentum (Absolute + Relative)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <div>
+              <label class="text-[11px] text-slate-400 block mb-1">Capital (₹)</label>
+              <input type="number" id="backtestCapitalInput" value="100000" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-400 block mb-1">Cost (bps)</label>
+              <input type="number" id="backtestCostInput" value="5" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-400 block mb-1">Slippage (bps)</label>
+              <input type="number" id="backtestSlippageInput" value="5" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+            </div>
+          </div>
+
+          <button id="runBacktestBtn" class="btn-primary" onclick="runBacktest()">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            Run Vectorized Strategy Simulation
+          </button>
+        </div>
+
+        <!-- Backtest Results Section -->
+        <div id="backtestResultCard" class="glass-card p-5 hidden">
+          <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+            <div>
+              <h3 id="btResultTitle" class="text-base font-bold text-white">Backtest Performance</h3>
+              <div id="btResultSubtitle" class="text-xs text-slate-400">Strategy vs NIFTY 50 Benchmark</div>
+            </div>
+          </div>
+
+          <!-- Key Metrics Grid -->
+          <div id="btMetricsGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+            <!-- Injected Metrics -->
+          </div>
+
+          <!-- Equity Curve Chart -->
+          <div class="mb-5">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Equity Growth Curve</div>
+            <div class="h-56 w-full">
+              <canvas id="backtestEquityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Drawdown Chart -->
+          <div class="mb-5">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Underwater Drawdown (%)</div>
+            <div class="h-32 w-full">
+              <canvas id="backtestDrawdownChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Regime Attribution Table -->
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Performance by Market Regime</div>
+            <div class="overflow-x-auto">
+              <table class="custom-table" id="btRegimeTable">
+                <thead>
+                  <tr>
+                    <th>Regime</th>
+                    <th>Days</th>
+                    <th>Strategy Ret</th>
+                    <th>Benchmark</th>
+                    <th>Sharpe</th>
+                    <th>Max DD</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Injected Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 4: PORTFOLIO (Virtual Paper Simulator & Rebalance)   -->
+      <!-- ======================================================== -->
+      <section id="tab-portfolio" class="tab-panel">
+        <!-- Active Virtual Portfolio Overview Card -->
+        <div class="glass-card p-5 mb-4">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i>
+                Virtual Paper Portfolio
+              </h2>
+              <div id="portfolioNameSubtitle" class="text-xs text-slate-400">My Simulated Tracker</div>
+            </div>
+            <button class="btn-ghost !text-xs !py-1 !px-2.5" onclick="openOrderSheetModal()">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+              Broker Order Sheet
+            </button>
+          </div>
+
+          <!-- Top Valuation Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Total Value</div>
+              <div id="portValuationTotal" class="text-base font-bold text-white mt-0.5">₹0.00</div>
+            </div>
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Unrealized P&L</div>
+              <div id="portValuationPnl" class="text-base font-bold text-emerald-400 mt-0.5">+₹0.00 (+0.0%)</div>
+            </div>
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Invested Capital</div>
+              <div id="portValuationInvested" class="text-base font-bold text-slate-300 mt-0.5">₹0.00</div>
+            </div>
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Alpha vs NIFTY</div>
+              <div id="portValuationAlpha" class="text-base font-bold text-indigo-400 mt-0.5">+0.0%</div>
+            </div>
+          </div>
+
+          <!-- Regime-Shift Rebalance Alert Banner -->
+          <div id="rebalanceAlertCard" class="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3.5 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="bell-ring" class="w-4 h-4 text-indigo-400"></i>
+                <span class="text-xs font-bold text-white">Regime-Shift Rebalance Status</span>
+              </div>
+              <span id="rebalanceBadge" class="text-[10px] font-semibold bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                In Sync
+              </span>
+            </div>
+            <p id="rebalanceReason" class="text-xs text-slate-300 mb-3">
+              Portfolio allocations are fully aligned with current Low-Volatility Bull market conditions.
+            </p>
+            <div id="rebalanceActions" class="hidden">
+              <button class="btn-emerald !text-xs !py-1.5 !w-full" onclick="applyRebalance()">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                Apply Regime-Shift Rebalance
+              </button>
+            </div>
+          </div>
+
+          <!-- Holdings Table -->
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Active Holdings Breakdown</div>
+            <div class="overflow-x-auto">
+              <table class="custom-table" id="portHoldingsTable">
+                <thead>
+                  <tr>
+                    <th>Stock</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Value</th>
+                    <th>Weight</th>
+                    <th>P&L</th>
+                  </tr>
+                </thead>
+                <tbody id="portHoldingsBody">
+                  <!-- Injected Holdings -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Mobile Tab Bar Navigation -->
+    <nav class="bottom-nav-bar" id="bottomNavBar">
+      <button class="nav-tab-btn active" data-tab="grow" onclick="switchTab('grow')">
+        <span class="nav-icon-wrap"><i data-lucide="sprout" class="w-5 h-5"></i></span>
+        <span>Grow</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="explore" onclick="switchTab('explore')">
+        <span class="nav-icon-wrap"><i data-lucide="compass" class="w-5 h-5"></i></span>
+        <span>Explore</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="quantlab" onclick="switchTab('quantlab')">
+        <span class="nav-icon-wrap"><i data-lucide="test-tube-2" class="w-5 h-5"></i></span>
+        <span>Quant Lab</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="portfolio" onclick="switchTab('portfolio')">
+        <span class="nav-icon-wrap"><i data-lucide="wallet" class="w-5 h-5"></i></span>
+        <span>Portfolio</span>
+      </button>
+    </nav>
+
+    <!-- Modal 1: 360° Stock Intelligence Profile Sheet -->
+    <div id="stockProfileModal" class="modal-overlay" onclick="closeStockProfileModal(event)">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div>
+            <h3 id="modalStockSymbol" class="text-lg font-bold text-white">RELIANCE</h3>
+            <div id="modalStockName" class="text-xs text-slate-400">Reliance Industries Ltd. • Energy</div>
+          </div>
+          <div class="text-right">
+            <div id="modalStockPrice" class="text-base font-bold text-white">₹2,845.50</div>
+            <div id="modalStockChange" class="text-xs font-semibold text-emerald-400">+1.45%</div>
+          </div>
+        </div>
+
+        <!-- Multi-Horizon Forecast Cones Chart -->
+        <div>
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Probabilistic Return Forecast Cones</div>
+          <div class="h-44 w-full">
+            <canvas id="stockForecastChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Technical Factors & Regime Suitability -->
+        <div class="grid grid-cols-2 gap-2" id="stockFactorsGrid">
+          <!-- Injected Factors -->
+        </div>
+
+        <!-- Action: Backtest in Quant Lab -->
+        <button id="modalBacktestBtn" class="btn-primary" onclick="backtestCurrentStock()">
+          <i data-lucide="flask-conical" class="w-4 h-4"></i>
+          Simulate in Quant Lab Studio
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal 2: 1-Click Broker Order Sheet Modal -->
+    <div id="orderSheetModal" class="modal-overlay" onclick="closeOrderSheetModal(event)">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-base font-bold text-white">1-Click Broker Order Sheet</h3>
+            <div class="text-xs text-slate-400">Execute trades easily on Zerodha or Groww</div>
+          </div>
+          <button class="btn-ghost !p-1.5" onclick="closeOrderSheetModal()">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Copyable Formats -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-xs font-semibold text-slate-300">Zerodha Basket CSV Format</span>
+            <button class="btn-ghost !text-[11px] !py-1 !px-2 text-indigo-300" onclick="copyZerodhaFormat()">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy CSV
+            </button>
+          </div>
+          <textarea id="zerodhaCsvText" readonly class="w-full h-24 bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300 font-mono focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-xs font-semibold text-slate-300">Groww Summary Text Format</span>
+            <button class="btn-ghost !text-[11px] !py-1 !px-2 text-indigo-300" onclick="copyGrowwFormat()">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy Summary
+            </button>
+          </div>
+          <textarea id="growwSummaryText" readonly class="w-full h-24 bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300 font-mono focus:outline-none"></textarea>
+        </div>
+
+        <div class="text-[10px] text-slate-500 leading-tight">
+          Disclaimer: Educational decision-support simulation tool. Not automated order execution or SEBI investment advice.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Client Application Script -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
