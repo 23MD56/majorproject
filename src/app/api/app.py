@@ -4,17 +4,20 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.explore import router as explore_router
 from app.api.routes.health import router as health_router
 from app.api.routes.market import router as market_router
 from app.api.routes.regime import router as regime_router
 from app.core.config import settings
 from app.data.service import MarketDataService
+from app.ml.forecasting.service import ExploreService
 from app.ml.regime.service import RegimeService
 
 
 def create_app(
     service: Optional[MarketDataService] = None,
     regime_service: Optional[RegimeService] = None,
+    explore_service: Optional[ExploreService] = None,
 ) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(
@@ -34,13 +37,18 @@ def create_app(
 
     # Attach Services to state
     market_svc = service or MarketDataService()
+    regime_svc = regime_service or RegimeService(market_service=market_svc)
+    explore_svc = explore_service or ExploreService(market_service=market_svc, regime_service=regime_svc)
+
     app.state.market_service = market_svc
-    app.state.regime_service = regime_service or RegimeService(market_service=market_svc)
+    app.state.regime_service = regime_svc
+    app.state.explore_service = explore_svc
 
     # Register routers under prefix
     app.include_router(health_router, prefix=settings.api_v1_prefix)
     app.include_router(market_router, prefix=settings.api_v1_prefix)
     app.include_router(regime_router, prefix=settings.api_v1_prefix)
+    app.include_router(explore_router, prefix=settings.api_v1_prefix)
 
     return app
 

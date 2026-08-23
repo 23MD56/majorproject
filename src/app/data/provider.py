@@ -183,8 +183,16 @@ class MockDataProvider(MarketDataProvider):
         if n == 0:
             return pd.DataFrame()
 
-        # Geometric random walk
-        daily_returns = rng.normal(loc=drift, scale=volatility, size=n)
+        # Geometric random walk with market correlation for stocks
+        if canonical not in ("^NSEI", "^INDIAVIX"):
+            mkt_rng = np.random.default_rng(self._get_symbol_seed("^NSEI"))
+            mkt_returns = mkt_rng.normal(loc=0.0004, scale=0.010, size=n)
+            target_beta = float(rng.uniform(0.75, 1.35))
+            idio_returns = rng.normal(loc=drift, scale=volatility * 0.7, size=n)
+            daily_returns = target_beta * mkt_returns + idio_returns
+        else:
+            daily_returns = rng.normal(loc=drift, scale=volatility, size=n)
+
         price_series = base_price * np.exp(np.cumsum(daily_returns))
 
         # Generate realistic OHLC bars around close
