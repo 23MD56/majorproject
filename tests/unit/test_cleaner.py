@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import pytest
 from datetime import datetime, timezone
-from quantniti.core.models import OHLCVBar, StockQuote, UniverseStock
-from quantniti.data.cleaner import (
+from app.core.models import OHLCVBar, StockQuote, UniverseStock
+from app.data.cleaner import (
     validate_ohlcv_dataframe,
     align_to_trading_calendar,
     calculate_returns,

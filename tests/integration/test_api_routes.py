@@ -1,9 +1,9 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
-from quantniti.api.app import create_app
-from quantniti.data.cache import ParquetMarketCache
-from quantniti.data.provider import MockDataProvider
-from quantniti.data.service import MarketDataService
+from app.api.app import create_app
+from app.data.cache import ParquetMarketCache
+from app.data.provider import MockDataProvider
+from app.data.service import MarketDataService
 
 
 @pytest.fixture

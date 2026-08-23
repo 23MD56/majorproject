@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-from quantniti.data.cleaner import sanitize_raw_provider_data, validate_ohlcv_dataframe
-from quantniti.universe import denormalize_symbol, get_sector_for_symbol, normalize_symbol, _SYMBOL_MAP
+from app.data.cleaner import sanitize_raw_provider_data, validate_ohlcv_dataframe
+from app.universe import denormalize_symbol, get_sector_for_symbol, normalize_symbol, _SYMBOL_MAP
 
 
 class MarketDataProvider(ABC):

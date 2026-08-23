@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 import pandas as pd
 import pytest
-from quantniti.data.cache import ParquetMarketCache
+from app.data.cache import ParquetMarketCache
 
 
 @pytest.fixture

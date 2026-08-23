@@ -4,12 +4,12 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional, Union
 import pandas as pd
 
-from quantniti.core.config import settings
-from quantniti.core.models import StockQuote, UniverseStock, SyncResult
-from quantniti.data.cache import ParquetMarketCache
-from quantniti.data.cleaner import align_to_trading_calendar, calculate_returns, validate_ohlcv_dataframe
-from quantniti.data.provider import MarketDataProvider, YahooFinanceProvider
-from quantniti.universe import (
+from app.core.config import settings
+from app.core.models import StockQuote, UniverseStock, SyncResult
+from app.data.cache import ParquetMarketCache
+from app.data.cleaner import align_to_trading_calendar, calculate_returns, validate_ohlcv_dataframe
+from app.data.provider import MarketDataProvider, YahooFinanceProvider
+from app.universe import (
     get_sector_for_symbol,
     get_universe_metadata,
     get_universe_symbols,

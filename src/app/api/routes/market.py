@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from quantniti.core.models import (
+from app.core.models import (
     MarketHistoryResponse,
     OHLCVBar,
     ReturnsMatrixResponse,
@@ -12,8 +12,8 @@ from quantniti.core.models import (
     SyncResult,
     UniverseStock,
 )
-from quantniti.data.service import MarketDataService
-from quantniti.universe import is_valid_symbol, normalize_symbol, _SYMBOL_MAP
+from app.data.service import MarketDataService
+from app.universe import is_valid_symbol, normalize_symbol, _SYMBOL_MAP
 
 router = APIRouter(prefix="/market", tags=["Market Data"])
 

@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 from typing import List, Optional, Union
 import pandas as pd
-from quantniti.core.config import settings
-from quantniti.universe import normalize_symbol
+from app.core.config import settings
+from app.universe import normalize_symbol
 
 
 class ParquetMarketCache:

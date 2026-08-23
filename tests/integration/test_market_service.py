@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
-from quantniti.core.models import StockQuote, UniverseStock, SyncResult
-from quantniti.data.cache import ParquetMarketCache
-from quantniti.data.provider import MockDataProvider
-from quantniti.data.service import MarketDataService
-from quantniti.universe import get_universe_symbols
+from app.core.models import StockQuote, UniverseStock, SyncResult
+from app.data.cache import ParquetMarketCache
+from app.data.provider import MockDataProvider
+from app.data.service import MarketDataService
+from app.universe import get_universe_symbols
 
 
 @pytest.fixture

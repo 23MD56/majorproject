@@ -1,5 +1,5 @@
 [project]
-name = "quantniti"
+name = "app"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -14,6 +14,8 @@ dependencies = [
     "pandas>=3.0.5",
     "pyarrow>=25.0.1",
     "pydantic>=2.13.4",
+    "scikit-learn>=1.9.0",
+    "scipy>=1.18.1",
     "uvicorn[standard]>=0.52.4",
     "yfinance>=1.6.0",
 ]

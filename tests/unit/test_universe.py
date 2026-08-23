@@ -1,5 +1,5 @@
 import pytest
-from quantniti.universe import (
+from app.universe import (
     NIFTY50_CONSTITUENTS,
     BENCHMARK_SYMBOLS,
     get_universe_symbols,
