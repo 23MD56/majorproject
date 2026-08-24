@@ -12,6 +12,7 @@ from app.core.models import (
     RebalanceAlert,
     RebalanceItemDiff,
 )
+from app.ml.portfolio.allocation import DiscreteAllocationEngine
 
 
 def compute_rebalance_diff(
@@ -20,7 +21,7 @@ def compute_rebalance_diff(
     current_regime: MarketRegimeType,
     latest_prices: Optional[Dict[str, float]] = None,
 ) -> RebalanceAlert:
-    """Compute before/after allocation diff when market regime shifts."""
+    """Compute before/after allocation diff when market regime shifts using discrete integer shares."""
     is_shift = current_regime != portfolio.current_regime
     
     current_holdings_map = {h.symbol: h for h in portfolio.holdings}
@@ -29,6 +30,22 @@ def compute_rebalance_diff(
     all_symbols = sorted(set(list(current_holdings_map.keys()) + list(target_map.keys())))
     total_val = portfolio.current_value
     prices = latest_prices or {}
+
+    # Calculate discrete target shares if not explicitly supplied
+    has_explicit_target_shares = any(
+        a.get("shares") is not None or a.get("target_shares") is not None
+        for a in target_allocations
+    )
+    if not has_explicit_target_shares and target_allocations:
+        t_weights = {a["symbol"]: float(a.get("weight", 0.0)) for a in target_allocations}
+        t_prices = {
+            a["symbol"]: float(prices.get(a["symbol"], current_holdings_map[a["symbol"]].current_price if a["symbol"] in current_holdings_map else 100.0))
+            for a in target_allocations
+        }
+        discrete_target = DiscreteAllocationEngine().allocate(weights=t_weights, prices=t_prices, capital=total_val)
+        discrete_target_map = discrete_target.shares
+    else:
+        discrete_target_map = {}
 
     diff_items: List[RebalanceItemDiff] = []
 
@@ -45,10 +62,12 @@ def compute_rebalance_diff(
         curr_price = float(prices.get(sym, curr_h.current_price if curr_h else 100.0))
 
         curr_shares = curr_h.shares if curr_h else 0
-        target_amount = target_w * total_val
-        target_shares = int(target_amount // curr_price) if curr_price > 0 else 0
-        if target_shares == 0 and target_w > 0 and target_amount >= curr_price * 0.5:
-            target_shares = 1
+        if has_explicit_target_shares and target_a:
+            target_shares = int(target_a.get("target_shares") or target_a.get("shares", 0))
+        elif target_a:
+            target_shares = discrete_target_map.get(sym, 0)
+        else:
+            target_shares = 0
 
         shares_diff = target_shares - curr_shares
 
@@ -223,9 +242,10 @@ def generate_broker_order_sheet(
     zerodha_csv = "\n".join(csv_lines)
 
     # 2. Groww Clean Clipboard text format:
+    cash_buffer = getattr(portfolio, "cash", 0.0)
     groww_lines = [
         f"QuantNiti Order Sheet - {portfolio.name}",
-        f"Total Orders: {len(orders)} | Est. Capital: ₹{total_amt:,.2f}",
+        f"Total Orders: {len(orders)} | Total Invested: ₹{total_amt:,.2f} | Cash Buffer: ₹{cash_buffer:,.2f}",
         "----------------------------------------",
     ]
     for o in orders:
@@ -242,4 +262,6 @@ def generate_broker_order_sheet(
         zerodha_csv_text=zerodha_csv,
         groww_clipboard_text=groww_text,
         generated_at=now_str,
+        total_invested=total_amt,
+        unallocated_cash=cash_buffer,
     )

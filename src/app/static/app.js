@@ -139,23 +139,38 @@ function renderBasketDetails(data) {
   document.getElementById("basketRegimeContext").innerText = 
     `Optimized for ${data.active_regime} • ${data.risk_persona} Persona`;
 
+  // Update Discrete Allocation & Cash Buffer Pill
+  const investedEl = document.getElementById("basketEquitiesSpent");
+  const cashBufferEl = document.getElementById("basketCashBuffer");
+  if (investedEl && cashBufferEl) {
+    const totalInv = data.total_invested || (data.capital - (data.unallocated_cash || 0));
+    const cashBuf = data.unallocated_cash || 0;
+    const bufPct = data.cash_buffer_pct || (data.capital > 0 ? (cashBuf / data.capital) * 100 : 0);
+    investedEl.innerText = `₹${totalInv.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    cashBufferEl.innerText = `₹${cashBuf.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (${bufPct.toFixed(1)}%)`;
+  }
+
   // Render Donut Chart
   renderAllocationDonut(data.allocations);
 
   // Render Allocation Pills List
   const listEl = document.getElementById("basketStockList");
-  listEl.innerHTML = data.allocations.map((item) => `
+  listEl.innerHTML = data.allocations.map((item) => {
+    const shares = item.shares || item.shares_approx || 0;
+    const allocatedAmt = item.allocated_amount || (shares * item.current_price) || item.target_amount;
+    return `
     <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800 text-xs">
       <div>
         <span class="font-bold text-white">${item.symbol}</span>
         <span class="text-[10px] text-slate-400 block">${item.name} (${(item.weight * 100).toFixed(1)}%)</span>
       </div>
       <div class="text-right">
-        <div class="font-semibold text-indigo-300">₹${item.target_amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-        <div class="text-[10px] text-slate-400">${item.shares_approx} shares @ ₹${item.current_price.toFixed(1)}</div>
+        <div class="font-semibold text-indigo-300">₹${allocatedAmt.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+        <div class="text-[10px] text-slate-400">${shares} shares @ ₹${item.current_price.toFixed(1)}</div>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   // Render 3-Tier Rupee Projections
   const tierContainer = document.getElementById("rupeeTierContainer");
@@ -847,13 +862,26 @@ async function openOrderSheetModal() {
   if (!AppState.activePortfolioId) {
     // If no portfolio yet, create a default order sheet from basket
     if (AppState.currentBasket) {
-      const orders = AppState.currentBasket.allocations.map(a => 
-        `NSE,${a.symbol},BUY,${a.shares_approx},MARKET,CNC`
+      const validAlloc = AppState.currentBasket.allocations.filter(a => (a.shares || a.shares_approx || 0) > 0);
+      const orders = validAlloc.map(a => 
+        `${a.symbol},NSE,BUY,MARKET,${a.shares || a.shares_approx},${a.current_price.toFixed(2)},CNC`
       ).join("\n");
-      document.getElementById("zerodhaCsvText").value = `Exchange,Symbol,Action,Quantity,OrderType,Product\n${orders}`;
-      document.getElementById("growwSummaryText").value = AppState.currentBasket.allocations.map(a => 
-        `• Buy ${a.shares_approx} shares of ${a.symbol} @ approx ₹${a.current_price.toFixed(1)} (Total ₹${a.target_amount.toLocaleString('en-IN')})`
-      ).join("\n");
+      document.getElementById("zerodhaCsvText").value = `Instrument,Exchange,Action,Order Type,Quantity,Price,Product Type\n${orders}`;
+      
+      const totalInv = AppState.currentBasket.total_invested || AppState.currentBasket.capital;
+      const cashBuf = AppState.currentBasket.unallocated_cash || 0;
+      const growwLines = [
+        `QuantNiti Order Sheet - AI Portfolio Basket`,
+        `Total Orders: ${validAlloc.length} | Total Invested: ₹${totalInv.toLocaleString('en-IN', { maximumFractionDigits: 0 })} | Cash Buffer: ₹${cashBuf.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`,
+        `----------------------------------------`,
+        ...validAlloc.map(a => {
+          const sh = a.shares || a.shares_approx || 0;
+          const amt = a.allocated_amount || (sh * a.current_price);
+          return `• BUY ${sh} shares of ${a.symbol} @ ₹${a.current_price.toFixed(2)} (₹${amt.toLocaleString('en-IN', { maximumFractionDigits: 0 })})`;
+        }),
+        `----------------------------------------`,
+      ];
+      document.getElementById("growwSummaryText").value = growwLines.join("\n");
     }
     return;
   }

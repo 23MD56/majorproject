@@ -16,6 +16,7 @@ from app.data.service import MarketDataService
 from app.ml.forecasting.factors import extract_stock_factors
 from app.ml.forecasting.service import ExploreService
 from app.ml.forecasting.suitability import compute_regime_suitability
+from app.ml.portfolio.allocation import DiscreteAllocationEngine
 from app.ml.portfolio.growth_calculator import (
     HORIZON_ATTR,
     HORIZON_DAYS,
@@ -37,6 +38,7 @@ class GrowService:
         regime_service: Optional[RegimeService] = None,
         explore_service: Optional[ExploreService] = None,
         hrp_optimizer: Optional[HRPOptimizer] = None,
+        allocator: Optional[DiscreteAllocationEngine] = None,
     ):
         self.market_service = market_service
         self.regime_service = regime_service or RegimeService(market_service=market_service)
@@ -44,6 +46,7 @@ class GrowService:
             market_service=market_service, regime_service=self.regime_service
         )
         self.hrp_optimizer = hrp_optimizer or HRPOptimizer()
+        self.allocator = allocator or DiscreteAllocationEngine()
 
     def recommend_basket(
         self,
@@ -155,7 +158,10 @@ class GrowService:
         tot_w = sum(filtered_weights.values())
         norm_weights = {k: float(v / tot_w) for k, v in filtered_weights.items()}
 
-        # 5. Build Allocations
+        # 5. Discrete Allocation Engine (whole shares & cash buffer)
+        prices_map = {c["symbol"]: c["current_price"] for c in selected_candidates if c["symbol"] in norm_weights}
+        discrete_res = self.allocator.allocate(weights=norm_weights, prices=prices_map, capital=capital)
+
         attr_name = HORIZON_ATTR.get(horizon, "m6")
         allocations: List[BasketAllocationItem] = []
         for cand in selected_candidates:
@@ -165,9 +171,9 @@ class GrowService:
             w = round(norm_weights[sym], 4)
             target_amt = round(w * capital, 2)
             price = cand["current_price"]
-            shares = int(target_amt // price) if price > 0 else 0
-            if shares == 0 and target_amt >= price * 0.5:
-                shares = 1
+            shares = discrete_res.shares.get(sym, 0)
+            allocated_amt = discrete_res.allocated_amounts.get(sym, 0.0)
+            act_w = discrete_res.actual_weights.get(sym, 0.0)
 
             cone = getattr(cand["forecast"], attr_name)
             allocations.append(
@@ -178,6 +184,9 @@ class GrowService:
                     weight=w,
                     target_amount=target_amt,
                     shares_approx=shares,
+                    shares=shares,
+                    allocated_amount=allocated_amt,
+                    actual_weight=act_w,
                     current_price=price,
                     growth_base_pct=cone.base_pct,
                     regime_suitability_score=cand["suitability_score"],
@@ -236,4 +245,7 @@ class GrowService:
             growth_projections=projections,
             trust_card=trust_card,
             benchmark_comparisons=benchmark_comparisons,
+            total_invested=discrete_res.total_invested,
+            unallocated_cash=discrete_res.unallocated_cash,
+            cash_buffer_pct=discrete_res.cash_buffer_pct,
         )

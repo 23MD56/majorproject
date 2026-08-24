@@ -2410,8 +2410,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/spec.md": {
-    "mtime": 1787565358.5012124,
-    "ast_hash": "8588279d511b009eff527598c59d1073",
+    "mtime": 1787500612.092972,
+    "ast_hash": "81a15b5407429a27fc24dfe3e95d1ee4",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -2430,8 +2430,8 @@
     "semantic_hash": ""
   },
   "docs/PRD.md": {
-    "mtime": 1787565358.515213,
-    "ast_hash": "8588279d511b009eff527598c59d1073",
+    "mtime": 1787500460.4971192,
+    "ast_hash": "5d5d3cefd3307833bcc8db518e99e092",
     "semantic_hash": ""
   },
   "docs/adr/0001-pivot-from-backtesting-to-portfolio-growth-intelligence.md": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1787566093.6177485,
-    "ast_hash": "d64e4ad31ec6c0605f3f33af75c249d4",
+    "mtime": 1787508218.9550006,
+    "ast_hash": "125f83579ca41d7f239f56554b866c7c",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2765,8 +2765,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/service.py": {
-    "mtime": 1787566108.511735,
-    "ast_hash": "ff1b9591186fbed8da155c0389737edd",
+    "mtime": 1787507106.5472,
+    "ast_hash": "3853a8a4dfb75d5e506fbc9212cbe5e1",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_api.py": {
@@ -2775,8 +2775,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_grow_service.py": {
-    "mtime": 1787566174.8318305,
-    "ast_hash": "771c1a9c21aaa165cf78eb9798c1389b",
+    "mtime": 1787506922.024431,
+    "ast_hash": "88eea7dad118fd96a4daefd15086df74",
     "semantic_hash": ""
   },
   "tests/unit/test_basket_growth_calculator.py": {
@@ -2845,13 +2845,13 @@
     "semantic_hash": ""
   },
   "src/app/ml/simulation/portfolio.py": {
-    "mtime": 1787566195.4799087,
-    "ast_hash": "4c6b37bb20285a4d4ca2489431e02f2c",
+    "mtime": 1787508232.0712068,
+    "ast_hash": "8c6dcc9f7c9df9c6c7ced42d6c98543a",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/rebalance.py": {
-    "mtime": 1787566215.5910056,
-    "ast_hash": "88862e76443939f4a4d5d3eee214089a",
+    "mtime": 1787508240.864642,
+    "ast_hash": "c835dc24559112476554be66a5c800ff",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/service.py": {
@@ -2875,13 +2875,13 @@
     "semantic_hash": ""
   },
   "tests/unit/test_rebalance_engine.py": {
-    "mtime": 1787566235.250119,
-    "ast_hash": "f8b8c782be0ebe779d413ad69fdab610",
+    "mtime": 1787508251.126274,
+    "ast_hash": "185f4175cce0e774be7592d89f7ee027",
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1787566313.6877449,
-    "ast_hash": "cc9e38c55a3a680e4efb6183dac22956",
+    "mtime": 1787509710.5986767,
+    "ast_hash": "eb2a33c4b26b1c1a572608e5cfbcdc48",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,53 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1787566275.8014095,
-    "ast_hash": "902b396bb5bf20a2f8720c7ae4480df4",
-    "semantic_hash": ""
-  },
-  "src/app/ml/portfolio/allocation.py": {
-    "mtime": 1787566067.5238051,
-    "ast_hash": "172ad840c1cd76500a6a6e0a8bf76df0",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_discrete_allocation.py": {
-    "mtime": 1787566048.0668762,
-    "ast_hash": "6c32c1ea44ab6ec740e4c0a3288f127b",
-    "semantic_hash": ""
-  },
-  ".scratch/quantniti-core/issues/08-discrete-integer-allocation-engine.md": {
-    "mtime": 1787565353.0119653,
-    "ast_hash": "814581fe050db4cf538be66157a10fb4",
-    "semantic_hash": ""
-  },
-  ".scratch/quantniti-core/issues/09-ledoit-wolf-covariance-shrinkage-hrp.md": {
-    "mtime": 1787565353.0139654,
-    "ast_hash": "45285347e594d6d0934b2d576bb3b367",
-    "semantic_hash": ""
-  },
-  ".scratch/quantniti-core/issues/10-in-app-competitor-benchmark-drawer.md": {
-    "mtime": 1787565353.0159655,
-    "ast_hash": "6df8a91915a30d27ca70a1c89e4c3120",
-    "semantic_hash": ""
-  },
-  ".scratch/quantniti-core/issues/11-pwa-mobile-manifest-and-installability.md": {
-    "mtime": 1787565353.0179656,
-    "ast_hash": "7f6a6124f6433781af4778c4289d4488",
-    "semantic_hash": ""
-  },
-  "docs/adr/0005-discrete-allocation-and-ledoit-wolf-covariance-shrinkage.md": {
-    "mtime": 1787564867.1780727,
-    "ast_hash": "bf4c23a77616250d583ad9b8747f7b3c",
-    "semantic_hash": ""
-  },
-  "docs/research/competitor-and-open-source-audit.md": {
-    "mtime": 1787564480.3090904,
-    "ast_hash": "3e16a4eae3daec34985c98800578635d",
-    "semantic_hash": ""
-  },
-  "docs/research/exhaustive-competitor-analysis-moneycontrol-zerodha-groww-indmoney.md": {
-    "mtime": 1787565132.613094,
-    "ast_hash": "55a0c251de22993a32baf2a86af38ca1",
+    "mtime": 1787509690.9124272,
+    "ast_hash": "9d24cbb329ff203e4138f88fc49708a8",
     "semantic_hash": ""
   }
 }

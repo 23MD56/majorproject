@@ -89,12 +89,20 @@ def test_execute_rebalance_updates_holdings(bull_portfolio: PortfolioState):
 
 
 def test_generate_broker_order_sheet(bull_portfolio: PortfolioState):
-    """Generate Zerodha CSV and Groww text format order sheets."""
+    """Generate Zerodha CSV and Groww text format order sheets with discrete whole shares."""
     order_sheet = generate_broker_order_sheet(bull_portfolio)
 
     assert isinstance(order_sheet, BrokerOrderSheet)
     assert order_sheet.total_orders == len(bull_portfolio.holdings)
     assert order_sheet.total_estimated_amount > 0
+    assert order_sheet.unallocated_cash >= 0.0
+    assert round(order_sheet.total_invested + order_sheet.unallocated_cash, 2) == round(bull_portfolio.initial_capital, 2)
+
+    # Check discrete integer quantities for every order
+    for o in order_sheet.orders:
+        assert isinstance(o.quantity, int)
+        assert o.quantity > 0
+        assert o.estimated_total == round(o.quantity * o.price, 2)
 
     # Zerodha CSV format verification
     assert "Instrument,Exchange,Action,Order Type,Quantity,Price,Product Type" in order_sheet.zerodha_csv_text
@@ -102,4 +110,5 @@ def test_generate_broker_order_sheet(bull_portfolio: PortfolioState):
 
     # Groww text format verification
     assert "QuantNiti Order Sheet" in order_sheet.groww_clipboard_text
+    assert "Cash Buffer" in order_sheet.groww_clipboard_text
     assert "• BUY" in order_sheet.groww_clipboard_text

@@ -50,6 +50,16 @@ def test_grow_service_recommend_basket_balanced(grow_service: GrowService):
     total_target_amount = sum(a.target_amount for a in resp.allocations)
     assert pytest.approx(total_target_amount, rel=1e-2) == capital
 
+    # Check Discrete Integer Allocation & Cash Buffer (Ticket 08)
+    assert resp.total_invested <= capital
+    assert resp.unallocated_cash >= 0.0
+    assert round(resp.total_invested + resp.unallocated_cash, 2) == round(capital, 2)
+    assert resp.cash_buffer_pct >= 0.0
+    for a in resp.allocations:
+        assert isinstance(a.shares, int)
+        assert a.shares >= 0
+        assert a.allocated_amount == round(a.shares * a.current_price, 2)
+
     # Check 3-Tier Rupee Growth Scenarios
     projections = resp.growth_projections
     assert projections.pessimistic.expected_return_pct <= projections.base.expected_return_pct

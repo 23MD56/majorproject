@@ -239,7 +239,10 @@ class BasketAllocationItem(BaseModel):
     sector: str
     weight: float = Field(..., ge=0.0, le=1.0)
     target_amount: float
-    shares_approx: int
+    shares_approx: int = 0
+    shares: int = 0
+    allocated_amount: float = 0.0
+    actual_weight: float = 0.0
     current_price: float
     growth_base_pct: float
     regime_suitability_score: float
@@ -320,6 +323,9 @@ class BasketRecommendationResponse(BaseModel):
     growth_projections: BasketGrowthProjections
     trust_card: TrustCardPillars
     benchmark_comparisons: List[BenchmarkComparisonItem]
+    total_invested: float = 0.0
+    unallocated_cash: float = 0.0
+    cash_buffer_pct: float = 0.0
 
 
 # ==========================================
@@ -505,6 +511,8 @@ class BrokerOrderSheet(BaseModel):
     zerodha_csv_text: str
     groww_clipboard_text: str
     generated_at: str
+    total_invested: float = 0.0
+    unallocated_cash: float = 0.0
 
 
 class CreatePortfolioRequest(BaseModel):

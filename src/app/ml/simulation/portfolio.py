@@ -11,6 +11,7 @@ from app.core.models import (
     PortfolioState,
     RiskPersona,
 )
+from app.ml.portfolio.allocation import DiscreteAllocationEngine
 
 
 def create_portfolio_from_allocations(
@@ -23,12 +24,22 @@ def create_portfolio_from_allocations(
     as_of_date: Optional[str] = None,
     portfolio_id: Optional[str] = None,
 ) -> PortfolioState:
-    """Initialize a new Virtual Paper Portfolio from basket allocations."""
+    """Initialize a new Virtual Paper Portfolio from basket allocations with discrete integer shares."""
     pid = portfolio_id or f"port_{uuid.uuid4().hex[:8]}"
     date_str = as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     holdings: List[PortfolioHolding] = []
     total_spent = 0.0
+
+    # Determine if discrete allocation is needed
+    has_explicit_shares = any(alloc.get("shares") is not None for alloc in allocations)
+    if not has_explicit_shares:
+        weights = {a["symbol"]: float(a.get("weight", 0.0)) for a in allocations}
+        prices = {a["symbol"]: float(a.get("price") or a.get("current_price", 100.0)) for a in allocations}
+        alloc_res = DiscreteAllocationEngine().allocate(weights=weights, prices=prices, capital=capital)
+        discrete_shares_map = alloc_res.shares
+    else:
+        discrete_shares_map = {}
 
     for alloc in allocations:
         sym = alloc["symbol"]
@@ -37,12 +48,10 @@ def create_portfolio_from_allocations(
         w = float(alloc["weight"])
         price = float(alloc.get("price") or alloc.get("current_price", 100.0))
 
-        target_amt = w * capital
-        shares = int(alloc.get("shares") or alloc.get("shares_approx", 0))
-        if shares == 0 and price > 0:
-            shares = int(target_amt // price)
-            if shares == 0 and target_amt >= price * 0.5:
-                shares = 1
+        if has_explicit_shares:
+            shares = int(alloc.get("shares") or alloc.get("shares_approx", 0))
+        else:
+            shares = discrete_shares_map.get(sym, 0)
 
         invested_amt = round(shares * price, 2)
         total_spent += invested_amt
