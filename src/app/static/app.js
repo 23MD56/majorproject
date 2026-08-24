@@ -17,16 +17,95 @@ const AppState = {
   charts: {},
 };
 
+// Deferred PWA install prompt holder
+let deferredPWAInstallPrompt = null;
+
 // Initialize App on DOM Loaded
 document.addEventListener("DOMContentLoaded", async () => {
   if (window.lucide) {
     lucide.createIcons();
   }
+  registerServiceWorker();
+  checkIOSInstallGuidance();
   await fetchCurrentRegime();
   await loadExploreStocks();
   // Pre-generate a default basket for instant preview
   await generateBasket();
 });
+
+// ===================================================================
+// PWA & SERVICE WORKER LIFECYCLE CONTROLLER
+// ===================================================================
+
+function registerServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/" })
+        .then((reg) => {
+          console.log("QuantNiti ServiceWorker registered:", reg.scope);
+        })
+        .catch((err) => {
+          console.warn("QuantNiti ServiceWorker registration notice:", err);
+        });
+    });
+  }
+}
+
+// Intercept beforeinstallprompt for Custom Branded Install Button
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPWAInstallPrompt = e;
+  const installBtn = document.getElementById("pwaInstallBtn");
+  if (installBtn) {
+    installBtn.classList.remove("hidden");
+  }
+});
+
+async function promptPWAInstall() {
+  if (!deferredPWAInstallPrompt) return;
+  deferredPWAInstallPrompt.prompt();
+  const { outcome } = await deferredPWAInstallPrompt.userChoice;
+  console.log(`User response to install prompt: ${outcome}`);
+  deferredPWAInstallPrompt = null;
+  const installBtn = document.getElementById("pwaInstallBtn");
+  if (installBtn) {
+    installBtn.classList.add("hidden");
+  }
+}
+
+window.addEventListener("appinstalled", () => {
+  deferredPWAInstallPrompt = null;
+  const installBtn = document.getElementById("pwaInstallBtn");
+  if (installBtn) {
+    installBtn.classList.add("hidden");
+  }
+  console.log("QuantNiti PWA was successfully installed.");
+});
+
+// iOS Safari Guidance: In-App Dismissible Banner
+function checkIOSInstallGuidance() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  const isDismissed = localStorage.getItem("quantniti_ios_pwa_dismissed") === "true";
+
+  if (isIOS && !isStandalone && !isDismissed) {
+    const banner = document.getElementById("iosInstallBanner");
+    if (banner) {
+      banner.classList.remove("hidden");
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+}
+
+function dismissIOSInstallBanner() {
+  const banner = document.getElementById("iosInstallBanner");
+  if (banner) {
+    banner.classList.add("hidden");
+  }
+  localStorage.setItem("quantniti_ios_pwa_dismissed", "true");
+}
+
 
 // Tab Switching Controller
 function switchTab(tabId) {
@@ -913,3 +992,35 @@ function copyGrowwFormat() {
   navigator.clipboard.writeText(text);
   alert("Groww order summary copied to clipboard!");
 }
+
+// ===================================================================
+// COMPETITOR BENCHMARK DRAWER LOGIC
+// ===================================================================
+
+function openCompetitorBenchmarkModal() {
+  const modal = document.getElementById("competitorBenchmarkModal");
+  if (modal) {
+    modal.classList.add("active");
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+}
+
+function closeCompetitorBenchmarkModal(event) {
+  if (event) event.stopPropagation();
+  const modal = document.getElementById("competitorBenchmarkModal");
+  if (modal) {
+    modal.classList.remove("active");
+  }
+}
+
+// Global Keyboard Handler for Modal Accessibility (Escape Key)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeStockProfileModal(e);
+    closeOrderSheetModal(e);
+    closeCompetitorBenchmarkModal(e);
+  }
+});
+

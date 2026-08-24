@@ -91,6 +91,27 @@ def create_app(
         async def serve_client_alias():
             return FileResponse(static_dir / "index.html")
 
+        @app.get("/manifest.json", response_class=FileResponse, include_in_schema=False)
+        async def serve_manifest():
+            return FileResponse(
+                static_dir / "manifest.json",
+                media_type="application/manifest+json",
+            )
+
+        @app.get("/sw.js", response_class=FileResponse, include_in_schema=False)
+        async def serve_service_worker():
+            return FileResponse(
+                static_dir / "sw.js",
+                media_type="application/javascript",
+                headers={"Service-Worker-Allowed": "/"},
+            )
+
+        @app.get("/offline.html", response_class=FileResponse, include_in_schema=False)
+        async def serve_offline():
+            return FileResponse(static_dir / "offline.html", media_type="text/html")
+
+
+
     # Register routers under prefix
     app.include_router(health_router, prefix=settings.api_v1_prefix)
     app.include_router(market_router, prefix=settings.api_v1_prefix)
