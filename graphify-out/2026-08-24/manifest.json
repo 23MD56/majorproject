@@ -2410,8 +2410,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/spec.md": {
-    "mtime": 1787500612.092972,
-    "ast_hash": "81a15b5407429a27fc24dfe3e95d1ee4",
+    "mtime": 1787580380.4344704,
+    "ast_hash": "a5c9dfa5f74630e44ad6d913a24eb7ff",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -2420,8 +2420,8 @@
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1787500442.6454918,
-    "ast_hash": "9ffd91de04df2a07798ae893f5ff4f89",
+    "mtime": 1787580632.652344,
+    "ast_hash": "ef87a22c79493f1e47a28897058c68d8",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2430,8 +2430,8 @@
     "semantic_hash": ""
   },
   "docs/PRD.md": {
-    "mtime": 1787500460.4971192,
-    "ast_hash": "5d5d3cefd3307833bcc8db518e99e092",
+    "mtime": 1787580639.3573544,
+    "ast_hash": "a5c9dfa5f74630e44ad6d913a24eb7ff",
     "semantic_hash": ""
   },
   "docs/adr/0001-pivot-from-backtesting-to-portfolio-growth-intelligence.md": {
@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1787509720.1940877,
-    "ast_hash": "93fbe3e5ac5f6ac4ac345c64ea4be370",
+    "mtime": 1787581404.8351126,
+    "ast_hash": "07dee28dd635acae306372819127cf28",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1787508218.9550006,
-    "ast_hash": "125f83579ca41d7f239f56554b866c7c",
+    "mtime": 1787566093.6177485,
+    "ast_hash": "d64e4ad31ec6c0605f3f33af75c249d4",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2750,8 +2750,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/__init__.py": {
-    "mtime": 1787506852.5933928,
-    "ast_hash": "e5828a7bab5a5a0c836237ed23ca07d1",
+    "mtime": 1787578165.5271919,
+    "ast_hash": "4341066d9fecb3eb6a2d0bcb0483161e",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/growth_calculator.py": {
@@ -2760,13 +2760,13 @@
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/hrp.py": {
-    "mtime": 1787506882.5028398,
-    "ast_hash": "9e7ad000e26c2e8ad54f9d4e4745a94c",
+    "mtime": 1787578158.6980534,
+    "ast_hash": "8aeb63de6e82c77ab76ac564a49f357d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/service.py": {
-    "mtime": 1787507106.5472,
-    "ast_hash": "3853a8a4dfb75d5e506fbc9212cbe5e1",
+    "mtime": 1787566108.511735,
+    "ast_hash": "ff1b9591186fbed8da155c0389737edd",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_api.py": {
@@ -2775,8 +2775,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_grow_service.py": {
-    "mtime": 1787506922.024431,
-    "ast_hash": "88eea7dad118fd96a4daefd15086df74",
+    "mtime": 1787566174.8318305,
+    "ast_hash": "771c1a9c21aaa165cf78eb9798c1389b",
     "semantic_hash": ""
   },
   "tests/unit/test_basket_growth_calculator.py": {
@@ -2785,8 +2785,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_hrp_optimizer.py": {
-    "mtime": 1787506831.501078,
-    "ast_hash": "93020280d9bbe5abec1808219f6834e6",
+    "mtime": 1787578182.485985,
+    "ast_hash": "080c02960632bbf2a469bbcdf364beb7",
     "semantic_hash": ""
   },
   "src/app/api/routes/backtest.py": {
@@ -2845,13 +2845,13 @@
     "semantic_hash": ""
   },
   "src/app/ml/simulation/portfolio.py": {
-    "mtime": 1787508232.0712068,
-    "ast_hash": "8c6dcc9f7c9df9c6c7ced42d6c98543a",
+    "mtime": 1787566195.4799087,
+    "ast_hash": "4c6b37bb20285a4d4ca2489431e02f2c",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/rebalance.py": {
-    "mtime": 1787508240.864642,
-    "ast_hash": "c835dc24559112476554be66a5c800ff",
+    "mtime": 1787566215.5910056,
+    "ast_hash": "88862e76443939f4a4d5d3eee214089a",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/service.py": {
@@ -2875,18 +2875,18 @@
     "semantic_hash": ""
   },
   "tests/unit/test_rebalance_engine.py": {
-    "mtime": 1787508251.126274,
-    "ast_hash": "185f4175cce0e774be7592d89f7ee027",
+    "mtime": 1787566235.250119,
+    "ast_hash": "f8b8c782be0ebe779d413ad69fdab610",
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1787509710.5986767,
-    "ast_hash": "eb2a33c4b26b1c1a572608e5cfbcdc48",
+    "mtime": 1787581434.5326068,
+    "ast_hash": "71810ac26d3221d3ab879bada75259fc",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
-    "mtime": 1787509644.0068479,
-    "ast_hash": "30ddc28bfce9e2482d88353556ddd57f",
+    "mtime": 1787578913.6721177,
+    "ast_hash": "44e53112dc04bd7e7f63478fd8b98dc3",
     "semantic_hash": ""
   },
   "tests/integration/test_end_to_end_integration.py": {
@@ -2900,8 +2900,138 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1787509690.9124272,
-    "ast_hash": "9d24cbb329ff203e4138f88fc49708a8",
+    "mtime": 1787581423.582424,
+    "ast_hash": "389f9989cc771a2bf7ddaabf4b793b25",
+    "semantic_hash": ""
+  },
+  "src/app/ml/portfolio/allocation.py": {
+    "mtime": 1787566067.5238051,
+    "ast_hash": "172ad840c1cd76500a6a6e0a8bf76df0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_discrete_allocation.py": {
+    "mtime": 1787566048.0668762,
+    "ast_hash": "6c32c1ea44ab6ec740e4c0a3288f127b",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/08-discrete-integer-allocation-engine.md": {
+    "mtime": 1787566683.5834851,
+    "ast_hash": "ee6ff5be6170633a7ce4649a54d326ec",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/09-ledoit-wolf-covariance-shrinkage-hrp.md": {
+    "mtime": 1787578334.5478828,
+    "ast_hash": "b0b7997d44a07bbc0f53490ea7eab338",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/10-in-app-competitor-benchmark-drawer.md": {
+    "mtime": 1787579052.3893497,
+    "ast_hash": "54832935fd5547e4502568e2b49db982",
+    "semantic_hash": ""
+  },
+  "docs/adr/0005-discrete-allocation-and-ledoit-wolf-covariance-shrinkage.md": {
+    "mtime": 1787564867.1780727,
+    "ast_hash": "bf4c23a77616250d583ad9b8747f7b3c",
+    "semantic_hash": ""
+  },
+  "docs/research/competitor-and-open-source-audit.md": {
+    "mtime": 1787564480.3090904,
+    "ast_hash": "3e16a4eae3daec34985c98800578635d",
+    "semantic_hash": ""
+  },
+  "docs/research/exhaustive-competitor-analysis-moneycontrol-zerodha-groww-indmoney.md": {
+    "mtime": 1787565132.613094,
+    "ast_hash": "55a0c251de22993a32baf2a86af38ca1",
+    "semantic_hash": ""
+  },
+  "src/app/static/manifest.json": {
+    "mtime": 1787581368.1725113,
+    "ast_hash": "9eaa8d88dadca55f49447c0483feff7c",
+    "semantic_hash": ""
+  },
+  "src/app/static/sw.js": {
+    "mtime": 1787581385.374792,
+    "ast_hash": "8f32d7f6abad172b76f47d41ade4f806",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_pwa_integration.py": {
+    "mtime": 1787581340.937071,
+    "ast_hash": "963e43b835bab2a164a386b40e111f45",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_pwa_unit.py": {
+    "mtime": 1787581329.0568807,
+    "ast_hash": "fa449b130eaa41ffef5d92a5f4a2d631",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/11-pwa-cross-platform-installability.md": {
+    "mtime": 1787581488.1895142,
+    "ast_hash": "6f69c64ad75c47dc756496200d5e6a98",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/12-nitibot-rag-portfolio-assistant.md": {
+    "mtime": 1787580533.4126425,
+    "ast_hash": "3868e074046e016839282b59e44ab1df",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/13-esg-conscience-score-layer.md": {
+    "mtime": 1787580549.3495302,
+    "ast_hash": "9d4444dac03c6de9c1ad49b7c46a9b91",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/14-financial-literacy-microlearning-cards.md": {
+    "mtime": 1787580561.262464,
+    "ast_hash": "74da6774ef5c2215c5ff60d1bb24155e",
+    "semantic_hash": ""
+  },
+  ".scratch/quantniti-core/issues/15-sharable-portfolio-report-card.md": {
+    "mtime": 1787580561.491463,
+    "ast_hash": "d7e6123c958fef315138933d16714fbb",
+    "semantic_hash": ""
+  },
+  "docs/adr/0006-rag-powered-conversational-assistant-nitibot.md": {
+    "mtime": 1787580602.224341,
+    "ast_hash": "cf5c543f9258c9e24025250435af2bfe",
+    "semantic_hash": ""
+  },
+  "docs/adr/0007-esg-conscience-score-and-socially-responsible-investing.md": {
+    "mtime": 1787580614.5123332,
+    "ast_hash": "e0bf678cdfafee3844c399c1f8f083a2",
+    "semantic_hash": ""
+  },
+  "docs/adr/0008-cross-platform-pwa-with-adaptive-desktop-layout.md": {
+    "mtime": 1787580614.921333,
+    "ast_hash": "fa8c3762b2eb1cc5a2c8c9f5aee5079c",
+    "semantic_hash": ""
+  },
+  "src/app/static/offline.html": {
+    "mtime": 1787581376.5726483,
+    "ast_hash": "9cce03ddfc34508c90c93b5679eb5d35",
+    "semantic_hash": ""
+  },
+  "src/app/static/icons/icon-192.png": {
+    "mtime": 1787581362.553014,
+    "ast_hash": "579fdcba6b41bb5da63790e8d3ca76dc",
+    "semantic_hash": ""
+  },
+  "src/app/static/icons/icon-512.png": {
+    "mtime": 1787581362.9032152,
+    "ast_hash": "ac01421517d7d07b88314977125b1a2f",
+    "semantic_hash": ""
+  },
+  "src/app/static/icons/icon-maskable-192.png": {
+    "mtime": 1787581362.9322386,
+    "ast_hash": "08f89fd90d473bf963b4c5ecb7a2023b",
+    "semantic_hash": ""
+  },
+  "src/app/static/icons/icon-maskable-512.png": {
+    "mtime": 1787581363.145492,
+    "ast_hash": "731487c2262869b0af01959eb508bf4a",
+    "semantic_hash": ""
+  },
+  "src/app/static/icons/icon.svg": {
+    "mtime": 1787581362.480458,
+    "ast_hash": "b199029e33260703f999577fb504dafd",
     "semantic_hash": ""
   }
 }

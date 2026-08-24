@@ -524,4 +524,33 @@ class CreatePortfolioRequest(BaseModel):
     custom_allocations: Optional[List[Dict[str, Any]]] = None
 
 
+# ==========================================
+# NitiBot RAG Portfolio Assistant Models (Ticket 12)
+# ==========================================
+
+class ChatMessageRequest(BaseModel):
+    message: str = Field(..., min_length=1, description="Natural language user query")
+    context: Optional[Dict[str, Any]] = Field(default=None, description="Optional active client-side session context")
+    session_id: Optional[str] = Field(default=None, description="Client session identifier for conversation memory")
+
+
+class ChatMessageResponse(BaseModel):
+    reply: str
+    sources: List[str] = Field(default_factory=list)
+    session_id: str
+
+
+class ChatStatusResponse(BaseModel):
+    available: bool
+    model: str = "gemini-2.5-flash"
+    message: Optional[str] = None
+
+
+class RAGContextPayload(BaseModel):
+    grounding_text: str
+    sources: List[str]
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+
 

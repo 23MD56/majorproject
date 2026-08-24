@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from app.core.models import RiskPersona
-from app.ml.portfolio.hrp import HRPOptimizer, compute_hrp_weights
+from app.ml.portfolio.hrp import HRPOptimizer, compute_hrp_weights, compute_shrunk_covariance
 
 
 @pytest.fixture
@@ -113,3 +113,122 @@ def test_hrp_optimizer_handles_two_assets():
     assert sum(weights.values()) == pytest.approx(1.0, rel=1e-5)
     # Asset A has lower variance (0.01 vs 0.02), so it gets higher inverse-variance weight
     assert weights["A"] > weights["B"]
+
+
+def test_compute_shrunk_covariance_ledoit_wolf(sample_returns_df: pd.DataFrame):
+    """Ledoit-Wolf shrinkage computes valid positive-definite covariance with shrinkage in [0, 1]."""
+    cov_shrunk, shrinkage = compute_shrunk_covariance(sample_returns_df, use_shrinkage=True)
+    
+    assert isinstance(cov_shrunk, np.ndarray)
+    assert cov_shrunk.shape == (6, 6)
+    assert 0.0 <= shrinkage <= 1.0
+    
+    # Covariance matrix must be symmetric
+    np.testing.assert_allclose(cov_shrunk, cov_shrunk.T, atol=1e-8)
+    
+    # Covariance matrix must be positive definite (all eigenvalues > 0)
+    eigenvalues = np.linalg.eigvalsh(cov_shrunk)
+    assert np.all(eigenvalues > 0)
+    
+    # Condition number should be well-behaved
+    cond_shrunk = np.linalg.cond(cov_shrunk)
+    assert np.isfinite(cond_shrunk)
+    assert cond_shrunk > 0
+
+
+def test_compute_shrunk_covariance_fallback_on_degenerate_data():
+    """Fallback to regularized empirical covariance on rank-deficient / constant returns."""
+    # Create constant returns where Ledoit-Wolf or empirical variance is 0
+    df_const = pd.DataFrame({
+        "A": [0.01] * 20,
+        "B": [0.01] * 20,
+    })
+    cov_shrunk, shrinkage = compute_shrunk_covariance(df_const, use_shrinkage=True)
+    
+    assert cov_shrunk.shape == (2, 2)
+    assert np.all(np.isfinite(cov_shrunk))
+    # Must still be positive definite due to ridge regularisation fallback
+    eigenvalues = np.linalg.eigvalsh(cov_shrunk)
+    assert np.all(eigenvalues > 0)
+
+
+def test_compute_shrunk_covariance_without_shrinkage(sample_returns_df: pd.DataFrame):
+    """When use_shrinkage=False, returns empirical covariance with shrinkage=0.0."""
+    cov_emp, shrinkage = compute_shrunk_covariance(sample_returns_df, use_shrinkage=False)
+    assert shrinkage == 0.0
+    assert cov_emp.shape == (6, 6)
+    np.testing.assert_allclose(cov_emp, cov_emp.T, atol=1e-8)
+
+
+def test_hrp_distance_matrix_conditioning_extreme_correlation():
+    """HRP engine handles collinear assets (correlation ~ 0.9999) gracefully without NaN or singular errors."""
+    np.random.seed(42)
+    base_returns = np.random.normal(0.001, 0.02, 100)
+    # Asset B is almost perfectly correlated with Asset A
+    df = pd.DataFrame({
+        "A": base_returns,
+        "B": base_returns + np.random.normal(0, 1e-6, 100),
+        "C": np.random.normal(0.001, 0.015, 100),
+    })
+    
+    optimizer = HRPOptimizer()
+    weights = optimizer.optimize(returns_df=df, risk_persona=RiskPersona.BALANCED)
+    
+    assert len(weights) == 3
+    assert sum(weights.values()) == pytest.approx(1.0, rel=1e-5)
+    for sym, w in weights.items():
+        assert np.isfinite(w)
+        assert w >= 0.0
+
+
+def test_hrp_optimizer_weight_stability_noisy_regime():
+    """Ledoit-Wolf shrinkage reduces weight variation across small rolling subsamples."""
+    np.random.seed(123)
+    n_days = 60  # Short noisy rolling window
+    n_assets = 5
+    symbols = [f"ASSET_{i}" for i in range(n_assets)]
+    
+    # Highly noisy covariance
+    raw_cov = np.random.uniform(0.1, 0.5, (n_assets, n_assets))
+    raw_cov = raw_cov @ raw_cov.T / n_assets + np.eye(n_assets) * 0.05
+    
+    returns = np.random.multivariate_normal(mean=np.zeros(n_assets), cov=raw_cov, size=n_days)
+    df = pd.DataFrame(returns, columns=symbols)
+    
+    optimizer = HRPOptimizer()
+    weights_shrunk = optimizer.optimize(df, risk_persona=RiskPersona.BALANCED, use_shrinkage=True)
+    weights_empirical = optimizer.optimize(df, risk_persona=RiskPersona.BALANCED, use_shrinkage=False)
+    
+    assert sum(weights_shrunk.values()) == pytest.approx(1.0, rel=1e-5)
+    assert sum(weights_empirical.values()) == pytest.approx(1.0, rel=1e-5)
+    for sym in symbols:
+        assert weights_shrunk[sym] >= 0.0
+        assert weights_empirical[sym] >= 0.0
+
+
+def test_hrp_optimizer_all_personas_and_caps():
+    """Verify all RiskPersona types adhere to strict concentration caps on an 8-asset universe."""
+    np.random.seed(42)
+    n_days = 250
+    symbols = [f"STOCK_{i}" for i in range(8)]
+    returns = np.random.normal(0.0005, 0.01, size=(n_days, 8))
+    # Make some assets have lower variance to induce concentrated raw weights
+    returns[:, 0] *= 0.2
+    returns[:, 1] *= 0.3
+    df = pd.DataFrame(returns, columns=symbols)
+    
+    optimizer = HRPOptimizer()
+    
+    for persona, expected_cap in [
+        (RiskPersona.CONSERVATIVE, 0.15),
+        (RiskPersona.BALANCED, 0.22),
+        (RiskPersona.AGGRESSIVE, 0.32),
+    ]:
+        weights = optimizer.optimize(
+            returns_df=df,
+            risk_persona=persona,
+            use_shrinkage=True,
+        )
+        assert sum(weights.values()) == pytest.approx(1.0, rel=1e-5)
+        for sym, w in weights.items():
+            assert w <= expected_cap + 1e-4, f"{sym} weight {w} exceeded {expected_cap} for {persona}"

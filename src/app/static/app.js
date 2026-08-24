@@ -14,6 +14,8 @@ const AppState = {
   activePortfolio: null,
   allExploreStocks: [],
   selectedStockSymbol: null,
+  activeBacktest: null,
+  nitibotSessionId: "session_" + Math.random().toString(36).substring(2, 10),
   charts: {},
 };
 
@@ -27,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   registerServiceWorker();
   checkIOSInstallGuidance();
+  await checkNitiBotStatus();
   await fetchCurrentRegime();
   await loadExploreStocks();
   // Pre-generate a default basket for instant preview
@@ -687,6 +690,7 @@ async function runBacktest() {
 }
 
 function renderBacktestResults(data) {
+  AppState.activeBacktest = data;
   const card = document.getElementById("backtestResultCard");
   card.classList.remove("hidden");
 
@@ -1021,6 +1025,265 @@ document.addEventListener("keydown", (e) => {
     closeStockProfileModal(e);
     closeOrderSheetModal(e);
     closeCompetitorBenchmarkModal(e);
+    closeNitiBotChat();
   }
 });
+
+// ===================================================================
+// NITIBOT CONVERSATIONAL RAG ASSISTANT CONTROLLER (Ticket 12)
+// ===================================================================
+
+async function checkNitiBotStatus() {
+  try {
+    const resp = await fetch("/api/chat/status");
+    if (resp.ok) {
+      const data = await resp.json();
+      const trigger = document.getElementById("nitibotTriggerContainer");
+      if (data.available && trigger) {
+        trigger.classList.remove("hidden");
+      } else if (trigger) {
+        trigger.classList.add("hidden");
+      }
+    }
+  } catch (err) {
+    console.warn("NitiBot service status check failed:", err);
+  }
+}
+
+function toggleNitiBotChat() {
+  const modal = document.getElementById("nitibotModal");
+  if (!modal) return;
+  if (modal.classList.contains("active")) {
+    closeNitiBotChat();
+  } else {
+    openNitiBotChat();
+  }
+}
+
+function openNitiBotChat() {
+  const modal = document.getElementById("nitibotModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    // Trigger animation next frame
+    requestAnimationFrame(() => {
+      modal.classList.add("active");
+    });
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+    const input = document.getElementById("nitibotInputField");
+    if (input) {
+      setTimeout(() => input.focus(), 200);
+    }
+    scrollToLatestNitiBotMessage();
+  }
+}
+
+function closeNitiBotChat() {
+  const modal = document.getElementById("nitibotModal");
+  if (modal) {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      if (!modal.classList.contains("active")) {
+        modal.classList.add("hidden");
+      }
+    }, 300);
+  }
+}
+
+function closeNitiBotModal(event) {
+  if (event) event.stopPropagation();
+  closeNitiBotChat();
+}
+
+function clearNitiBotChat() {
+  AppState.nitibotSessionId = "session_" + Math.random().toString(36).substring(2, 10);
+  const container = document.getElementById("nitibotMessagesContainer");
+  if (container) {
+    container.innerHTML = `
+      <div class="chat-msg chat-msg-bot">
+        <div class="chat-msg-avatar">
+          <i data-lucide="bot" class="w-4 h-4 text-indigo-300"></i>
+        </div>
+        <div class="chat-msg-bubble">
+          <p class="text-xs text-slate-200 leading-relaxed">
+            Conversation reset. Namaste! I'm <strong>NitiBot</strong>. How can I help explain your portfolio or quantitative metrics today?
+          </p>
+          <div class="chat-source-tag mt-2">
+            <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400 inline mr-1"></i>
+            <span>SEBI-Compliant Educational Intelligence</span>
+          </div>
+        </div>
+      </div>
+    `;
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+}
+
+function sendNitiBotQuickPrompt(promptText) {
+  const input = document.getElementById("nitibotInputField");
+  if (input) {
+    input.value = promptText;
+    sendNitiBotMessage(promptText);
+  }
+}
+
+function handleNitiBotSubmit(event) {
+  if (event) event.preventDefault();
+  const input = document.getElementById("nitibotInputField");
+  if (!input) return;
+  const message = input.value.trim();
+  if (!message) return;
+  sendNitiBotMessage(message);
+}
+
+function scrollToLatestNitiBotMessage() {
+  const container = document.getElementById("nitibotMessagesContainer");
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function formatMarkdownResponse(text) {
+  if (!text) return "";
+  let formatted = text
+    // Replace bold **text**
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Replace italic *text*
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Replace inline code `code`
+    .replace(/`([^`]+)`/g, '<code class="bg-slate-900 px-1 py-0.5 rounded text-indigo-300 font-mono text-[11px]">$1</code>')
+    // Replace bullet points starting with - or *
+    .replace(/^\s*[-*]\s+(.*)$/gm, '<li class="ml-3 list-disc">$1</li>')
+    // Replace newlines with breaks if not wrapped in lists
+    .replace(/\n\n/g, '<br/><br/>')
+    .replace(/\n/g, '<br/>');
+
+  return formatted;
+}
+
+async function sendNitiBotMessage(messageText) {
+  const input = document.getElementById("nitibotInputField");
+  const sendBtn = document.getElementById("nitibotSendBtn");
+  const messagesContainer = document.getElementById("nitibotMessagesContainer");
+  const typingIndicator = document.getElementById("nitibotTypingIndicator");
+
+  if (!messageText) return;
+
+  // Clear input
+  if (input) input.value = "";
+  if (sendBtn) sendBtn.disabled = true;
+
+  // Append user message
+  const userMsgDiv = document.createElement("div");
+  userMsgDiv.className = "chat-msg chat-msg-user";
+  userMsgDiv.innerHTML = `
+    <div class="chat-msg-avatar">
+      <i data-lucide="user" class="w-4 h-4 text-emerald-300"></i>
+    </div>
+    <div class="chat-msg-bubble">
+      <p class="text-xs text-white leading-relaxed">${escapeHtml(messageText)}</p>
+    </div>
+  `;
+  messagesContainer.appendChild(userMsgDiv);
+  if (window.lucide) lucide.createIcons();
+
+  // Show typing indicator & scroll
+  if (typingIndicator) typingIndicator.classList.remove("hidden");
+  scrollToLatestNitiBotMessage();
+
+  // Prepare context payload from active AppState
+  const activeContext = {
+    regime: AppState.activeRegime,
+    basket: AppState.currentBasket,
+    backtest: AppState.activeBacktest,
+  };
+
+  try {
+    const response = await fetch("/api/v1/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: messageText,
+        context: activeContext,
+        session_id: AppState.nitibotSessionId,
+      }),
+    });
+
+    if (typingIndicator) typingIndicator.classList.add("hidden");
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      const botMsgDiv = document.createElement("div");
+      botMsgDiv.className = "chat-msg chat-msg-bot";
+      botMsgDiv.innerHTML = `
+        <div class="chat-msg-avatar">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400"></i>
+        </div>
+        <div class="chat-msg-bubble border-rose-900/50 bg-rose-950/30 text-rose-200">
+          <p class="text-xs">${errData.detail || "Unable to reach NitiBot at the moment. Please ensure GEMINI_API_KEY is configured."}</p>
+        </div>
+      `;
+      messagesContainer.appendChild(botMsgDiv);
+    } else {
+      const data = await response.json();
+      if (data.session_id) {
+        AppState.nitibotSessionId = data.session_id;
+      }
+
+      const botMsgDiv = document.createElement("div");
+      botMsgDiv.className = "chat-msg chat-msg-bot";
+
+      let sourcesHtml = "";
+      if (data.sources && data.sources.length > 0) {
+        const sourceTags = data.sources
+          .map((src) => `<span class="chat-source-tag"><i data-lucide="layers" class="w-3 h-3 text-indigo-400 inline mr-0.5"></i>${src}</span>`)
+          .join(" ");
+        sourcesHtml = `<div class="mt-2.5 flex flex-wrap gap-1">${sourceTags}</div>`;
+      }
+
+      botMsgDiv.innerHTML = `
+        <div class="chat-msg-avatar">
+          <i data-lucide="bot" class="w-4 h-4 text-indigo-300"></i>
+        </div>
+        <div class="chat-msg-bubble">
+          <div class="text-xs text-slate-200 leading-relaxed">${formatMarkdownResponse(data.reply)}</div>
+          ${sourcesHtml}
+        </div>
+      `;
+      messagesContainer.appendChild(botMsgDiv);
+    }
+  } catch (err) {
+    if (typingIndicator) typingIndicator.classList.add("hidden");
+    const botMsgDiv = document.createElement("div");
+    botMsgDiv.className = "chat-msg chat-msg-bot";
+    botMsgDiv.innerHTML = `
+      <div class="chat-msg-avatar">
+        <i data-lucide="wifi-off" class="w-4 h-4 text-rose-400"></i>
+      </div>
+      <div class="chat-msg-bubble border-rose-900/50 bg-rose-950/30 text-rose-200">
+        <p class="text-xs">Network error connecting to NitiBot intelligence service.</p>
+      </div>
+    `;
+    messagesContainer.appendChild(botMsgDiv);
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+    if (window.lucide) lucide.createIcons();
+    scrollToLatestNitiBotMessage();
+  }
+}
+
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
 

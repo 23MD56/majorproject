@@ -7,13 +7,67 @@ Implements the Lopez de Prado (2016) Hierarchical Risk Parity algorithm:
 4. Risk-Persona Concentration Capping and Rebalancing.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 from scipy.cluster.hierarchy import linkage, to_tree
 from scipy.spatial.distance import squareform
+from sklearn.covariance import LedoitWolf
 
 from app.core.models import RiskPersona
+
+
+def compute_shrunk_covariance(
+    returns_df: pd.DataFrame,
+    use_shrinkage: bool = True,
+) -> Tuple[np.ndarray, float]:
+    """Compute regularized covariance matrix with Ledoit-Wolf shrinkage and automated fallback.
+    
+    Args:
+        returns_df: DataFrame of asset return series (columns as symbols).
+        use_shrinkage: Whether to apply Ledoit-Wolf shrinkage. Defaults to True.
+        
+    Returns:
+        Tuple of (covariance_matrix, shrinkage_intensity).
+    """
+    n_samples, n_features = returns_df.shape
+    if n_features == 0:
+        return np.empty((0, 0)), 0.0
+    if n_features == 1:
+        var = float(returns_df.iloc[:, 0].var(ddof=1)) if n_samples > 1 else 1e-4
+        if not np.isfinite(var) or var <= 0:
+            var = 1e-4
+        return np.array([[max(var, 1e-8)]]), 0.0
+
+    if use_shrinkage and n_samples >= 2:
+        try:
+            X = returns_df.to_numpy(dtype=np.float64, copy=True)
+            if np.all(np.isfinite(X)):
+                lw = LedoitWolf(assume_centered=False)
+                lw.fit(X)
+                cov = lw.covariance_
+                shrinkage = float(lw.shrinkage_)
+                
+                # Verify symmetry, finiteness, non-negative shrinkage
+                if np.all(np.isfinite(cov)) and not np.isnan(shrinkage):
+                    cov = 0.5 * (cov + cov.T)
+                    # Add ridge regularization to guarantee strictly positive-definite conditioning
+                    cov += np.eye(n_features) * 1e-7
+                    return cov, float(np.clip(shrinkage, 0.0, 1.0))
+        except Exception:
+            # Automated fallback to empirical sample covariance
+            pass
+
+    # Fallback: Empirical sample covariance with ridge regularization
+    try:
+        cov = returns_df.cov().to_numpy(dtype=np.float64, copy=True)
+        cov = np.nan_to_num(cov, nan=0.0, posinf=0.0, neginf=0.0)
+    except Exception:
+        cov = np.zeros((n_features, n_features))
+        
+    cov = 0.5 * (cov + cov.T)
+    cov += np.eye(n_features) * 1e-7
+    return cov, 0.0
 
 
 def get_quasi_diag_order(link_matrix: np.ndarray) -> List[int]:
@@ -38,7 +92,7 @@ def get_quasi_diag_order(link_matrix: np.ndarray) -> List[int]:
 def get_cluster_variance(cov: np.ndarray, cluster_indices: List[int]) -> float:
     """Compute variance of an inverse-variance weighted sub-cluster."""
     sub_cov = cov[np.ix_(cluster_indices, cluster_indices)]
-    inv_diag = 1.0 / np.diag(sub_cov)
+    inv_diag = 1.0 / np.maximum(np.diag(sub_cov), 1e-8)
     # Handle zero or infinite variance edge cases
     inv_diag = np.nan_to_num(inv_diag, nan=1.0, posinf=1.0, neginf=1.0)
     if np.sum(inv_diag) == 0:
@@ -140,14 +194,15 @@ def compute_hrp_weights(
         return {symbols[0]: 1.0}
 
     # 1. Correlation Matrix
-    diag_std = np.sqrt(np.diag(cov_matrix))
-    diag_std[diag_std == 0] = 1e-4
-    corr_matrix = cov_matrix / np.outer(diag_std, diag_std)
-    corr_matrix = np.clip(corr_matrix, -1.0, 1.0)
+    diag_std = np.sqrt(np.maximum(np.diag(cov_matrix), 1e-8))
+    outer_std = np.maximum(np.outer(diag_std, diag_std), 1e-8)
+    corr_matrix = np.clip(cov_matrix / outer_std, -1.0, 1.0)
     np.fill_diagonal(corr_matrix, 1.0)
 
     # 2. Distance Matrix D_i,j = sqrt(0.5 * (1 - rho_i,j))
     dist_matrix = np.sqrt(np.clip(0.5 * (1.0 - corr_matrix), 0.0, 1.0))
+    dist_matrix = np.nan_to_num(dist_matrix, nan=0.0, posinf=0.0, neginf=0.0)
+    dist_matrix = 0.5 * (dist_matrix + dist_matrix.T)
     np.fill_diagonal(dist_matrix, 0.0)
 
     # 3. Tree Clustering Linkage
@@ -189,6 +244,7 @@ class HRPOptimizer:
         returns_df: pd.DataFrame,
         risk_persona: RiskPersona = RiskPersona.BALANCED,
         max_weight_cap: Optional[float] = None,
+        use_shrinkage: bool = True,
     ) -> Dict[str, float]:
         """Optimize portfolio allocation across assets in returns_df."""
         symbols = list(returns_df.columns)
@@ -197,9 +253,7 @@ class HRPOptimizer:
         if len(symbols) == 1:
             return {symbols[0]: 1.0}
 
-        cov_matrix = returns_df.cov().to_numpy(copy=True)
-        # Add small ridge regularization to prevent singular covariance
-        cov_matrix += np.eye(len(symbols)) * 1e-7
+        cov_matrix, _ = compute_shrunk_covariance(returns_df, use_shrinkage=use_shrinkage)
 
         if max_weight_cap is not None:
             cap = max_weight_cap

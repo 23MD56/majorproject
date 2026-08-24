@@ -907,6 +907,120 @@
       </div>
     </div>
 
+    <!-- Floating NitiBot Chat Bubble Trigger -->
+    <div id="nitibotTriggerContainer" class="floating-chat-bubble-container hidden">
+      <button id="nitibotBubbleBtn" class="floating-chat-bubble" onclick="toggleNitiBotChat()" title="Ask NitiBot AI Assistant">
+        <div class="chat-bubble-inner">
+          <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+          <span class="chat-online-dot"></span>
+        </div>
+        <span class="chat-bubble-label hidden sm:inline">Ask NitiBot</span>
+      </button>
+    </div>
+
+    <!-- Modal 4: NitiBot Conversational Assistant Panel -->
+    <div id="nitibotModal" class="modal-overlay hidden" onclick="closeNitiBotModal(event)">
+      <div class="modal-sheet nitibot-chat-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        
+        <!-- Chat Header -->
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-bold text-white">NitiBot</h3>
+                <span class="text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  RAG Grounded
+                </span>
+              </div>
+              <div class="text-xs text-slate-400">Context-Aware Quantitative Portfolio Assistant</div>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-1">
+            <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="clearNitiBotChat()" title="Reset Conversation">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeNitiBotChat()" title="Close NitiBot">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Message History Container -->
+        <div id="nitibotMessagesContainer" class="nitibot-messages-area custom-scrollbar">
+          <!-- Default Greeting -->
+          <div class="chat-msg chat-msg-bot">
+            <div class="chat-msg-avatar">
+              <i data-lucide="bot" class="w-4 h-4 text-indigo-300"></i>
+            </div>
+            <div class="chat-msg-bubble">
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Namaste! I'm <strong>NitiBot</strong>, your QuantNiti quantitative intelligence assistant. I can explain your AI portfolio allocation, analyze downside stress drawdowns, break down market regimes, or answer questions about your backtested strategies.
+              </p>
+              <div class="chat-source-tag mt-2">
+                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400 inline mr-1"></i>
+                <span>SEBI-Compliant Educational Intelligence</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="nitibotTypingIndicator" class="chat-typing-indicator hidden">
+          <div class="chat-msg-avatar">
+            <i data-lucide="bot" class="w-4 h-4 text-indigo-300"></i>
+          </div>
+          <div class="typing-bubble">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <!-- Suggested Quick-Action Prompt Chips -->
+        <div class="nitibot-prompt-chips flex gap-1.5 overflow-x-auto py-1">
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('Explain my portfolio')">
+            <i data-lucide="sparkles" class="w-3 h-3 text-indigo-400"></i>
+            <span>Explain my portfolio</span>
+          </button>
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('What if the market crashes?')">
+            <i data-lucide="alert-triangle" class="w-3 h-3 text-amber-400"></i>
+            <span>What if the market crashes?</span>
+          </button>
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('Why this stock?')">
+            <i data-lucide="help-circle" class="w-3 h-3 text-emerald-400"></i>
+            <span>Why this stock?</span>
+          </button>
+        </div>
+
+        <!-- Input Form -->
+        <form id="nitibotInputForm" class="nitibot-input-bar" onsubmit="handleNitiBotSubmit(event)">
+          <input 
+            type="text" 
+            id="nitibotInputField" 
+            class="nitibot-text-input" 
+            placeholder="Ask anything about your portfolio or market regime..." 
+            autocomplete="off"
+          >
+          <button type="submit" id="nitibotSendBtn" class="nitibot-send-btn" title="Send message">
+            <i data-lucide="send" class="w-4 h-4 text-white"></i>
+          </button>
+        </form>
+
+        <!-- SEBI Compliance Disclaimer Footer -->
+        <div class="nitibot-disclaimer-footer">
+          <i data-lucide="info" class="w-3 h-3 inline text-slate-400 mr-1"></i>
+          <span>NitiBot is an educational tool, not a financial advisor.</span>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <!-- Client Application Script -->
