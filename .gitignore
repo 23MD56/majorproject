@@ -16,3 +16,6 @@ data/cache/
 .DS_Store
 .vscode/
 .idea/
+
+# Environment variables
+.env
