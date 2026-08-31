@@ -41,3 +41,19 @@ _Avoid_: Demo wallet, Mock account
 **Regime-Shift Rebalance**:
 A proactive portfolio re-allocation alert triggered when the market transitions across regimes, offering an interactive before/after diff to protect capital.
 _Avoid_: Reset, Auto-trade
+
+**NitiBot**:
+A RAG-powered conversational AI assistant grounded in QuantNiti's own regime, portfolio, and backtest data, answering natural-language questions about algorithmic recommendations. Uses Retrieval-Augmented Generation to prevent hallucination.
+_Avoid_: Generic chatbot, AI advisor, Financial planner
+
+**ESG Conscience Score**:
+A composite Environmental, Social, and Governance rating (0–100) assigned to each NIFTY 50 stock and aggregated at the portfolio level, enabling socially responsible investment decisions.
+_Avoid_: Ethics rating, Green score, Sustainability label
+
+**Financial Literacy Microlearning Card**:
+A bite-sized, contextual educational card explaining a financial concept (e.g. HRP, Sharpe Ratio, Market Regime) in plain language with a relatable analogy, surfaced inline alongside the relevant UI element.
+_Avoid_: Tutorial, Help tooltip, Wiki
+
+**Portfolio Report Card**:
+A branded, downloadable PDF/image document summarizing a user's portfolio allocation, growth projections, Trust Card, ESG score, and market regime context for offline reference or social sharing.
+_Avoid_: Statement, Receipt, Export dump
