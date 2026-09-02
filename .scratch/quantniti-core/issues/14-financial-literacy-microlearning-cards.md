@@ -1,15 +1,16 @@
-# 14: Financial Literacy Microlearning Cards
+# 14: Financial Literacy Microlearning Cards & Home Tab Learning Hub
 
-**What to build:** A contextual financial education system that surfaces bite-sized learning cards alongside every recommendation, technical metric, and jargon term in the QuantNiti UI. When a user encounters an unfamiliar concept (e.g. "HRP Optimization", "Sharpe Ratio", "Market Regime"), tapping the contextual "Learn" icon expands an inline educational card explaining the concept in plain language with a relatable analogy. NitiBot can also reference and surface these cards in its conversational responses.
+**What to build:** A comprehensive beginner financial education system featuring a prominent "Learning Hub" carousel on the Home tab, video facade explainers, and inline contextual learning cards across the QuantNiti interface. When users encounter unfamiliar concepts or want to learn investing fundamentals, the Learning Hub provides bite-sized, plain-language lessons with real-world analogies (e.g. comparing HRP diversification to a cricket team), lightweight video facades, and a concept completion tracker. NitiBot can also reference and surface these cards in its conversational responses.
 
-**Blocked by:** 07: Unified Mobile-First Client Shell & End-to-End Integration
+**Blocked by:** 07: Unified Mobile-First Client Shell & End-to-End Integration, 16: Groww-Inspired Mobile UI Redesign & 4-Tab Navigation
 
 **Status:** ready-for-agent
 
-- [ ] Creates a static `literacy_cards.json` knowledge base containing ~30 curated micro-lessons, each with fields: `key` (concept identifier, e.g. `hrp`, `sharpe_ratio`, `market_regime`, `max_drawdown`, `esg`, `quantile_regression`, `diversification`, `rebalancing`, `bull_market`, `bear_market`, `sideways_market`, `volatility`, `cagr`, `sortino_ratio`, `risk_persona`, `trust_card`, `black_litterman`, `portfolio_basket`, `growth_projection`, `regime_shift`, `order_sheet`, `nifty_50`, `fii_dii`, `india_vix`, `moving_average`, `rsi`, `bollinger_bands`, `momentum`, `backtesting`, `paper_portfolio`), `title`, `explanation` (2–4 sentences, no jargon), `analogy` (1 sentence relatable comparison), `related_keys` (list of related concept keys).
-- [ ] Adds contextual "Learn" icons (ℹ️ circle) adjacent to technical terms across the Grow, Explore, Quant Lab, and Portfolio tabs. Tapping the icon expands an inline glassmorphism card below the term showing the title, explanation, and analogy.
-- [ ] Cards are dismissible and do not disrupt the primary user flow.
-- [ ] Implements a `GET /api/v1/literacy/{key}` endpoint returning the card data for a given concept key, enabling NitiBot to retrieve and reference cards in conversational responses.
-- [ ] Mobile-responsive card design: on mobile, cards span full width below the trigger element; on desktop sidebar layout, cards appear as a right-aligned popover.
-- [ ] No external API dependency — the knowledge base is a static JSON file served from the static directory.
-- [ ] Passes automated tests: all concept keys referenced in the UI have a matching entry in `literacy_cards.json`, API endpoint returns valid data for known keys and 404 for unknown keys.
+- [ ] Creates a static `literacy_cards.json` knowledge base containing ~30 curated micro-lessons, each with fields: `key` (concept identifier), `title`, `explanation` (2–4 plain-English sentences), `analogy` (1 relatable everyday comparison), `category` (`basics`, `regimes`, `risk`, `quant`), and `related_keys`.
+- [ ] Builds the Learning Hub carousel on the Home tab dashboard with visual concept cards, progress indicators ("X of 30 concepts learned"), and quick-filter category pills.
+- [ ] Implements lightweight Video Facades (lazy-loaded thumbnails with play overlays) that only load video players when clicked, preserving mobile battery and network speed.
+- [ ] Adds contextual "Learn" chips adjacent to technical terms across Explore, Grow, and Portfolio tabs, expanding an inline card with analogy and an "Ask NitiBot" deep-dive button.
+- [ ] Implements `GET /api/v1/literacy/{key}` and `GET /api/v1/literacy/all` endpoints returning microlearning lesson data.
+- [ ] Persists user learning progress in client-side `localStorage` so completed lessons show a checkmark badge.
+- [ ] Passes automated tests: all concept keys have valid schema definitions, endpoints return 200 for valid keys and 404 for unknown keys.
+

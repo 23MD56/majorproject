@@ -295,9 +295,18 @@ function renderHomeTab() {
       const alpha = document.getElementById("homePortAlpha");
 
       if (pnl1d) {
-        const est1d = port.current_value * 0.0058; // Benchmark-scaled 1D change
-        pnl1d.innerText = `+₹${est1d.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (+0.6%)`;
-        pnl1d.className = "text-base font-bold text-emerald-400 mt-0.5 tabular-nums";
+        let dayPnl = 0;
+        port.holdings.forEach((h) => {
+          const s = AppState.allExploreStocks.find((stk) => stk.symbol === h.symbol);
+          if (s && typeof s.day_change_pct === "number") {
+            const prevPrice = s.current_price / (1 + s.day_change_pct / 100);
+            dayPnl += (s.current_price - prevPrice) * h.shares;
+          }
+        });
+        const dayPnlPct = port.current_value > 0 ? (dayPnl / port.current_value) * 100 : 0;
+        const isPos = dayPnl >= 0;
+        pnl1d.innerText = `${isPos ? '+' : ''}₹${dayPnl.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (${dayPnlPct.toFixed(1)}%)`;
+        pnl1d.className = `text-base font-bold ${isPos ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 tabular-nums`;
       }
       if (pnlOverall) {
         const isPos = port.total_pnl >= 0;

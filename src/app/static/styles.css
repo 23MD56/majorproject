@@ -295,9 +295,40 @@ input, button, table, td, th, .tabular-nums {
   font-weight: 700;
 }
 
+.nav-tab-btn.active svg {
+  fill: currentColor;
+}
+
 .nav-tab-btn.active .nav-icon-wrap {
   transform: translateY(-2px);
   color: var(--accent-mint);
+}
+
+/* Light Theme overrides for embedded Tailwind colors */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] .text-white {
+  color: #111827;
+}
+
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-800,
+[data-theme="light"] .bg-slate-800\/40,
+[data-theme="light"] .bg-slate-800\/30,
+[data-theme="light"] .bg-slate-900\/80,
+[data-theme="light"] .bg-slate-900\/70,
+[data-theme="light"] .bg-slate-900\/60 {
+  background-color: var(--bg-surface);
+  color: #111827;
+}
+
+[data-theme="light"] .border-slate-800,
+[data-theme="light"] .border-slate-700,
+[data-theme="light"] .border-slate-700\/60,
+[data-theme="light"] .border-slate-700\/50 {
+  border-color: var(--border-subtle);
 }
 
 .nav-tab-btn.active::after {
