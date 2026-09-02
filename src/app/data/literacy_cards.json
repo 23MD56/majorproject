@@ -1,0 +1,272 @@
+[
+  {
+    "key": "nifty_50_index",
+    "title": "NIFTY 50 Benchmark",
+    "explanation": "The NIFTY 50 represents India's 50 largest and most actively traded companies across key economic sectors on the National Stock Exchange. It serves as the primary benchmark gauge for the health and trajectory of the Indian economy. Investing in benchmark index components gives broad exposure to national industrial growth without relying on individual company fortunes.",
+    "analogy": "Think of the NIFTY 50 as the Indian national cricket playing XI. Even if one or two players have a bad match, the team as a whole still wins consistently over the entire tournament season.",
+    "category": "basics",
+    "related_keys": ["asset_allocation", "diversification_free_lunch"],
+    "video": {
+      "video_id": "nifty_explainer",
+      "video_title": "How the NIFTY 50 Powers India's Wealth Engine",
+      "video_duration": "2:15",
+      "thumbnail_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "key": "compounding_sip",
+    "title": "Power of Compounding & SIP",
+    "explanation": "A Systematic Investment Plan (SIP) allows you to invest a fixed sum at regular monthly intervals into equities or index baskets. Compounding occurs when earnings from previous months generate their own returns over subsequent quarters. Over 5 to 10 years, reinvested returns often eclipse the actual principal capital deposited.",
+    "analogy": "Think of an SIP like planting a banyan seed and watering it with a single cup of water every month. In the early years you only see small green shoots, but eventually it grows into an enormous shade canopy that drops aerial roots and sustains itself.",
+    "category": "basics",
+    "related_keys": ["rupee_cost_averaging", "emergency_fund_first"],
+    "video": {
+      "video_id": "sip_compounding",
+      "video_title": "The Eighth Wonder: SIP Compounding in Action",
+      "video_duration": "3:00",
+      "thumbnail_url": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "key": "rupee_cost_averaging",
+    "title": "Rupee-Cost Averaging (RCA)",
+    "explanation": "Rupee-Cost Averaging automatically lowers your average acquisition cost during market declines. When share prices fall, your fixed monthly rupee allocation buys more shares, and when prices rise, it buys fewer shares. This completely removes the psychological stress of trying to time market tops and bottoms.",
+    "analogy": "Imagine buying vegetables at your neighborhood mandi with a fixed budget of ₹100 every week. When tomatoes are cheap, you walk home with a heavy bag of 5 kg, and when tomatoes are expensive, you buy only 1 kg, keeping your average cost per kilo remarkably low.",
+    "category": "basics",
+    "related_keys": ["compounding_sip", "market_regimes"]
+  },
+  {
+    "key": "diversification_free_lunch",
+    "title": "Diversification — The Only Free Lunch",
+    "explanation": "Nobel laureate Harry Markowitz called diversification the only 'free lunch' in finance. Spreading investments across uncorrelated sectors like IT, Banking, FMCG, and Gold reduces portfolio risk without sacrificing expected returns. When one sector encounters macroeconomic headwinds, resilient sectors buffer your total net worth.",
+    "analogy": "Imagine running a seasonal shop that sells both hot monsoon tea and cold summer kulfi. No matter whether the afternoon brings a scorching heatwave or a sudden thunderstorm, your daily register always rings with steady sales.",
+    "category": "basics",
+    "related_keys": ["hrp_diversification", "asset_allocation"]
+  },
+  {
+    "key": "risk_vs_reward",
+    "title": "Risk vs Reward Trade-Off",
+    "explanation": "In financial markets, the potential for higher investment returns is fundamentally accompanied by higher volatility and downside risk. Low-risk instruments like government treasury bills offer modest guaranteed yields, while equity baskets provide wealth generation in exchange for interim price swings. Understanding your emotional tolerance for price fluctuations determines your sustainable asset allocation.",
+    "analogy": "Driving an auto-rickshaw at 30 km/h is predictable and calm, but driving a Formula 1 car at 250 km/h will get you to the finish line dramatically faster as long as you wear professional safety harnesses and brakes.",
+    "category": "basics",
+    "related_keys": ["risk_personas", "beta_volatility"]
+  },
+  {
+    "key": "market_vs_limit_orders",
+    "title": "Market vs Limit Orders",
+    "explanation": "A market order executes instantly at the best available current trading price on the exchange. A limit order lets you specify the exact maximum price you are willing to pay or minimum price you accept, executing only when the market touches that level. QuantNiti outputs discrete integer orders formatted for 1-click execution on Zerodha and Groww.",
+    "analogy": "A market order is like buying fish at whatever the vendor quotes so you can leave immediately, while a limit order is leaving your phone number with the vendor and saying you will buy only if the price drops to ₹300 per kilo.",
+    "category": "basics",
+    "related_keys": ["discrete_allocation", "nifty_50_index"]
+  },
+  {
+    "key": "emergency_fund_first",
+    "title": "Emergency Buffer vs Risk Capital",
+    "explanation": "Before committing capital to equity baskets, every investor should establish an emergency reserve covering 3 to 6 months of essential living expenses. This liquid buffer guarantees you will never be forced to liquidate equity holdings during a temporary market downturn to meet unexpected medical or family bills. Equities represent long-term wealth compounding capital, not emergency cash.",
+    "analogy": "Never sail into deep ocean waters without a sturdy inflatable lifeboat strapped to the stern. If unexpected rough waves hit, you will never have to dismantle your wooden mast for flotation wood.",
+    "category": "basics",
+    "related_keys": ["cash_buffering", "compounding_sip"]
+  },
+  {
+    "key": "asset_allocation",
+    "title": "Strategic Asset Allocation",
+    "explanation": "Asset allocation is the practice of dividing an investment portfolio across various asset categories such as Indian equities, government debt, and precious metal ETFs. Studies demonstrate that asset allocation accounts for over 90% of long-term portfolio return variation, far outweighing individual stock picking or market timing. A disciplined mix insulates you against structural market shocks.",
+    "analogy": "A grand Indian thali never consists entirely of spicy curries. It carefully balances rice, dal, vegetables, cooling curd, and sweet gulab jamun to create a satisfying and wholesome meal that is easy on the stomach.",
+    "category": "basics",
+    "related_keys": ["diversification_free_lunch", "gold_silver_hedge"]
+  },
+  {
+    "key": "market_regimes",
+    "title": "Understanding Market Regimes",
+    "explanation": "Financial markets do not move in uniform straight lines; they transition across structural macroeconomic regimes categorized as Bull, Bear, and Sideways. In a Low-Volatility Bull regime, upward momentum is steady and equities outperform. High-Volatility Bear regimes witness sharp corrections and flight to capital safety, while Sideways regimes demand patience and factor selection.",
+    "analogy": "Think of market regimes as changing weather seasons. You dress in light cottons for hot sunny weather, carry umbrellas and gumboots during the monsoon deluge, and put on warm woolens when the winter frost arrives.",
+    "category": "regimes",
+    "related_keys": ["gmm_regime_clustering", "regime_shift_rebalance"],
+    "video": {
+      "video_id": "regimes_radar",
+      "video_title": "How Machine Learning Spots Market Regimes Early",
+      "video_duration": "2:45",
+      "thumbnail_url": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "key": "gmm_regime_clustering",
+    "title": "GMM Regime Clustering",
+    "explanation": "Gaussian Mixture Models (GMM) are unsupervised machine learning algorithms that identify hidden statistical distributions within market data. Instead of human guesswork, GMM analyzes rolling returns, realized volatility, and macroeconomic velocity to classify market state. It outputs objective probability distributions showing whether today's market resembles historical bull, bear, or consolidation phases.",
+    "analogy": "GMM functions like an expert agricultural meteorologist who checks barometric pressure, wind speed, and humidity to declare whether a dark cloud will produce a gentle drizzle or a destructive cyclonic storm.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "low_vol_bull"]
+  },
+  {
+    "key": "low_vol_bull",
+    "title": "Low-Volatility Bull Regime",
+    "explanation": "A Low-Volatility Bull market is characterized by steady upward price appreciation accompanied by subdued volatility and broad institutional participation. In this state, corporate earnings expand, liquidity remains abundant, and equities reward trend-following strategies. QuantNiti tilts portfolio weights toward high-momentum and quality growth leaders during this favorable phase.",
+    "analogy": "This is like cruising on the Yamuna Expressway on a clear sunny morning with zero traffic and green signals all the way to Agra.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "high_vol_bear"]
+  },
+  {
+    "key": "high_vol_bear",
+    "title": "High-Volatility Bear Regime",
+    "explanation": "A High-Volatility Bear market exhibits sharp intraday sell-offs, erratic swings, and pervasive investor panic triggered by macro shocks or policy shifts. Blindly holding high-beta stocks during this regime often leads to severe portfolio drawdowns. QuantNiti protects your capital by shifting asset allocation toward defensive sectors, cash reserves, and Gold ETFs.",
+    "analogy": "Think of navigating a high-altitude Himalayan mountain pass in the middle of a blinding blizzard. You slow down, turn on your hazard lights, and engage four-wheel drive instead of trying to speed.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "gold_silver_hedge"]
+  },
+  {
+    "key": "sideways_consolidation",
+    "title": "Sideways Consolidation Regime",
+    "explanation": "In a Sideways Consolidation regime, the benchmark index fluctuates within a tight horizontal trading range without a decisive directional trend. Market participants digest previous runs and await fresh corporate quarterly earnings catalysts. During this phase, disciplined stock selection based on low-volatility and high-dividend yield factors outperforms aggressive trend chasing.",
+    "analogy": "Think of a runner pausing at an aid station during a 42 km marathon to hydrate, catch their breath, and stretch before resuming the second half of the race.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "low_vol_bull"]
+  },
+  {
+    "key": "regime_shift_rebalance",
+    "title": "Regime-Shift Rebalance",
+    "explanation": "When our machine learning models detect a confirmed transition between market regimes, QuantNiti triggers an intelligent rebalance alert. The platform provides a visual before-and-after diff comparing your current holdings against the regime-adapted optimal basket. This proactive reallocation protects hard-earned gains before broader panic sets into the market.",
+    "analogy": "Just like your Google Maps GPS promptly announces 'Route recalculating due to severe roadblock ahead' and smoothly redirects you through an unobstructed bypass road.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "drawdown_guardrails"]
+  },
+  {
+    "key": "gold_silver_hedge",
+    "title": "Precious Metals as Safe-Haven Hedges",
+    "explanation": "Precious metals like Gold (`GOLDBEES`) and Silver (`SILVERBEES`) historically exhibit low or negative correlation with equity indices during severe market corrections. When geopolitical uncertainty or inflation surges, global capital seeks refuge in tangible monetary assets. Allocating a steady 10%–15% portion to gold ETFs dampens overall portfolio drawdowns.",
+    "analogy": "Gold in your portfolio is like having a reliable home inverter battery. On bright sunny days you hardly notice it, but the instant the central power grid collapses, it keeps your lights glowing without a pause.",
+    "category": "regimes",
+    "related_keys": ["asset_allocation", "high_vol_bear"]
+  },
+  {
+    "key": "sector_rotation",
+    "title": "Macro Sector Rotation",
+    "explanation": "Different economic sectors lead the market at distinct phases of the business cycle. Capital goods and defense stocks thrive during fiscal expansion, while IT and pharmaceuticals act as defensive shields when domestic demand cools. Tracking sector rotation allows institutional algorithms to capture alpha while mitigating sector-specific risks.",
+    "analogy": "Like relay racers passing the baton seamlessly around the track. When the sprinter in lap one tires out, the fresh teammate in lap two takes over the lead to maintain winning momentum.",
+    "category": "regimes",
+    "related_keys": ["market_regimes", "diversification_free_lunch"]
+  },
+  {
+    "key": "drawdown_guardrails",
+    "title": "Max Stress Drawdown Guardrail",
+    "explanation": "A drawdown measures the percentage decline of a portfolio from its historical peak to its subsequent trough. QuantNiti calculates a maximum stress drawdown cap for every basket based on historical panic scenarios such as the 2008 crash and 2020 pandemic. This guarantees that investors enter allocations with eyes wide open to their worst-case historical risk.",
+    "analogy": "Drawdown guardrails are the steel crash barriers installed along steep hill turns in the Western Ghats. They ensure that even if you skid on wet asphalt, your vehicle is physically prevented from plunging down the ravine.",
+    "category": "risk",
+    "related_keys": ["risk_personas", "value_at_risk"],
+    "video": {
+      "video_id": "drawdown_explained",
+      "video_title": "How Drawdown Guardrails Protect Your Life Savings",
+      "video_duration": "3:10",
+      "thumbnail_url": "https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "key": "risk_personas",
+    "title": "Calibrated Risk Personas",
+    "explanation": "QuantNiti customizes portfolio baskets to four distinct risk personas: Conservative, Balanced, Aggressive, and ESG-Conscious. Conservative baskets prioritize capital preservation and gold defense, while Aggressive baskets maximize equity exposure for maximum compounding velocity. Matching your investment strategy to your psychological temperament prevents panic selling during inevitable corrections.",
+    "analogy": "Selecting a risk persona is like choosing the roller coaster thrill level at an amusement park. Some visitors enjoy the gentle scenic Ferris wheel, while others prefer the high-speed upside-down corkscrew loop.",
+    "category": "risk",
+    "related_keys": ["drawdown_guardrails", "beta_volatility"]
+  },
+  {
+    "key": "beta_volatility",
+    "title": "Beta & Systematic Volatility",
+    "explanation": "Beta measures how sensitive an individual stock or portfolio is relative to the benchmark NIFTY 50 index. A beta of 1.0 means the stock tends to move in exact tandem with the market, while a beta of 1.5 implies 50% amplified swings in both directions. Low-beta stocks provide essential stability when markets enter turbulent bear phases.",
+    "analogy": "Think of sea vessels during a choppy coastal storm. A giant oil tanker (beta 0.6) barely wobbles in the swell, whereas a tiny speedboat (beta 1.8) leaps and slams violently with every cresting wave.",
+    "category": "risk",
+    "related_keys": ["sharpe_ratio", "risk_vs_reward"]
+  },
+  {
+    "key": "value_at_risk",
+    "title": "Value at Risk (VaR)",
+    "explanation": "Value at Risk (VaR) is a quantitative risk assessment tool that estimates the maximum expected loss over a specific timeframe at a given confidence interval. For example, a 1-day 95% VaR of ₹2,000 indicates that there is only a 5% statistical probability of losing more than ₹2,000 in a single trading day. It provides an objective yardstick for daily risk containment.",
+    "analogy": "VaR is like checking the weather probability before going on an outdoor trek. A 95% dry forecast tells you that 19 times out of 20 you will not need a raincoat, while warning you of the 1-in-20 chance of a sudden downpour.",
+    "category": "risk",
+    "related_keys": ["drawdown_guardrails", "stress_testing"]
+  },
+  {
+    "key": "stop_loss_discipline",
+    "title": "Stop-Loss & Capital Preservation",
+    "explanation": "A stop-loss order automatically triggers a sell order when an asset reaches a predefined downside price threshold to prevent catastrophic loss. Retail investors frequently turn small losses into disastrous drawdowns by emotionally refusing to admit an investment thesis was wrong. Systematic algorithmic discipline cuts losing positions early and keeps investment capital intact.",
+    "analogy": "Think of the electrical circuit breaker (MCB) in your apartment distribution board. When an overloaded appliance threatens to spark a house fire, the fuse instantly trips and cuts power to protect your home.",
+    "category": "risk",
+    "related_keys": ["drawdown_guardrails", "cash_buffering"]
+  },
+  {
+    "key": "cash_buffering",
+    "title": "Cash Buffering & Liquidity",
+    "explanation": "Holding a small unallocated cash buffer (typically 2%–5%) inside an investment portfolio provides vital tactical liquidity. Because retail brokers trade in whole shares rather than fractions, the cash buffer absorbs rounding differences during basket generation. Crucially, dry powder allows you to buy quality stocks when unexpected flash crashes present generational buying opportunities.",
+    "analogy": "Keeping dry powder cash is like carrying a crisp ₹500 note tucked behind your phone cover. It ensures you never get stranded when a roadside tea stall's UPI QR scanner temporarily stops working.",
+    "category": "risk",
+    "related_keys": ["discrete_allocation", "emergency_fund_first"]
+  },
+  {
+    "key": "stress_testing",
+    "title": "Historical Stress Testing",
+    "explanation": "Stress testing subjects your portfolio algorithm to the most severe historical financial crises to evaluate how it would have survived. QuantNiti replays the 2008 Global Financial Crisis, the 2020 COVID market flash crash, and high-inflation interest rate shocks. Passing these rigorous stress gauntlets confirms that recommendations are resilient to unforeseen macro black swans.",
+    "analogy": "It is identical to automotive crash testing where new car models are propelled into concrete barricades at 60 km/h with sensor-laden crash test dummies to ensure the passenger cabin remains completely intact.",
+    "category": "risk",
+    "related_keys": ["drawdown_guardrails", "value_at_risk"]
+  },
+  {
+    "key": "hrp_diversification",
+    "title": "Hierarchical Risk Parity (HRP)",
+    "explanation": "Hierarchical Risk Parity is an advanced portfolio optimization technique pioneered by Dr. Marcos López de Prado that uses machine learning clustering to allocate weights. Unlike traditional Markowitz optimization which relies on inverted covariance matrices prone to extreme errors, HRP builds an intuitive tree hierarchy of correlated assets. This distributes risk evenly across market sub-clusters and delivers superior out-of-sample stability.",
+    "analogy": "Instead of picking 11 superstar opening batsmen for your cricket team, HRP methodically selects opening bats, middle-order anchors, a wicketkeeper, spin wizards, and fast bowlers so the team thrives in all pitch conditions.",
+    "category": "quant",
+    "related_keys": ["ledoit_wolf_shrinkage", "diversification_free_lunch"],
+    "video": {
+      "video_id": "hrp_explained",
+      "video_title": "Hierarchical Risk Parity: The AI Diversification Breakthrough",
+      "video_duration": "3:30",
+      "thumbnail_url": "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=600&auto=format&fit=crop&q=80"
+    }
+  },
+  {
+    "key": "ledoit_wolf_shrinkage",
+    "title": "Ledoit-Wolf Covariance Shrinkage",
+    "explanation": "Calculating asset covariance from historical price data is notoriously noisy when sample sizes are small or market volatility surges. Ledoit-Wolf shrinkage mathematically pulls noisy sample correlations toward a structured, well-conditioned constant-correlation target. This eliminates extreme outliers and stabilizes the mathematical weights used by the portfolio optimizer.",
+    "analogy": "Think of taking a photo in a dimly lit restaurant where the raw image is grainy and blurred. High-end smartphone software applies intelligent denoising algorithms to produce a clean, crisp portrait without losing genuine facial features.",
+    "category": "quant",
+    "related_keys": ["hrp_diversification", "probabilistic_forecasting"]
+  },
+  {
+    "key": "discrete_allocation",
+    "title": "Discrete Integer Share Sizing",
+    "explanation": "Academic portfolio formulas output continuous fractional weights (like 3.42 shares of Reliance), which cannot be executed on Indian exchanges like NSE and BSE. QuantNiti solves a discrete integer knapsack optimization problem to map optimal weights into exact whole-share counts while respecting your capital ceiling. The remaining change is cleanly preserved as an unallocated liquid cash buffer.",
+    "analogy": "Imagine going to a bakery with ₹500 to buy gourmet cookies costing ₹35 each. You cannot buy 14.28 cookies; you purchase exactly 14 full cookies and receive ₹10 in change to put back into your wallet.",
+    "category": "quant",
+    "related_keys": ["cash_buffering", "market_vs_limit_orders"]
+  },
+  {
+    "key": "sharpe_ratio",
+    "title": "Sharpe Ratio (Risk-Adjusted Alpha)",
+    "explanation": "The Sharpe Ratio measures how much excess return an investment delivers for each unit of total volatility endured above the risk-free rate. A higher Sharpe ratio indicates that positive returns stem from genuine algorithmic edge rather than reckless risk taking. A Sharpe ratio above 1.0 is considered solid, while values above 1.5 indicate institutional-grade performance.",
+    "analogy": "Think of measuring your car's fuel efficiency in kilometers per liter rather than looking solely at top speed. A vehicle that reaches 100 km/h on 1 liter is far superior to a gas-guzzling monster that needs 10 liters to travel the same distance.",
+    "category": "quant",
+    "related_keys": ["sortino_ratio", "beta_volatility"]
+  },
+  {
+    "key": "sortino_ratio",
+    "title": "Sortino Ratio (Downside Deviation)",
+    "explanation": "While the Sharpe ratio penalizes both upward and downward price volatility equally, the Sortino ratio focuses exclusively on harmful downside volatility. Investors welcome upside surges, so treating upside spikes as 'risk' is mathematically counterproductive. The Sortino ratio gives a clearer picture of downside capital defense during bear corrections.",
+    "analogy": "It is like evaluating a roller coaster where you only measure uncomfortable bone-rattling drops and jerks, completely disregarding the exhilarating smooth accelerations that passengers love.",
+    "category": "quant",
+    "related_keys": ["sharpe_ratio", "drawdown_guardrails"]
+  },
+  {
+    "key": "probabilistic_forecasting",
+    "title": "Quantile Growth Forecast Cones",
+    "explanation": "Instead of predicting unrealistic single-point price targets, QuantNiti uses LightGBM quantile regression to project probabilistic return cones. These forecast ranges bound future returns across 10th (Pessimistic), 50th (Base), and 90th (Optimistic) percentiles over 1M to 12M horizons. This statistical approach acknowledges market uncertainty and keeps return expectations grounded in empirical reality.",
+    "analogy": "Think of a cyclone trajectory cone on Doppler radar. Meteorologists do not pinpoint a single beach coordinate; they show a widening probability funnel that prepares coastal districts for the full spectrum of possibilities.",
+    "category": "quant",
+    "related_keys": ["trust_card_transparency", "gmm_regime_clustering"]
+  },
+  {
+    "key": "trust_card_transparency",
+    "title": "Explainable AI 4-Pillar Trust Card",
+    "explanation": "Every AI basket recommendation on QuantNiti is anchored by an Explainable AI Trust Card detailing four objective pillars: regime context, backtested hit rate, maximum stress drawdown, and disintermediation fee savings. We replace opaque black-box trading recommendations with transparent mathematical attribution. Investors understand exactly why each stock was chosen and what risks are involved.",
+    "analogy": "Think of reading the mandatory Nutritional Facts label and ISO certification on a food package before buying it, ensuring you know every ingredient and calorie before feeding your family.",
+    "category": "quant",
+    "related_keys": ["probabilistic_forecasting", "drawdown_guardrails"]
+  }
+]

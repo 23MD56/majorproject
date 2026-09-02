@@ -4,13 +4,14 @@
 
 **Blocked by:** 07: Unified Mobile-First Client Shell & End-to-End Integration, 16: Groww-Inspired Mobile UI Redesign & 4-Tab Navigation
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] Creates a static `literacy_cards.json` knowledge base containing ~30 curated micro-lessons, each with fields: `key` (concept identifier), `title`, `explanation` (2–4 plain-English sentences), `analogy` (1 relatable everyday comparison), `category` (`basics`, `regimes`, `risk`, `quant`), and `related_keys`.
-- [ ] Builds the Learning Hub carousel on the Home tab dashboard with visual concept cards, progress indicators ("X of 30 concepts learned"), and quick-filter category pills.
-- [ ] Implements lightweight Video Facades (lazy-loaded thumbnails with play overlays) that only load video players when clicked, preserving mobile battery and network speed.
-- [ ] Adds contextual "Learn" chips adjacent to technical terms across Explore, Grow, and Portfolio tabs, expanding an inline card with analogy and an "Ask NitiBot" deep-dive button.
-- [ ] Implements `GET /api/v1/literacy/{key}` and `GET /api/v1/literacy/all` endpoints returning microlearning lesson data.
-- [ ] Persists user learning progress in client-side `localStorage` so completed lessons show a checkmark badge.
-- [ ] Passes automated tests: all concept keys have valid schema definitions, endpoints return 200 for valid keys and 404 for unknown keys.
+- [x] Creates a static `literacy_cards.json` knowledge base containing ~30 curated micro-lessons, each with fields: `key` (concept identifier), `title`, `explanation` (2–4 plain-English sentences), `analogy` (1 relatable everyday comparison), `category` (`basics`, `regimes`, `risk`, `quant`), and `related_keys`.
+- [x] Builds the Learning Hub carousel on the Home tab dashboard with visual concept cards, progress indicators ("X of 30 concepts learned"), and quick-filter category pills.
+- [x] Implements lightweight Video Facades (lazy-loaded thumbnails with play overlays) that only load video players when clicked, preserving mobile battery and network speed.
+- [x] Adds contextual "Learn" chips adjacent to technical terms across Explore, Grow, and Portfolio tabs, expanding an inline card with analogy and an "Ask NitiBot" deep-dive button.
+- [x] Implements `GET /api/v1/literacy/{key}` and `GET /api/v1/literacy/all` endpoints returning microlearning lesson data.
+- [x] Persists user learning progress in client-side `localStorage` so completed lessons show a checkmark badge.
+- [x] Passes automated tests: all concept keys have valid schema definitions, endpoints return 200 for valid keys and 404 for unknown keys.
+
 

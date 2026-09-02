@@ -20,6 +20,10 @@ const AppState = {
   activeBacktest: null,
   nitibotSessionId: "session_" + Math.random().toString(36).substring(2, 10),
   charts: {},
+  literacyCards: [],
+  learnedConcepts: new Set(JSON.parse(localStorage.getItem("quantniti_learned_concepts") || "[]")),
+  selectedLiteracyCategory: "all",
+  activeConceptKey: null,
 };
 
 // Deferred PWA install prompt holder
@@ -51,6 +55,7 @@ function closeAllModals(triggerHistory = true) {
     "orderSheetModal",
     "competitorBenchmarkModal",
     "nitibotModal",
+    "conceptDetailModal",
   ];
   let hadOpen = false;
   modalIds.forEach((id) => {
@@ -144,6 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await checkNitiBotStatus();
   await fetchCurrentRegime();
   await loadExploreStocks();
+  await initLearningHub();
   // Pre-generate a default basket for instant preview
   await generateBasket();
   renderHomeTab();
@@ -329,6 +335,9 @@ function renderHomeTab() {
 
   // 2. Curated Recommendations Preview List
   renderHomeTopPicks();
+
+  // 3. Learning Hub & Concept Mastery Carousel
+  renderLearningHub();
 }
 
 function renderHomeTopPicks() {
@@ -363,6 +372,323 @@ function renderHomeTopPicks() {
     </div>
   `).join("");
 
+  if (window.lucide) lucide.createIcons();
+}
+
+// ===================================================================
+// FINANCIAL LITERACY MICROLEARNING CONTROLLER (TICKET 14)
+// ===================================================================
+
+async function initLearningHub() {
+  try {
+    const resp = await fetch("/api/v1/literacy/all");
+    if (resp.ok) {
+      const data = await resp.json();
+      AppState.literacyCards = data.cards || [];
+    }
+  } catch (err) {
+    console.warn("Could not fetch literacy cards from API:", err);
+  }
+
+  updateLearningProgress();
+  renderLearningCards();
+  renderVideoFacades();
+}
+
+function updateLearningProgress() {
+  const total = AppState.literacyCards.length || 30;
+  const learnedCount = AppState.learnedConcepts.size;
+  const pct = Math.min(100, Math.round((learnedCount / total) * 100));
+
+  const textEl = document.getElementById("learningProgressText");
+  if (textEl) {
+    textEl.innerText = `${learnedCount} of ${total} concepts learned`;
+  }
+
+  const barEl = document.getElementById("learningProgressBar");
+  if (barEl) {
+    barEl.style.width = `${pct}%`;
+  }
+}
+
+function filterLearningCategory(category) {
+  triggerHaptic(8);
+  AppState.selectedLiteracyCategory = category;
+
+  document.querySelectorAll("#learningCategoryPills .category-pill").forEach((pill) => {
+    pill.classList.toggle("active", pill.getAttribute("data-category") === category);
+  });
+
+  renderLearningCards();
+}
+
+function renderLearningHub() {
+  updateLearningProgress();
+  renderLearningCards();
+}
+
+function renderLearningCards() {
+  const container = document.getElementById("learningHubCarousel");
+  if (!container) return;
+
+  if (!AppState.literacyCards || !AppState.literacyCards.length) {
+    container.innerHTML = `<div class="text-xs text-slate-500 py-6 text-center w-full">Loading curated financial lessons...</div>`;
+    return;
+  }
+
+  const selectedCat = AppState.selectedLiteracyCategory || "all";
+  const filtered = selectedCat === "all"
+    ? AppState.literacyCards
+    : AppState.literacyCards.filter((c) => {
+        const cat = c.category && c.category.value ? c.category.value : String(c.category);
+        return cat.toLowerCase() === selectedCat.toLowerCase();
+      });
+
+  const catColors = {
+    basics: { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30", icon: "book-open" },
+    regimes: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30", icon: "activity" },
+    risk: { text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/30", icon: "shield-alert" },
+    quant: { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/30", icon: "cpu" },
+  };
+
+  container.innerHTML = filtered.map((c) => {
+    const isLearned = AppState.learnedConcepts.has(c.key);
+    const cat = (c.category && c.category.value ? c.category.value : String(c.category)).toLowerCase();
+    const style = catColors[cat] || catColors.basics;
+
+    return `
+      <div class="learning-card ${isLearned ? 'is-learned' : ''}" onclick="openConceptModal('${c.key}')" role="button" tabindex="0">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase ${style.text} ${style.bg} px-2 py-0.5 rounded border ${style.border}">
+            ${cat}
+          </span>
+          <div class="flex items-center gap-1.5">
+            ${isLearned ? '<span class="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Learned</span>' : ''}
+            <i data-lucide="${style.icon}" class="w-4 h-4 ${style.text}"></i>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-white flex items-center justify-between">
+            <span>${escapeHtml(c.title)}</span>
+          </h4>
+          <p class="text-[11px] text-slate-300 mt-1 leading-relaxed line-clamp-3">
+            ${escapeHtml(c.explanation)}
+          </p>
+        </div>
+
+        <!-- Everyday Analogy Snippet -->
+        <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-[10px] text-slate-300 italic line-clamp-2">
+          <span class="font-semibold text-amber-400 not-italic">💡 Analogy: </span>${escapeHtml(c.analogy)}
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
+          <button type="button" class="btn-ghost !p-1 text-slate-400 hover:text-white" onclick="event.stopPropagation(); toggleConceptLearned('${c.key}', event)">
+            <i data-lucide="${isLearned ? 'check-circle' : 'circle'}" class="w-3.5 h-3.5 ${isLearned ? 'text-emerald-400' : 'text-slate-500'}"></i>
+            <span class="ml-1">${isLearned ? 'Learned' : 'Mark Learned'}</span>
+          </button>
+          <button type="button" class="learn-chip" onclick="event.stopPropagation(); askNitiBotAboutConcept('${c.key}')">
+            <i data-lucide="bot" class="w-3 h-3"></i>
+            <span>Ask NitiBot</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function toggleConceptLearned(key, event) {
+  if (event) event.stopPropagation();
+  triggerHaptic(12);
+
+  if (AppState.learnedConcepts.has(key)) {
+    AppState.learnedConcepts.delete(key);
+  } else {
+    AppState.learnedConcepts.add(key);
+  }
+
+  // Persist to localStorage
+  try {
+    localStorage.setItem("quantniti_learned_concepts", JSON.stringify(Array.from(AppState.learnedConcepts)));
+  } catch (e) {
+    console.warn("Could not persist learned concepts to localStorage:", e);
+  }
+
+  updateLearningProgress();
+  renderLearningCards();
+
+  // If modal is open, update modal toggle state
+  if (AppState.activeConceptKey === key) {
+    updateConceptModalButtonState(key);
+  }
+}
+
+function updateConceptModalButtonState(key) {
+  const isLearned = AppState.learnedConcepts.has(key);
+  const btn = document.getElementById("conceptLearnedToggleBtn");
+  const text = document.getElementById("conceptLearnedToggleText");
+  if (btn && text) {
+    if (isLearned) {
+      btn.className = "btn-secondary !py-2 flex-1 justify-center !border-emerald-500/40 !text-emerald-400";
+      text.innerText = "Learned ✓ (Click to Undo)";
+    } else {
+      btn.className = "btn-secondary !py-2 flex-1 justify-center";
+      text.innerText = "Mark as Learned";
+    }
+  }
+}
+
+async function openConceptModal(conceptKey) {
+  triggerHaptic(15);
+  AppState.activeConceptKey = conceptKey;
+
+  let card = AppState.literacyCards.find((c) => c.key === conceptKey);
+  if (!card) {
+    try {
+      const resp = await fetch(`/api/v1/literacy/${conceptKey}`);
+      if (resp.ok) {
+        card = await resp.json();
+      }
+    } catch (e) {
+      console.warn("Error fetching card details:", e);
+    }
+  }
+
+  if (!card) return;
+
+  const catEl = document.getElementById("conceptDetailCategory");
+  const titleEl = document.getElementById("conceptDetailTitle");
+  const explEl = document.getElementById("conceptDetailExplanation");
+  const analogyEl = document.getElementById("conceptDetailAnalogy");
+  const relatedSection = document.getElementById("conceptRelatedSection");
+  const relatedChips = document.getElementById("conceptRelatedChips");
+
+  const cat = (card.category && card.category.value ? card.category.value : String(card.category)).toUpperCase();
+  if (catEl) catEl.innerText = cat;
+  if (titleEl) titleEl.innerText = card.title;
+  if (explEl) explEl.innerText = card.explanation;
+  if (analogyEl) analogyEl.innerText = `"${card.analogy}"`;
+
+  if (relatedSection && relatedChips) {
+    if (card.related_keys && card.related_keys.length) {
+      relatedSection.classList.remove("hidden");
+      relatedChips.innerHTML = card.related_keys.map((relKey) => {
+        const relCard = AppState.literacyCards.find((c) => c.key === relKey);
+        const relTitle = relCard ? relCard.title : relKey.replace(/_/g, " ");
+        return `
+          <button type="button" class="learn-chip" onclick="openConceptModal('${relKey}')">
+            <i data-lucide="arrow-right" class="w-2.5 h-2.5"></i>
+            <span>${escapeHtml(relTitle)}</span>
+          </button>
+        `;
+      }).join("");
+    } else {
+      relatedSection.classList.add("hidden");
+    }
+  }
+
+  updateConceptModalButtonState(conceptKey);
+  openModalSheet("conceptDetailModal");
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeConceptModal(event) {
+  if (event && event.target && !event.target.classList.contains("modal-overlay")) {
+    return;
+  }
+  closeModalSheet("conceptDetailModal");
+}
+
+function toggleCurrentConceptLearned() {
+  if (AppState.activeConceptKey) {
+    toggleConceptLearned(AppState.activeConceptKey);
+  }
+}
+
+function askNitiBotAboutCurrentConcept() {
+  if (AppState.activeConceptKey) {
+    const key = AppState.activeConceptKey;
+    closeModalSheet("conceptDetailModal");
+    askNitiBotAboutConcept(key);
+  }
+}
+
+function askNitiBotAboutConcept(conceptKey) {
+  triggerHaptic(12);
+  const card = AppState.literacyCards.find((c) => c.key === conceptKey);
+  const prompt = card
+    ? `Can you explain ${card.title} in the context of my portfolio using everyday analogies?`
+    : `Explain ${conceptKey.replace(/_/g, " ")} in plain English.`;
+
+  openModalSheet("nitibotModal");
+  sendNitiBotQuickPrompt(prompt);
+}
+
+// Lightweight Video Facades (Lazy-Loaded Thumbnails)
+function renderVideoFacades() {
+  const container = document.getElementById("videoFacadesContainer");
+  if (!container) return;
+
+  const cardsWithVideos = AppState.literacyCards.filter((c) => c.video);
+  if (!cardsWithVideos.length) {
+    container.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center col-span-2">No videos loaded yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = cardsWithVideos.map((c) => {
+    const v = c.video;
+    const thumb = v.thumbnail_url || "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop&q=80";
+    const facadeId = `video-facade-${c.key}`;
+
+    return `
+      <div class="video-facade" id="${facadeId}" onclick="loadVideoFacade('${v.video_id}', '${facadeId}')" role="button" tabindex="0" title="Click to stream video">
+        <img class="video-facade-thumbnail" src="${thumb}" alt="${escapeHtml(v.video_title)}" loading="lazy">
+        <div class="video-facade-overlay">
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-bold uppercase bg-slate-900/80 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
+              ${c.category && c.category.value ? c.category.value : c.category}
+            </span>
+            <span class="text-[10px] font-semibold bg-slate-900/80 text-white px-2 py-0.5 rounded">
+              ${v.video_duration || '2:30'}
+            </span>
+          </div>
+
+          <div class="video-facade-play-btn">
+            <i data-lucide="play" class="w-5 h-5 fill-current ml-0.5"></i>
+          </div>
+
+          <div class="text-xs font-bold text-white drop-shadow-md">
+            ${escapeHtml(v.video_title)}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function loadVideoFacade(videoId, containerId) {
+  triggerHaptic(20);
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="w-full h-full bg-slate-950 flex flex-col items-center justify-center p-4 text-center rounded-xl">
+      <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2 animate-pulse">
+        <i data-lucide="play" class="w-5 h-5 fill-current ml-0.5"></i>
+      </div>
+      <div class="text-xs font-bold text-white mb-1">Streaming Video Explainer</div>
+      <p class="text-[11px] text-slate-300 mb-2">Simulated mobile-first video player (battery-saver facade active).</p>
+      <button class="btn-ghost !text-xs text-emerald-400 !py-1 !px-3 border border-emerald-500/30" onclick="event.stopPropagation(); renderVideoFacades();">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 mr-1"></i> Close Player
+      </button>
+    </div>
+  `;
   if (window.lucide) lucide.createIcons();
 }
 

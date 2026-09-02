@@ -552,5 +552,51 @@ class RAGContextPayload(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+# ==========================================
+# Financial Literacy Microlearning Models (Ticket 14)
+# ==========================================
+
+class LiteracyCategory(str, Enum):
+    BASICS = "basics"
+    REGIMES = "regimes"
+    RISK = "risk"
+    QUANT = "quant"
+
+
+class VideoFacadeMetadata(BaseModel):
+    video_id: str
+    video_title: str
+    video_duration: str
+    thumbnail_url: Optional[str] = None
+    embed_url: Optional[str] = None
+
+
+class LiteracyCard(BaseModel):
+    key: str = Field(..., min_length=2, description="Unique slug concept identifier")
+    title: str = Field(..., min_length=2, description="Readable concept title")
+    explanation: str = Field(..., min_length=10, description="2 to 4 plain-English sentences")
+    analogy: str = Field(..., min_length=10, description="Relatable everyday comparison")
+    category: LiteracyCategory = Field(..., description="Concept category")
+    related_keys: List[str] = Field(default_factory=list, description="Related concept keys")
+    video: Optional[VideoFacadeMetadata] = None
+
+    @property
+    def sentence_count(self) -> int:
+        """Count sentences using punctuation boundaries."""
+        import re
+        cleaned = re.sub(r"\b(e\.g\.|i\.e\.|vs\.)", "", self.explanation)
+        # Protect decimals between digits (e.g. 1.5 or 0.6)
+        cleaned = re.sub(r"(\d)\.(\d)", r"\1_\2", cleaned)
+        parts = [p.strip() for p in re.split(r"[.!?]+", cleaned) if p.strip()]
+        return len(parts)
+
+
+class LiteracyListResponse(BaseModel):
+    total: int
+    categories: List[str]
+    cards: List[LiteracyCard]
+
+
+
 
 

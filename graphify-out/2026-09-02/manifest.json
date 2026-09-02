@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1787584119.6476722,
-    "ast_hash": "4f4bba686328e7d6af64055761cafbae",
+    "mtime": 1788368873.8640807,
+    "ast_hash": "d860fbc6396e47c06631c0e6329e6932",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1787584070.3847039,
-    "ast_hash": "f94d3fbe114f764c73c2fca2369c0d72",
+    "mtime": 1788368280.1647906,
+    "ast_hash": "6636e3c335fb57761c7765cc75cd763d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -3085,8 +3085,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/16-groww-ui-redesign-and-navigation.md": {
-    "mtime": 1788366409.4274375,
-    "ast_hash": "6b12e9563db87e05e5fd59271c53fa0b",
+    "mtime": 1788368573.5953863,
+    "ast_hash": "1ee91e2f81e62e55fdcad845a96d1f7a",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/17-multi-asset-universe-expansion.md": {
@@ -3132,6 +3132,11 @@
   "docs/adr/0012-ai-review-verification-fact-checking-agent.md": {
     "mtime": 1788366383.2125354,
     "ast_hash": "0c06b57cbcad85b60a3c3ae234e2ba67",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_groww_ui_navigation.py": {
+    "mtime": 1788367735.5887024,
+    "ast_hash": "cd91b88100973569dd5701e3f95c4ee9",
     "semantic_hash": ""
   }
 }

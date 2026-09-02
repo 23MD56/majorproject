@@ -160,6 +160,20 @@ class RAGContextBuilder:
                 f"- **Alpha**: {metrics.get('alpha', 0.0):+.2f}% | **Beta**: {metrics.get('beta', 1.0):.2f}"
             )
 
+        # 6. Financial Literacy Microlearning Grounding
+        matched_cards = self._find_relevant_literacy_cards(user_ctx)
+        if matched_cards:
+            sources.append("Financial Literacy Knowledge Base")
+            card_lines = []
+            for card in matched_cards:
+                cat_val = card.category.value if hasattr(card.category, "value") else str(card.category)
+                card_lines.append(
+                    f"#### Concept: {card.title} (Category: {cat_val})\n"
+                    f"- **Explanation**: {card.explanation}\n"
+                    f"- **Relatable Analogy**: {card.analogy}"
+                )
+            sections.append("### 6. Relevant Financial Literacy Microlearning Concepts:\n" + "\n\n".join(card_lines))
+
         # Ensure deduplicated source list
         unique_sources: List[str] = list(dict.fromkeys(sources))
         grounding_text = "\n\n".join(sections) if sections else "No active QuantNiti data context available."
@@ -169,3 +183,53 @@ class RAGContextBuilder:
             sources=unique_sources,
             metadata={"sections_count": len(sections)},
         )
+
+    def _find_relevant_literacy_cards(self, user_ctx: Dict[str, Any]):
+        """Find literacy cards relevant to user context or query."""
+        try:
+            from app.api.routes.literacy import _get_literacy_data
+            all_cards = _get_literacy_data()
+        except Exception:
+            return []
+
+        matched = []
+        concept_key = user_ctx.get("concept_key")
+        if concept_key:
+            for card in all_cards:
+                if card.key == concept_key:
+                    matched.append(card)
+                    return matched
+
+        query = str(user_ctx.get("query") or user_ctx.get("message") or "").lower()
+        if not query:
+            return []
+
+        import re
+        tokens = set(re.findall(r"\w+", query))
+        stopwords = {"the", "a", "an", "and", "or", "is", "in", "to", "for", "with", "what", "how", "can", "you", "explain", "like", "of", "about", "there", "just", "checking", "hello", "time"}
+        tokens = {t for t in tokens if t not in stopwords and len(t) > 2}
+        if not tokens:
+            return []
+
+        scored_cards = []
+        for card in all_cards:
+            score = 0
+            card_key_parts = set(card.key.split("_"))
+            card_title_tokens = set(re.findall(r"\w+", card.title.lower()))
+            analogy_tokens = set(re.findall(r"\w+", card.analogy.lower()))
+            explanation_tokens = set(re.findall(r"\w+", card.explanation.lower()))
+
+            # Key matches have highest weight
+            score += len(tokens & card_key_parts) * 5
+            # Title matches have high weight
+            score += len(tokens & card_title_tokens) * 3
+            # Analogy matches
+            score += len(tokens & analogy_tokens) * 2
+            # Explanation matches
+            score += len(tokens & explanation_tokens) * 1
+
+            if score > 0:
+                scored_cards.append((score, card))
+
+        scored_cards.sort(key=lambda x: x[0], reverse=True)
+        return [c for _, c in scored_cards[:2]]

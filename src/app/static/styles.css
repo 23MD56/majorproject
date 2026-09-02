@@ -546,7 +546,7 @@ input, button, table, td, th, .tabular-nums {
 }
 
 .learning-card {
-  flex: 0 0 260px;
+  flex: 0 0 280px;
   scroll-snap-align: start;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -556,13 +556,138 @@ input, button, table, td, th, .tabular-nums {
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
 }
 
 .learning-card:hover {
   border-color: var(--accent-mint);
   transform: translateY(-2px);
 }
+
+.learning-card.is-learned {
+  border-color: rgba(0, 208, 156, 0.4);
+  background: linear-gradient(180deg, rgba(0, 208, 156, 0.04) 0%, var(--bg-surface) 100%);
+}
+
+/* Category Filter Pills */
+.category-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.category-pill.active {
+  color: var(--accent-mint);
+  background: rgba(0, 208, 156, 0.12);
+  border-color: rgba(0, 208, 156, 0.4);
+}
+
+/* Contextual Learn Chips */
+.learn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-mint);
+  background: rgba(0, 208, 156, 0.08);
+  border: 1px solid rgba(0, 208, 156, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  vertical-align: middle;
+}
+
+.learn-chip:hover {
+  background: rgba(0, 208, 156, 0.2);
+  border-color: var(--accent-mint);
+  transform: translateY(-1px);
+}
+
+/* Lightweight Video Facades */
+.video-facade {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-surface-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.video-facade:hover {
+  border-color: var(--accent-mint);
+  transform: scale(1.01);
+}
+
+.video-facade-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+.video-facade:hover .video-facade-thumbnail {
+  filter: brightness(0.9);
+}
+
+.video-facade-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.video-facade-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 208, 156, 0.9);
+  color: #09090b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 208, 156, 0.4);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.video-facade:hover .video-facade-play-btn {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: #00D09C;
+}
+
+.video-facade iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 
 /* Trust Card 4 Pillars */
 .trust-pillar-grid {

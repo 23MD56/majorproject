@@ -13,6 +13,7 @@ from app.api.routes.chat import router as chat_router
 from app.api.routes.explore import router as explore_router
 from app.api.routes.grow import router as grow_router
 from app.api.routes.health import router as health_router
+from app.api.routes.literacy import router as literacy_router
 from app.api.routes.market import router as market_router
 from app.api.routes.portfolio import router as portfolio_router
 from app.api.routes.regime import router as regime_router
@@ -130,6 +131,8 @@ def create_app(
     app.include_router(portfolio_router, prefix=settings.api_v1_prefix)
     app.include_router(chat_router, prefix=settings.api_v1_prefix)
     app.include_router(chat_router, prefix="/api/v1")
+    app.include_router(literacy_router, prefix=settings.api_v1_prefix)
+    app.include_router(literacy_router, prefix="/api/v1")
 
     return app
 
