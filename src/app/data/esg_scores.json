@@ -498,5 +498,85 @@
     "esg_social": 84.0,
     "esg_governance": 85.0,
     "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "GOLDBEES": {
+    "symbol": "GOLDBEES",
+    "name": "Nippon India ETF Gold BeES",
+    "sector": "Commodities",
+    "esg_composite": 55.0,
+    "esg_environment": 55.0,
+    "esg_social": 55.0,
+    "esg_governance": 55.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "SILVERBEES": {
+    "symbol": "SILVERBEES",
+    "name": "Nippon India ETF Silver BeES",
+    "sector": "Commodities",
+    "esg_composite": 55.0,
+    "esg_environment": 55.0,
+    "esg_social": 55.0,
+    "esg_governance": 55.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HAL": {
+    "symbol": "HAL",
+    "name": "Hindustan Aeronautics Ltd.",
+    "sector": "Defense",
+    "esg_composite": 63.0,
+    "esg_environment": 58.0,
+    "esg_social": 66.0,
+    "esg_governance": 65.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BDL": {
+    "symbol": "BDL",
+    "name": "Bharat Dynamics Ltd.",
+    "sector": "Defense",
+    "esg_composite": 61.0,
+    "esg_environment": 56.0,
+    "esg_social": 64.0,
+    "esg_governance": 63.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "MAZDOCK": {
+    "symbol": "MAZDOCK",
+    "name": "Mazagon Dock Shipbuilders Ltd.",
+    "sector": "Defense",
+    "esg_composite": 64.0,
+    "esg_environment": 60.0,
+    "esg_social": 67.0,
+    "esg_governance": 65.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "COCHINSHIP": {
+    "symbol": "COCHINSHIP",
+    "name": "Cochin Shipyard Ltd.",
+    "sector": "Defense",
+    "esg_composite": 65.0,
+    "esg_environment": 62.0,
+    "esg_social": 68.0,
+    "esg_governance": 65.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "VEDL": {
+    "symbol": "VEDL",
+    "name": "Vedanta Ltd.",
+    "sector": "Metals",
+    "esg_composite": 58.0,
+    "esg_environment": 52.0,
+    "esg_social": 61.0,
+    "esg_governance": 61.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "JINDALSTEL": {
+    "symbol": "JINDALSTEL",
+    "name": "Jindal Steel & Power Ltd.",
+    "sector": "Metals",
+    "esg_composite": 60.0,
+    "esg_environment": 54.0,
+    "esg_social": 63.0,
+    "esg_governance": 63.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
   }
 }

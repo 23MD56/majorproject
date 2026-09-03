@@ -31,7 +31,7 @@ async def test_get_explore_stocks_route(app):
         response = await client.get("/api/explore/stocks")
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 50
+        assert len(data) == 58
         first = data[0]
         assert "symbol" in first
         assert "growth_6m_base_pct" in first
@@ -124,7 +124,7 @@ async def test_explore_stocks_contain_esg_fields(app):
         response = await client.get("/api/explore/stocks")
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 50
+        assert len(data) == 58
         first = data[0]
         assert "esg_composite" in first and first["esg_composite"] is not None
         assert "esg_badge" in first and first["esg_badge"] is not None

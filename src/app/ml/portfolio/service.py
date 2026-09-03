@@ -6,6 +6,7 @@ import uuid
 import pandas as pd
 
 from app.core.models import (
+    AssetClass,
     BasketAllocationItem,
     BasketRecommendationResponse,
     MarketRegimeType,
@@ -104,6 +105,7 @@ class GrowService:
                     "symbol": sym,
                     "name": item["name"],
                     "sector": item["sector"],
+                    "asset_class": item.get("asset_class", AssetClass.EQUITY),
                     "score": score,
                     "suitability_score": suit.score,
                 })
@@ -122,6 +124,23 @@ class GrowService:
                 sector_counts[sec] = sector_counts.get(sec, 0) + 1
             if len(selected_candidates) >= 7:
                 break
+
+        # In High-Volatility Bear regimes, guarantee at least one safe-haven Commodity ETF (e.g. Gold/Silver) participates
+        if active_regime == MarketRegimeType.HIGH_VOLATILITY_BEAR:
+            has_commodity = any(
+                c.get("asset_class") == AssetClass.COMMODITY_ETF or c.get("sector") == "Commodities"
+                for c in selected_candidates
+            )
+            if not has_commodity:
+                top_commodity = next(
+                    (c for c in scored_candidates if c.get("asset_class") == AssetClass.COMMODITY_ETF or c.get("sector") == "Commodities"),
+                    None,
+                )
+                if top_commodity:
+                    if len(selected_candidates) >= 7:
+                        selected_candidates[-1] = top_commodity
+                    else:
+                        selected_candidates.append(top_commodity)
 
         if len(selected_candidates) < 4:
             # Fallback if sector limit was too strict
@@ -199,6 +218,7 @@ class GrowService:
                     current_price=price,
                     growth_base_pct=cone.base_pct,
                     regime_suitability_score=cand["suitability_score"],
+                    asset_class=str(cand.get("asset_class", "EQUITY")),
                     esg_composite=esg_comp,
                 )
             )

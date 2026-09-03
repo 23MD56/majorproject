@@ -50,7 +50,7 @@ def test_get_growth_forecast(explore_service):
 def test_list_explore_stocks_and_filter(explore_service):
     # Test full list
     stocks = explore_service.list_explore_stocks()
-    assert len(stocks) == 50
+    assert len(stocks) == 58
     assert all(isinstance(s, ExploreStockSummary) for s in stocks)
     assert any(s.symbol == "TCS" for s in stocks)
 

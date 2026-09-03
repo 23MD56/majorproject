@@ -317,7 +317,7 @@
             <input 
               type="text" 
               id="stockSearchInput" 
-              placeholder="Search NIFTY 50 stock (e.g. RELIANCE, INFY)..." 
+              placeholder="Search Indian assets (e.g. RELIANCE, GOLDBEES, HAL)..." 
               class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               oninput="filterStocks()"
             >
@@ -326,13 +326,15 @@
           <!-- Sector Filter Pills -->
           <div class="chip-group" id="sectorFilterChips">
             <button class="chip-btn active" data-sector="" onclick="filterBySector('')">All Sectors</button>
+            <button class="chip-btn" data-sector="Commodities" onclick="filterBySector('Commodities')">Commodities</button>
+            <button class="chip-btn" data-sector="Defense" onclick="filterBySector('Defense')">Defense</button>
+            <button class="chip-btn" data-sector="Metals" onclick="filterBySector('Metals')">Metals</button>
             <button class="chip-btn" data-sector="Information Technology" onclick="filterBySector('Information Technology')">IT</button>
             <button class="chip-btn" data-sector="Financial Services" onclick="filterBySector('Financial Services')">Banking & Fin</button>
             <button class="chip-btn" data-sector="Energy" onclick="filterBySector('Energy')">Energy</button>
             <button class="chip-btn" data-sector="Automobile" onclick="filterBySector('Automobile')">Auto</button>
             <button class="chip-btn" data-sector="Consumer Goods" onclick="filterBySector('Consumer Goods')">FMCG</button>
             <button class="chip-btn" data-sector="Healthcare" onclick="filterBySector('Healthcare')">Pharma</button>
-            <button class="chip-btn" data-sector="Metals" onclick="filterBySector('Metals')">Metals</button>
           </div>
         </div>
 

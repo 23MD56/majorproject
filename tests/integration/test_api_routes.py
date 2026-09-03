@@ -28,13 +28,21 @@ async def test_health_endpoint(app):
 async def test_get_universe_endpoint(app):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Default expanded universe (58 + 2 benchmarks = 60)
         response = await client.get("/api/market/universe")
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 52  # 50 + 2 benchmarks
+        assert len(data) == 60
         symbols = [s["symbol"] for s in data]
         assert "RELIANCE" in symbols
+        assert "GOLDBEES" in symbols
         assert "^NSEI" in symbols
+
+        # Unexpanded NIFTY 50 universe (50 + 2 benchmarks = 52)
+        resp_unexp = await client.get("/api/market/universe?include_expanded=false")
+        assert resp_unexp.status_code == 200
+        data_unexp = resp_unexp.json()
+        assert len(data_unexp) == 52
 
 
 @pytest.mark.asyncio

@@ -6,7 +6,9 @@ indices, and normalization helpers across data providers (e.g. Yahoo Finance .NS
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union
+
+from app.core.models import AssetClass
 
 # Benchmark indices tracked by QuantNiti
 BENCHMARK_SYMBOLS: Set[str] = {
@@ -83,6 +85,116 @@ NIFTY50_CONSTITUENTS: List[Dict[str, Any]] = [
     {"symbol": "WIPRO", "name": "Wipro Ltd.", "sector": "Information Technology"},
 ]
 
+# Commodity ETFs (Gold and Silver)
+COMMODITY_ETF_CONSTITUENTS: List[Dict[str, Any]] = [
+    {
+        "symbol": "GOLDBEES",
+        "name": "Nippon India ETF Gold BeES",
+        "sector": "Commodities",
+        "asset_class": AssetClass.COMMODITY_ETF,
+    },
+    {
+        "symbol": "SILVERBEES",
+        "name": "Nippon India ETF Silver BeES",
+        "sector": "Commodities",
+        "asset_class": AssetClass.COMMODITY_ETF,
+    },
+]
+
+# Indian Defense Equities
+DEFENSE_CONSTITUENTS: List[Dict[str, Any]] = [
+    {
+        "symbol": "HAL",
+        "name": "Hindustan Aeronautics Ltd.",
+        "sector": "Defense",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "BEL",
+        "name": "Bharat Electronics Ltd.",
+        "sector": "Defense",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "BDL",
+        "name": "Bharat Dynamics Ltd.",
+        "sector": "Defense",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "MAZDOCK",
+        "name": "Mazagon Dock Shipbuilders Ltd.",
+        "sector": "Defense",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "COCHINSHIP",
+        "name": "Cochin Shipyard Ltd.",
+        "sector": "Defense",
+        "asset_class": AssetClass.SECTORAL,
+    },
+]
+
+# Metals Leaders
+METALS_CONSTITUENTS: List[Dict[str, Any]] = [
+    {
+        "symbol": "TATASTEEL",
+        "name": "Tata Steel Ltd.",
+        "sector": "Metals",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "HINDALCO",
+        "name": "Hindalco Industries Ltd.",
+        "sector": "Metals",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "JSWSTEEL",
+        "name": "JSW Steel Ltd.",
+        "sector": "Metals",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "VEDL",
+        "name": "Vedanta Ltd.",
+        "sector": "Metals",
+        "asset_class": AssetClass.SECTORAL,
+    },
+    {
+        "symbol": "JINDALSTEL",
+        "name": "Jindal Steel & Power Ltd.",
+        "sector": "Metals",
+        "asset_class": AssetClass.SECTORAL,
+    },
+]
+
+# Set default asset_class for NIFTY 50
+for item in NIFTY50_CONSTITUENTS:
+    if "asset_class" not in item:
+        item["asset_class"] = AssetClass.EQUITY
+
+# Build canonical 58-asset Investment Universe
+INVESTMENT_UNIVERSE: List[Dict[str, Any]] = []
+_seen_symbols: Set[str] = set()
+
+# First add Sectoral and Commodity ETFs so specific sectoral classifications take precedence
+for item in COMMODITY_ETF_CONSTITUENTS + DEFENSE_CONSTITUENTS + METALS_CONSTITUENTS:
+    if item["symbol"] not in _seen_symbols:
+        INVESTMENT_UNIVERSE.append(dict(item))
+        _seen_symbols.add(item["symbol"])
+
+# Then add the remaining NIFTY 50 equities
+for item in NIFTY50_CONSTITUENTS:
+    if item["symbol"] not in _seen_symbols:
+        c_item = dict(item)
+        if "asset_class" not in c_item:
+            c_item["asset_class"] = AssetClass.EQUITY
+        INVESTMENT_UNIVERSE.append(c_item)
+        _seen_symbols.add(item["symbol"])
+
+EXPANDED_CONSTITUENTS = INVESTMENT_UNIVERSE
+
 # Load curated ESG scores dataset
 _ESG_DATA_PATH = Path(__file__).resolve().parent / "data" / "esg_scores.json"
 ESG_DATA: Dict[str, Dict[str, Any]] = {}
@@ -93,19 +205,20 @@ if _ESG_DATA_PATH.exists():
     except Exception:
         ESG_DATA = {}
 
-# Enrich NIFTY 50 constituents with ESG scores
-for item in NIFTY50_CONSTITUENTS:
-    sym = item["symbol"]
-    if sym in ESG_DATA:
-        esg = ESG_DATA[sym]
-        item["esg_composite"] = esg.get("esg_composite")
-        item["esg_environment"] = esg.get("esg_environment")
-        item["esg_social"] = esg.get("esg_social")
-        item["esg_governance"] = esg.get("esg_governance")
+# Enrich constituents with ESG scores
+for col_list in (NIFTY50_CONSTITUENTS, INVESTMENT_UNIVERSE):
+    for item in col_list:
+        sym = item["symbol"]
+        if sym in ESG_DATA:
+            esg = ESG_DATA[sym]
+            item["esg_composite"] = esg.get("esg_composite")
+            item["esg_environment"] = esg.get("esg_environment")
+            item["esg_social"] = esg.get("esg_social")
+            item["esg_governance"] = esg.get("esg_governance")
 
 # Lookup map from symbol to metadata dict
 _SYMBOL_MAP: Dict[str, Dict[str, Any]] = {
-    item["symbol"]: item for item in NIFTY50_CONSTITUENTS
+    item["symbol"]: item for item in INVESTMENT_UNIVERSE
 }
 for bm in BENCHMARK_METADATA:
     _SYMBOL_MAP[bm["symbol"]] = bm
@@ -138,6 +251,7 @@ def normalize_symbol(symbol: str) -> str:
         'reliance' -> 'RELIANCE'
         'RELIANCE.NS' -> 'RELIANCE'
         'TCS.BO' -> 'TCS'
+        'goldbees.ns' -> 'GOLDBEES'
         '^NSEI' -> '^NSEI'
     """
     cleaned = symbol.strip().upper()
@@ -151,7 +265,7 @@ def normalize_symbol(symbol: str) -> str:
 def denormalize_symbol(symbol: str, provider: str = "yahoo") -> str:
     """Convert canonical symbol into provider-specific symbol format.
 
-    For Yahoo Finance on Indian markets, equity stocks require '.NS' suffix,
+    For Yahoo Finance on Indian markets, equity/ETF stocks require '.NS' suffix,
     while index tickers (starting with '^') remain unchanged.
     """
     canonical = normalize_symbol(symbol)
@@ -162,17 +276,55 @@ def denormalize_symbol(symbol: str, provider: str = "yahoo") -> str:
     return canonical
 
 
-def get_universe_symbols(include_benchmarks: bool = False) -> List[str]:
+def get_asset_class_for_symbol(symbol: str) -> Optional[AssetClass]:
+    """Retrieve the asset class taxonomy for a given symbol."""
+    canonical = normalize_symbol(symbol)
+    meta = _SYMBOL_MAP.get(canonical)
+    if not meta:
+        return None
+    ac = meta.get("asset_class", AssetClass.EQUITY)
+    return AssetClass(ac) if isinstance(ac, str) else ac
+
+
+def get_universe_symbols(
+    include_benchmarks: bool = False,
+    include_expanded: bool = True,
+    asset_classes: Optional[List[Union[AssetClass, str]]] = None,
+) -> List[str]:
     """Return list of canonical symbols in the universe."""
-    symbols = [item["symbol"] for item in NIFTY50_CONSTITUENTS]
+    base = INVESTMENT_UNIVERSE if include_expanded else NIFTY50_CONSTITUENTS
+    if asset_classes:
+        str_classes = {(ac.value if hasattr(ac, "value") else str(ac)) for ac in asset_classes}
+        symbols = [
+            item["symbol"]
+            for item in base
+            if (item.get("asset_class").value if hasattr(item.get("asset_class"), "value") else str(item.get("asset_class", "EQUITY"))) in str_classes
+        ]
+    else:
+        symbols = [item["symbol"] for item in base]
+
     if include_benchmarks:
         symbols.extend(sorted(list(BENCHMARK_SYMBOLS)))
     return symbols
 
 
-def get_universe_metadata(include_benchmarks: bool = False) -> List[Dict[str, Any]]:
+def get_universe_metadata(
+    include_benchmarks: bool = False,
+    include_expanded: bool = True,
+    asset_classes: Optional[List[Union[AssetClass, str]]] = None,
+) -> List[Dict[str, Any]]:
     """Return list of metadata dictionaries for all stocks in the universe."""
-    result = list(NIFTY50_CONSTITUENTS)
+    base = list(INVESTMENT_UNIVERSE if include_expanded else NIFTY50_CONSTITUENTS)
+    if asset_classes:
+        str_classes = {(ac.value if hasattr(ac, "value") else str(ac)) for ac in asset_classes}
+        result = [
+            dict(item)
+            for item in base
+            if (item.get("asset_class").value if hasattr(item.get("asset_class"), "value") else str(item.get("asset_class", "EQUITY"))) in str_classes
+        ]
+    else:
+        result = [dict(item) for item in base]
+
     if include_benchmarks:
         result.extend(BENCHMARK_METADATA)
     return result
@@ -186,6 +338,6 @@ def get_sector_for_symbol(symbol: str) -> Optional[str]:
 
 
 def is_valid_symbol(symbol: str) -> bool:
-    """Check whether a symbol belongs to the NIFTY 50 universe or benchmarks."""
+    """Check whether a symbol belongs to the investment universe or benchmarks."""
     canonical = normalize_symbol(symbol)
     return canonical in _SYMBOL_MAP

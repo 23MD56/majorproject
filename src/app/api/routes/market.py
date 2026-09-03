@@ -32,11 +32,12 @@ class SyncRequest(BaseModel):
 @router.get("/universe", response_model=List[UniverseStock])
 def get_universe(
     include_benchmarks: bool = Query(True, description="Include ^NSEI and ^INDIAVIX"),
+    include_expanded: bool = Query(True, description="Include expanded multi-asset universe (ETFs, Defense, Metals)"),
     sector: Optional[str] = Query(None, description="Filter universe by sector name"),
     service: MarketDataService = Depends(get_market_service),
 ):
-    """Retrieve NIFTY 50 universe constituents and benchmarks."""
-    stocks = service.get_universe(include_benchmarks=include_benchmarks)
+    """Retrieve universe constituents and benchmarks."""
+    stocks = service.get_universe(include_benchmarks=include_benchmarks, include_expanded=include_expanded)
     if sector:
         stocks = [s for s in stocks if s.sector.lower() == sector.strip().lower()]
     return stocks

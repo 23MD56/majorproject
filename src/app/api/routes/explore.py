@@ -24,11 +24,12 @@ def get_explore_service(request: Request) -> ExploreService:
 def list_explore_stocks(
     sector: Optional[str] = Query(None, description="Filter stocks by sector name"),
     search: Optional[str] = Query(None, description="Search stocks by symbol or company name"),
+    asset_class: Optional[str] = Query(None, description="Filter stocks by asset class (EQUITY, COMMODITY_ETF, SECTORAL)"),
     service: ExploreService = Depends(get_explore_service),
 ):
-    """List all NIFTY 50 universe stocks with quotes, 6M growth projections, and regime suitability."""
+    """List all universe assets with quotes, 6M growth projections, and regime suitability."""
     try:
-        return service.list_explore_stocks(sector=sector, search=search)
+        return service.list_explore_stocks(sector=sector, search=search, asset_class=asset_class)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list explore stocks: {str(e)}")
 

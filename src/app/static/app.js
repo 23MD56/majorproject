@@ -735,7 +735,18 @@ function filterStocks() {
 
   let filtered = AppState.allExploreStocks;
   if (sector) {
-    filtered = filtered.filter((s) => s.sector === sector);
+    const sLow = sector.toLowerCase();
+    if (sLow === "metals") {
+      filtered = filtered.filter((s) => s.sector === "Metals" || s.sector === "Metals & Mining");
+    } else if (sLow === "commodities") {
+      filtered = filtered.filter((s) => s.sector === "Commodities" || s.asset_class === "COMMODITY_ETF");
+    } else if (sLow === "defense") {
+      filtered = filtered.filter((s) => s.sector === "Defense");
+    } else if (sLow === "energy") {
+      filtered = filtered.filter((s) => s.sector === "Energy" || s.sector === "Energy & Oil" || s.sector === "Power & Energy");
+    } else {
+      filtered = filtered.filter((s) => s.sector === sector || (s.sector && s.sector.includes(sector)));
+    }
   }
   if (query) {
     filtered = filtered.filter((s) => 
@@ -749,7 +760,7 @@ function renderExploreStockGrid(stocks) {
   const grid = document.getElementById("exploreStockGrid");
   if (!grid) return;
   if (!stocks.length) {
-    grid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No stocks matching your criteria</div>`;
+    grid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No assets matching your criteria</div>`;
     return;
   }
 
@@ -757,7 +768,10 @@ function renderExploreStockGrid(stocks) {
     <div class="glass-card-sm cursor-pointer hover:border-emerald-500/40 transition-all" onclick="openStockProfileModal('${stock.symbol}')">
       <div class="flex justify-between items-start mb-2">
         <div>
-          <span class="font-bold text-white text-sm">${stock.symbol}</span>
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-white text-sm">${stock.symbol}</span>
+            ${stock.asset_class === 'COMMODITY_ETF' ? `<span class="text-[9px] font-semibold px-1 py-0.2 rounded bg-amber-950/80 text-amber-300 border border-amber-500/30">ETF</span>` : ''}
+          </div>
           <span class="text-[10px] text-slate-400 block">${stock.sector}</span>
         </div>
         <div class="flex items-center gap-1">
@@ -1563,6 +1577,7 @@ function renderPortfolioState(port) {
       </td>
     </tr>
   `).join("");
+
 }
 
 async function checkRebalanceDiff() {

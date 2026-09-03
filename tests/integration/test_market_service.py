@@ -15,15 +15,22 @@ def mock_service(tmp_path):
 
 
 def test_get_universe(mock_service):
+    # NIFTY 50 unexpanded
+    nifty_stocks = mock_service.get_universe(include_benchmarks=False, include_expanded=False)
+    assert len(nifty_stocks) == 50
+
+    # Expanded multi-asset universe (58 assets)
     stocks = mock_service.get_universe(include_benchmarks=False)
-    assert len(stocks) == 50
+    assert len(stocks) == 58
     assert all(isinstance(s, UniverseStock) for s in stocks)
     symbols = [s.symbol for s in stocks]
     assert "RELIANCE" in symbols
     assert "TCS" in symbols
+    assert "GOLDBEES" in symbols
+    assert "HAL" in symbols
 
     all_items = mock_service.get_universe(include_benchmarks=True)
-    assert len(all_items) == 52
+    assert len(all_items) == 60
     bm_symbols = [s.symbol for s in all_items if s.is_benchmark]
     assert "^NSEI" in bm_symbols
     assert "^INDIAVIX" in bm_symbols

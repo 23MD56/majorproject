@@ -194,8 +194,9 @@ class ExploreService:
         self,
         sector: Optional[str] = None,
         search: Optional[str] = None,
+        asset_class: Optional[str] = None,
     ) -> List[ExploreStockSummary]:
-        """List all NIFTY 50 stocks with summary growth projections and regime suitability."""
+        """List all universe assets (equities, commodity ETFs, sectoral) with summary growth projections and regime suitability."""
         all_meta = get_universe_metadata(include_benchmarks=False)
         index_df = self.market_service.get_history("^NSEI")
         current_regime = self.regime_service.get_current_regime().regime
@@ -206,10 +207,27 @@ class ExploreService:
             sym = item["symbol"]
             name = item["name"]
             st_sector = item["sector"]
+            ac_raw = item.get("asset_class", "EQUITY")
+            st_asset_class = ac_raw.value if hasattr(ac_raw, "value") else str(ac_raw)
 
-            # Filter by sector
-            if sector and st_sector.lower() != sector.strip().lower():
+            # Filter by asset_class
+            if asset_class and st_asset_class.upper() != asset_class.strip().upper():
                 continue
+
+            # Filter by sector / theme
+            if sector:
+                s_lower = sector.strip().lower()
+                if s_lower == "metals":
+                    if st_sector.lower() not in ("metals", "metals & mining"):
+                        continue
+                elif s_lower == "commodities":
+                    if st_sector.lower() != "commodities" and st_asset_class != "COMMODITY_ETF":
+                        continue
+                elif s_lower == "defense":
+                    if st_sector.lower() != "defense":
+                        continue
+                elif st_sector.lower() != s_lower:
+                    continue
 
             # Filter by search
             if search:
@@ -242,6 +260,7 @@ class ExploreService:
                         regime_suitability_score=suit.score,
                         regime_badge=suit.badge,
                         volume=quote.volume,
+                        asset_class=st_asset_class,
                         esg_composite=esg_comp,
                         esg_badge=esg_badge,
                     )

@@ -38,8 +38,11 @@ def test_esg_badge_thresholds():
 def test_universe_stock_model_includes_esg_fields():
     """MarketDataService.get_universe() returns UniverseStock objects with populated ESG fields."""
     svc = MarketDataService()
+    nifty_universe = svc.get_universe(include_benchmarks=False, include_expanded=False)
+    assert len(nifty_universe) == 50
+
     universe = svc.get_universe(include_benchmarks=False)
-    assert len(universe) == 50
+    assert len(universe) == 58
     for stock in universe:
         assert isinstance(stock, UniverseStock)
         assert stock.esg_composite is not None

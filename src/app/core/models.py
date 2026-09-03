@@ -6,11 +6,18 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
+class AssetClass(str, Enum):
+    EQUITY = "EQUITY"
+    COMMODITY_ETF = "COMMODITY_ETF"
+    SECTORAL = "SECTORAL"
+
+
 class UniverseStock(BaseModel):
     symbol: str
     name: str
     sector: str
     is_benchmark: bool = False
+    asset_class: str = "EQUITY"
     esg_composite: Optional[float] = None
     esg_environment: Optional[float] = None
     esg_social: Optional[float] = None
@@ -238,6 +245,7 @@ class ExploreStockSummary(BaseModel):
     regime_suitability_score: float
     regime_badge: str
     volume: float
+    asset_class: Optional[str] = "EQUITY"
     esg_composite: Optional[float] = None
     esg_badge: Optional[str] = None
 
@@ -266,6 +274,7 @@ class BasketAllocationItem(BaseModel):
     current_price: float
     growth_base_pct: float
     regime_suitability_score: float
+    asset_class: Optional[str] = "EQUITY"
     esg_composite: Optional[float] = None
 
 
@@ -619,8 +628,3 @@ class LiteracyListResponse(BaseModel):
     total: int
     categories: List[str]
     cards: List[LiteracyCard]
-
-
-
-
-

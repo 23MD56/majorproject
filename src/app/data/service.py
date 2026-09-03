@@ -31,15 +31,20 @@ class MarketDataService:
         self.cache = cache or ParquetMarketCache()
         self.auto_cache = auto_cache
 
-    def get_universe(self, include_benchmarks: bool = True) -> List[UniverseStock]:
+    def get_universe(
+        self,
+        include_benchmarks: bool = True,
+        include_expanded: bool = True,
+    ) -> List[UniverseStock]:
         """Return list of all universe members and benchmark indices as Pydantic models."""
-        raw_meta = get_universe_metadata(include_benchmarks=include_benchmarks)
+        raw_meta = get_universe_metadata(include_benchmarks=include_benchmarks, include_expanded=include_expanded)
         return [
             UniverseStock(
                 symbol=item["symbol"],
                 name=item["name"],
                 sector=item["sector"],
                 is_benchmark=item.get("is_benchmark", False),
+                asset_class=item.get("asset_class").value if hasattr(item.get("asset_class"), "value") else str(item.get("asset_class", "EQUITY")),
                 esg_composite=item.get("esg_composite"),
                 esg_environment=item.get("esg_environment"),
                 esg_social=item.get("esg_social"),

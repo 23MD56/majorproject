@@ -29,15 +29,22 @@ def test_benchmark_symbols_present():
 
 
 def test_get_universe_symbols():
+    # NIFTY 50 unexpanded
+    nifty_symbols = get_universe_symbols(include_benchmarks=False, include_expanded=False)
+    assert len(nifty_symbols) == 50
+
+    # Expanded Multi-Asset Universe (58 assets)
     symbols = get_universe_symbols(include_benchmarks=False)
-    assert len(symbols) == 50
+    assert len(symbols) == 58
     assert "RELIANCE" in symbols
     assert "TCS" in symbols
     assert "INFY" in symbols
     assert "HDFCBANK" in symbols
+    assert "GOLDBEES" in symbols
+    assert "HAL" in symbols
 
     symbols_with_benchmarks = get_universe_symbols(include_benchmarks=True)
-    assert len(symbols_with_benchmarks) == 52
+    assert len(symbols_with_benchmarks) == 60
     assert "^NSEI" in symbols_with_benchmarks
     assert "^INDIAVIX" in symbols_with_benchmarks
 
@@ -74,8 +81,16 @@ def test_is_valid_symbol():
 
 
 def test_get_universe_metadata():
+    # NIFTY 50 unexpanded
+    nifty_meta = get_universe_metadata(include_expanded=False)
+    assert len(nifty_meta) == 50
+
+    # Expanded universe (58 assets)
     metadata = get_universe_metadata()
-    assert len(metadata) == 50
+    assert len(metadata) == 58
     sectors = {m["sector"] for m in metadata}
     assert "Information Technology" in sectors
     assert "Financial Services" in sectors
+    assert "Commodities" in sectors
+    assert "Defense" in sectors
+    assert "Metals" in sectors
