@@ -150,6 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await fetchCurrentRegime();
   await loadExploreStocks();
   await initLearningHub();
+  initCompoundingVisualizer();
   // Pre-generate a default basket for instant preview
   await generateBasket();
   renderHomeTab();
@@ -690,6 +691,149 @@ function loadVideoFacade(videoId, containerId) {
     </div>
   `;
   if (window.lucide) lucide.createIcons();
+}
+
+// ===================================================================
+// COMPOUNDING VISUALIZER & WEALTH GROWTH ENGINE (Ticket #18)
+// ===================================================================
+
+let compoundingDebounceTimer = null;
+
+function initCompoundingVisualizer() {
+  const card = document.getElementById("compoundingVisualizerCard");
+  if (!card) return;
+  recalculateCompounding();
+}
+
+function handleCompoundingInputChange() {
+  triggerHaptic(5);
+  const amount = parseFloat(document.getElementById("sipAmountSlider").value) || 5000;
+  const tenure = parseInt(document.getElementById("sipTenureSlider").value) || 5;
+  const rate = parseFloat(document.getElementById("sipReturnSlider").value) || 12;
+
+  document.getElementById("sipAmountLabel").innerText = `₹${amount.toLocaleString('en-IN')}`;
+  document.getElementById("sipTenureLabel").innerText = `${tenure} Year${tenure > 1 ? 's' : ''}`;
+  document.getElementById("sipReturnLabel").innerText = `${rate.toFixed(1)}% p.a.`;
+
+  clearTimeout(compoundingDebounceTimer);
+  compoundingDebounceTimer = setTimeout(recalculateCompounding, 120);
+}
+
+async function recalculateCompounding() {
+  const amountEl = document.getElementById("sipAmountSlider");
+  const tenureEl = document.getElementById("sipTenureSlider");
+  const returnEl = document.getElementById("sipReturnSlider");
+  const stepUpEl = document.getElementById("sipStepUpToggle");
+  const canvas = document.getElementById("compoundingFanChart");
+
+  if (!amountEl || !canvas) return;
+
+  const monthlySip = parseFloat(amountEl.value) || 5000;
+  const tenureYears = parseInt(tenureEl.value) || 5;
+  const expectedReturn = parseFloat(returnEl.value) || 12.0;
+  const useStepUp = stepUpEl ? stepUpEl.checked : false;
+
+  try {
+    const resp = await fetch("/api/portfolio/compounding", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        monthly_sip: monthlySip,
+        tenure_years: tenureYears,
+        expected_return_pct: expectedReturn,
+        step_up_pct: useStepUp ? 10.0 : 0.0,
+      }),
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+
+    const summary = useStepUp ? data.step_up_sip_summary : data.regular_sip_summary;
+    document.getElementById("compoundingTotalInvested").innerText = `₹${Math.round(summary.total_invested).toLocaleString('en-IN')}`;
+    document.getElementById("compoundingWealthGain").innerText = `+₹${Math.round(summary.wealth_gain).toLocaleString('en-IN')}`;
+    document.getElementById("compoundingFutureValue").innerText = `₹${Math.round(summary.future_value).toLocaleString('en-IN')}`;
+
+    // Tipping point indicator
+    const badge = document.getElementById("tippingPointBadge");
+    const desc = document.getElementById("tippingPointDescription");
+    if (data.tipping_point && data.tipping_point.is_reached) {
+      badge.innerText = `Month ${data.tipping_point.month} (Year ${data.tipping_point.year})`;
+      badge.className = "text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-semibold border border-emerald-500/30 animate-pulse";
+      desc.innerText = data.tipping_point.description;
+    } else {
+      badge.innerText = "Beyond Horizon";
+      badge.className = "text-[10px] px-2 py-0.5 bg-slate-800 text-slate-400 rounded font-semibold border border-slate-700";
+      desc.innerText = data.tipping_point ? data.tipping_point.description : "Keep investing to reach the tipping point.";
+    }
+
+    // Render Fan Chart
+    if (AppState.charts.compoundingFan) {
+      AppState.charts.compoundingFan.destroy();
+    }
+
+    const ctx = canvas.getContext("2d");
+    const stepInterval = tenureYears <= 3 ? 3 : (tenureYears <= 6 ? 6 : 12);
+    const displayPts = data.monthly_trajectories.filter((pt) => pt.month % stepInterval === 0 || pt.month === data.monthly_trajectories.length);
+
+    const labels = displayPts.map((pt) => `M${pt.month}`);
+    const investedData = displayPts.map((pt) => useStepUp ? pt.invested_step_up : pt.invested_sip);
+    const valueData = displayPts.map((pt) => useStepUp ? pt.value_step_up : pt.value_sip);
+
+    AppState.charts.compoundingFan = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Total Wealth",
+            data: valueData,
+            borderColor: "#00D09C",
+            backgroundColor: "rgba(0, 208, 156, 0.20)",
+            fill: 1,
+            borderWidth: 2.5,
+            pointRadius: 2.5,
+            tension: 0.3,
+          },
+          {
+            label: "Principal Deposited",
+            data: investedData,
+            borderColor: "#94a3b8",
+            borderDash: [4, 4],
+            backgroundColor: "rgba(148, 163, 184, 0.05)",
+            fill: "origin",
+            borderWidth: 1.5,
+            pointRadius: 2,
+            tension: 0.1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => ` ${c.dataset.label}: ₹${Math.round(c.parsed.y).toLocaleString('en-IN')}`,
+            },
+          },
+        },
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8", font: { size: 9 } } },
+          y: { 
+            grid: { color: "rgba(255,255,255,0.05)" }, 
+            ticks: { 
+              color: "#94a3b8", 
+              font: { size: 9 },
+              callback: (v) => "₹" + (v >= 100000 ? (v / 100000).toFixed(1) + "L" : (v / 1000).toFixed(0) + "k"),
+            },
+          },
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Error calculating compounding projection:", err);
+  }
 }
 
 // ===================================================================
@@ -1578,6 +1722,128 @@ function renderPortfolioState(port) {
     </tr>
   `).join("");
 
+  // Update 10-Year Long-Horizon Compounding Projection vs 7% Bank FD Hurdle (Ticket #18)
+  renderPortfolioCompounding(port);
+}
+
+async function renderPortfolioCompounding(port) {
+  if (!port) return;
+  const canvas = document.getElementById("portfolioCompoundingChart");
+  if (!canvas) return;
+
+  try {
+    const resp = await fetch("/api/portfolio/compounding", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        portfolio_id: port.portfolio_id,
+        tenure_years: 10,
+        initial_lump_sum: port.current_value,
+      }),
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+
+    const yr10 = data.yearly_trajectories[data.yearly_trajectories.length - 1];
+    if (yr10) {
+      document.getElementById("port10YPessimistic").innerText = `₹${Math.round(yr10.gbm_pessimistic_10th).toLocaleString('en-IN')}`;
+      document.getElementById("port10YBase").innerText = `₹${Math.round(yr10.gbm_base_50th).toLocaleString('en-IN')}`;
+      document.getElementById("port10YOptimistic").innerText = `₹${Math.round(yr10.gbm_optimistic_90th).toLocaleString('en-IN')}`;
+      document.getElementById("port10YBankFd").innerText = `₹${Math.round(yr10.bank_fd_value).toLocaleString('en-IN')}`;
+    }
+
+    const alphaEl = document.getElementById("portfolioAlphaText");
+    if (alphaEl) {
+      const alphaVal = Math.round(data.alpha_vs_bank_fd);
+      alphaEl.innerText = alphaVal >= 0 
+        ? `Beats 7% Bank FD by +₹${alphaVal.toLocaleString('en-IN')}`
+        : `Lags 7% Bank FD by -₹${Math.abs(alphaVal).toLocaleString('en-IN')}`;
+    }
+
+    if (AppState.charts.portfolioCompounding) {
+      AppState.charts.portfolioCompounding.destroy();
+    }
+
+    const ctx = canvas.getContext("2d");
+    const labels = data.yearly_trajectories.map((y) => `Year ${y.year}`);
+    const q90 = data.yearly_trajectories.map((y) => y.gbm_optimistic_90th);
+    const q50 = data.yearly_trajectories.map((y) => y.gbm_base_50th);
+    const q10 = data.yearly_trajectories.map((y) => y.gbm_pessimistic_10th);
+    const bankFd = data.yearly_trajectories.map((y) => y.bank_fd_value);
+
+    AppState.charts.portfolioCompounding = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Optimistic (Q90)",
+            data: q90,
+            borderColor: "#2dd4bf",
+            backgroundColor: "rgba(45, 212, 191, 0.08)",
+            fill: "+1",
+            borderWidth: 2,
+            pointRadius: 3,
+            tension: 0.3,
+          },
+          {
+            label: "Base Case (Q50)",
+            data: q50,
+            borderColor: "#00D09C",
+            backgroundColor: "rgba(0, 208, 156, 0.12)",
+            borderWidth: 2.5,
+            pointRadius: 4,
+            tension: 0.3,
+          },
+          {
+            label: "Pessimistic (Q10)",
+            data: q10,
+            borderColor: "#f87171",
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            pointRadius: 3,
+            tension: 0.3,
+          },
+          {
+            label: "7% Bank FD Hurdle",
+            data: bankFd,
+            borderColor: "#fbbf24",
+            borderDash: [5, 5],
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            pointRadius: 3,
+            tension: 0.1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => ` ${c.dataset.label}: ₹${Math.round(c.parsed.y).toLocaleString('en-IN')}`,
+            },
+          },
+        },
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8", font: { size: 10 } } },
+          y: { 
+            grid: { color: "rgba(255,255,255,0.05)" }, 
+            ticks: { 
+              color: "#94a3b8", 
+              font: { size: 10 },
+              callback: (v) => "₹" + (v >= 100000 ? (v / 100000).toFixed(1) + "L" : (v / 1000).toFixed(0) + "k"),
+            },
+          },
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Error rendering portfolio compounding trajectory:", err);
+  }
 }
 
 async function checkRebalanceDiff() {

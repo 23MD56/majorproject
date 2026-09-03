@@ -1238,3 +1238,54 @@ input, button, table, td, th, .tabular-nums {
   }
 }
 
+/* ===================================================================
+   Compounding Visualizer & Wealth Growth Engine Styling (Ticket #18)
+   =================================================================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.08);
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  transition: background 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-mint, #00D09C);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 208, 156, 0.5);
+  border: 2px solid #ffffff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(0, 208, 156, 0.7);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-mint, #00D09C);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 208, 156, 0.5);
+  border: 2px solid #ffffff;
+}
+
+#tippingPointCard {
+  transition: all 0.3s ease;
+}
+
+#tippingPointBadge {
+  transition: all 0.3s ease;
+}
+
+

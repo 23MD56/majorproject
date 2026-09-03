@@ -628,3 +628,80 @@ class LiteracyListResponse(BaseModel):
     total: int
     categories: List[str]
     cards: List[LiteracyCard]
+
+
+# ==========================================
+# Compounding Visualizer & Wealth Engine Models (Ticket 18)
+# ==========================================
+
+class CompoundingRequest(BaseModel):
+    initial_lump_sum: float = Field(default=0.0, ge=0.0, description="Initial one-time lump sum capital in ₹")
+    monthly_sip: float = Field(default=5000.0, ge=0.0, description="Monthly SIP installment in ₹")
+    tenure_years: int = Field(default=5, ge=1, le=10, description="Investment horizon in years (1 to 10)")
+    expected_return_pct: float = Field(default=12.0, ge=0.0, le=100.0, description="Annual expected return / CAGR in %")
+    step_up_pct: float = Field(default=10.0, ge=0.0, le=100.0, description="Annual step-up increment percentage in % (e.g. 10%)")
+    annual_volatility_pct: float = Field(default=15.0, ge=0.0, le=100.0, description="Annualized portfolio return volatility in %")
+    portfolio_id: Optional[str] = Field(default=None, description="Optional active virtual portfolio ID")
+
+
+class CompoundingSummary(BaseModel):
+    total_invested: float
+    future_value: float
+    wealth_gain: float
+    cagr_pct: float
+
+
+class CompoundingTippingPoint(BaseModel):
+    is_reached: bool
+    month: Optional[int] = None
+    year: Optional[float] = None
+    description: str
+
+
+class CompoundingYearlyPoint(BaseModel):
+    year: int
+    invested_lump_sum: float
+    value_lump_sum: float
+    invested_sip: float
+    value_sip: float
+    invested_step_up: float
+    value_step_up: float
+    bank_fd_value: float
+    gbm_pessimistic_10th: float
+    gbm_base_50th: float
+    gbm_optimistic_90th: float
+
+
+class CompoundingMonthlyPoint(BaseModel):
+    month: int
+    year: float
+    invested_sip: float
+    value_sip: float
+    invested_step_up: float
+    value_step_up: float
+    gain_sip: float
+    gain_step_up: float
+    tipping_point_active: bool = False
+
+
+class CompoundingResponse(BaseModel):
+    initial_lump_sum: float
+    monthly_sip: float
+    tenure_years: int
+    expected_return_pct: float
+    step_up_pct: float
+    annual_volatility_pct: float
+    lump_sum_summary: CompoundingSummary
+    regular_sip_summary: CompoundingSummary
+    step_up_sip_summary: CompoundingSummary
+    tipping_point: CompoundingTippingPoint
+    yearly_trajectories: List[CompoundingYearlyPoint]
+    monthly_trajectories: List[CompoundingMonthlyPoint]
+    bank_fd_hurdle_value: float
+    alpha_vs_bank_fd: float
+
+
+
+
+
+

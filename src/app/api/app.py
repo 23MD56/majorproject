@@ -131,6 +131,7 @@ def create_app(
     app.include_router(grow_router, prefix="/api/v1")
     app.include_router(backtest_router, prefix=settings.api_v1_prefix)
     app.include_router(portfolio_router, prefix=settings.api_v1_prefix)
+    app.include_router(portfolio_router, prefix="/api/v1")
     app.include_router(chat_router, prefix=settings.api_v1_prefix)
     app.include_router(chat_router, prefix="/api/v1")
     app.include_router(literacy_router, prefix=settings.api_v1_prefix)

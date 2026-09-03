@@ -117,3 +117,55 @@ async def test_android_physics_and_haptics_in_js(test_app):
         # History API popstate handling for modal dismissal
         assert "popstate" in js
         assert "pushState" in js
+
+
+@pytest.mark.asyncio
+async def test_compounding_visualizer_and_wealth_engine_ui(test_app):
+    """Verify Ticket #18 Compounding Visualizer in Home tab & Long-Horizon Hurdle in Portfolio tab."""
+    transport = ASGITransport(app=test_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. HTML DOM validation
+        res_html = await client.get("/")
+        assert res_html.status_code == 200
+        html = res_html.text
+
+        # Learning Hub Compounding Visualizer Card
+        assert 'id="compoundingVisualizerCard"' in html
+        assert 'id="sipAmountSlider"' in html
+        assert 'id="sipTenureSlider"' in html
+        assert 'id="sipReturnSlider"' in html
+        assert 'id="sipStepUpToggle"' in html
+        assert 'id="compoundingTotalInvested"' in html
+        assert 'id="compoundingWealthGain"' in html
+        assert 'id="compoundingFutureValue"' in html
+        assert 'id="tippingPointCard"' in html
+        assert 'id="tippingPointBadge"' in html
+        assert 'id="compoundingFanChart"' in html
+
+        # Portfolio Tab Long-Horizon Trajectory & 7% Bank FD Hurdle Card
+        assert 'id="portfolioCompoundingSection"' in html
+        assert 'id="portfolioCompoundingChart"' in html
+        assert 'id="portfolioHurdleBadge"' in html
+        assert 'id="port10YPessimistic"' in html
+        assert 'id="port10YBase"' in html
+        assert 'id="port10YOptimistic"' in html
+        assert 'id="port10YBankFd"' in html
+
+        # 2. JavaScript logic validation
+        res_js = await client.get("/static/app.js")
+        assert res_js.status_code == 200
+        js = res_js.text
+        assert "initCompoundingVisualizer" in js
+        assert "recalculateCompounding" in js
+        assert "handleCompoundingInputChange" in js
+        assert "renderPortfolioCompounding" in js
+        assert "compoundingFan" in js
+        assert "portfolioCompounding" in js
+
+        # 3. CSS slider tokens validation
+        res_css = await client.get("/static/styles.css")
+        assert res_css.status_code == 200
+        css = res_css.text
+        assert "slider-thumb" in css
+        assert "#tippingPointCard" in css
+

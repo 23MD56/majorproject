@@ -405,13 +405,13 @@
     "semantic_hash": ""
   },
   "tests/integration/test_api_routes.py": {
-    "mtime": 1787505021.3930824,
-    "ast_hash": "16b6c1cf7d294f446616b98f9cb271bc",
+    "mtime": 1788451716.7103438,
+    "ast_hash": "83ed97b6913b8ccec0c63ab2332450fe",
     "semantic_hash": ""
   },
   "tests/integration/test_market_service.py": {
-    "mtime": 1787505018.3320637,
-    "ast_hash": "e814d865b720e5bebdcd6656b83680b5",
+    "mtime": 1788451477.1005337,
+    "ast_hash": "44ee44927b3588f26ccf8c374fd186ad",
     "semantic_hash": ""
   },
   "tests/unit/test_cache.py": {
@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_universe.py": {
-    "mtime": 1787505005.8289893,
-    "ast_hash": "65bd50ce567d61239e673610b86e88dd",
+    "mtime": 1788451412.185349,
+    "ast_hash": "54b1994ab14fd6935fcba69cf5b6e7fc",
     "semantic_hash": ""
   },
   ".agents/rules/graphify.md": {
@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1788370290.3648052,
-    "ast_hash": "4c933de4ed6af014fe745fc76add56ea",
+    "mtime": 1788406956.0852652,
+    "ast_hash": "cc93e058e84ede202f7d99c2114f314f",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2590,8 +2590,8 @@
     "semantic_hash": ""
   },
   "src/app/api/routes/market.py": {
-    "mtime": 1787504989.1538942,
-    "ast_hash": "14f28e0986607add5db08f90bbedeefe",
+    "mtime": 1788451705.8562658,
+    "ast_hash": "173d49f082933bb4f75dbe35961eb04d",
     "semantic_hash": ""
   },
   "src/app/api/routes/regime.py": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1788370243.569346,
-    "ast_hash": "d0235e6684fe4312924d3ecfb7322f84",
+    "mtime": 1788450997.573985,
+    "ast_hash": "56be41ab6de40d04d5abbd96598d8b50",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2630,13 +2630,13 @@
     "semantic_hash": ""
   },
   "src/app/data/provider.py": {
-    "mtime": 1787505582.0275123,
+    "mtime": 1788450372.4787726,
     "ast_hash": "d990aaf1732087eb11f874d10c621101",
     "semantic_hash": ""
   },
   "src/app/data/service.py": {
-    "mtime": 1787505001.5389643,
-    "ast_hash": "f068245753811651916f2f5adacc33d4",
+    "mtime": 1788451437.5741742,
+    "ast_hash": "4b11397fa6ecbcdbe50d3cc17103bd17",
     "semantic_hash": ""
   },
   "src/app/ml/__init__.py": {
@@ -2665,8 +2665,8 @@
     "semantic_hash": ""
   },
   "src/app/universe.py": {
-    "mtime": 1787503151.5408776,
-    "ast_hash": "d85c68bf658a299977d3e5de2a2103e9",
+    "mtime": 1788451336.03309,
+    "ast_hash": "f47d41a1668e88c44e198285f9c9ea6d",
     "semantic_hash": ""
   },
   "tests/integration/test_regime_api.py": {
@@ -2690,8 +2690,8 @@
     "semantic_hash": ""
   },
   "src/app/api/routes/explore.py": {
-    "mtime": 1787505604.9627926,
-    "ast_hash": "4e507bdaf34f51b22c3ca46e4860bf9a",
+    "mtime": 1788451184.537692,
+    "ast_hash": "848fa1069d91085e7feb255246ea171e",
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/__init__.py": {
@@ -2700,7 +2700,7 @@
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/factors.py": {
-    "mtime": 1787505465.291136,
+    "mtime": 1788450372.4777727,
     "ast_hash": "f5da595729081654d78bee6ec2eff0f8",
     "semantic_hash": ""
   },
@@ -2710,8 +2710,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/service.py": {
-    "mtime": 1787505563.818292,
-    "ast_hash": "020bf46b2ff87488aad69882dede44e2",
+    "mtime": 1788451351.266289,
+    "ast_hash": "7a88ebca95ee653b2a2cfdeedda52d3c",
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/suitability.py": {
@@ -2720,13 +2720,13 @@
     "semantic_hash": ""
   },
   "tests/integration/test_explore_api.py": {
-    "mtime": 1787505593.0936472,
-    "ast_hash": "5daa0f8e9befbdd51e18ebe052de9a63",
+    "mtime": 1788451537.4177845,
+    "ast_hash": "1bb859a411cf971c998aeba98572d602",
     "semantic_hash": ""
   },
   "tests/integration/test_explore_service.py": {
-    "mtime": 1787505546.7990875,
-    "ast_hash": "72853d3722a2ffd4d53c3e9936a832cf",
+    "mtime": 1788451543.8693187,
+    "ast_hash": "088c033a45a9e9fb12d70710d4e47ef8",
     "semantic_hash": ""
   },
   "tests/unit/test_growth_forecaster.py": {
@@ -2740,7 +2740,7 @@
     "semantic_hash": ""
   },
   "tests/unit/test_stock_factors.py": {
-    "mtime": 1787505446.5559242,
+    "mtime": 1788450372.4777727,
     "ast_hash": "fe1951a261975c409aa9ca4a89e00652",
     "semantic_hash": ""
   },
@@ -2760,23 +2760,23 @@
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/hrp.py": {
-    "mtime": 1787578158.6980534,
-    "ast_hash": "8aeb63de6e82c77ab76ac564a49f357d",
+    "mtime": 1788407343.960672,
+    "ast_hash": "105e53747f6481a0c187a865bb4f2b0a",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/service.py": {
-    "mtime": 1787566108.511735,
-    "ast_hash": "ff1b9591186fbed8da155c0389737edd",
+    "mtime": 1788451156.530833,
+    "ast_hash": "f59de77f430bfdd04bd05e0873fa35b2",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_api.py": {
-    "mtime": 1787507147.698819,
-    "ast_hash": "75c1cd405bf1dfdf6f981a06a7c980a4",
+    "mtime": 1788407785.7715201,
+    "ast_hash": "38f61c3b19414c7a9be69d82c7f953ed",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_service.py": {
-    "mtime": 1787566174.8318305,
-    "ast_hash": "771c1a9c21aaa165cf78eb9798c1389b",
+    "mtime": 1788407660.6236553,
+    "ast_hash": "80430e03deab7a36e956b0996fbc47f0",
     "semantic_hash": ""
   },
   "tests/unit/test_basket_growth_calculator.py": {
@@ -2785,8 +2785,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_hrp_optimizer.py": {
-    "mtime": 1787578182.485985,
-    "ast_hash": "080c02960632bbf2a469bbcdf364beb7",
+    "mtime": 1788450372.4767728,
+    "ast_hash": "b550eba007494179c2b55f4caa8998b4",
     "semantic_hash": ""
   },
   "src/app/api/routes/backtest.py": {
@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788370644.5742464,
-    "ast_hash": "9dd298cab1e3d79c3dbdecab6f63aea2",
+    "mtime": 1788451220.0470476,
+    "ast_hash": "cd580cc3bb6d8a27f36a7ad77cb73fb8",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788370529.1679416,
-    "ast_hash": "9c4d859bf1c24d8f637a04d9599c2f7e",
+    "mtime": 1788451196.6207683,
+    "ast_hash": "96cf1c30806096a1ee90c747da19e5d2",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -2975,13 +2975,13 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/13-esg-conscience-score-layer.md": {
-    "mtime": 1788180327.0307019,
-    "ast_hash": "9d4444dac03c6de9c1ad49b7c46a9b91",
+    "mtime": 1788425977.5769136,
+    "ast_hash": "c65d13c5d2dcfe5a7251047111ed322b",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/14-financial-literacy-microlearning-cards.md": {
-    "mtime": 1788366446.0892928,
-    "ast_hash": "0b3320955ac8283d9952cf899637663c",
+    "mtime": 1788370975.7353947,
+    "ast_hash": "b543b36cc9ee26b2fbc4cba2a3df18cf",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/15-sharable-portfolio-report-card.md": {
@@ -3045,8 +3045,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/assistant/context_builder.py": {
-    "mtime": 1788370332.3490953,
-    "ast_hash": "cc31c208b8de706c0dbdd108ae054ba2",
+    "mtime": 1788425640.795319,
+    "ast_hash": "86cfc8dfa88a23c924bb44616c715a4a",
     "semantic_hash": ""
   },
   "src/app/ml/assistant/memory.py": {
@@ -3070,8 +3070,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_nitibot_context_builder.py": {
-    "mtime": 1787583898.507443,
-    "ast_hash": "0fc66a0075d5dc1575ce820c1eae0f22",
+    "mtime": 1788425661.4365015,
+    "ast_hash": "a040d3109b964fc5878e0a32c1c5d5cc",
     "semantic_hash": ""
   },
   "tests/unit/test_nitibot_memory.py": {
@@ -3090,7 +3090,7 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/17-multi-asset-universe-expansion.md": {
-    "mtime": 1788366415.3554149,
+    "mtime": 1788450372.4607742,
     "ast_hash": "3b051c5952893fdd117ef329794ef936",
     "semantic_hash": ""
   },
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "src/app/data/literacy_cards.json": {
-    "mtime": 1788370233.8410394,
-    "ast_hash": "03bc261416a3effd7f6a893e9f87d816",
+    "mtime": 1788425613.452455,
+    "ast_hash": "6121591b5de04536f5d6fc503459aa7e",
     "semantic_hash": ""
   },
   "tests/integration/test_literacy_api.py": {
@@ -3167,6 +3167,26 @@
   "tests/unit/test_nitibot_literacy.py": {
     "mtime": 1788370302.0397868,
     "ast_hash": "1bea5fa531cf31de8d658d1dcef37a6a",
+    "semantic_hash": ""
+  },
+  "src/app/data/esg_scores.json": {
+    "mtime": 1788451022.1571057,
+    "ast_hash": "7622f8dddab8d51417c99c8dbcd7f0c2",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_esg_data.py": {
+    "mtime": 1788451449.8698456,
+    "ast_hash": "34f98e197a9621e7f68d197e80306b31",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_multi_asset_integration.py": {
+    "mtime": 1788451271.3399758,
+    "ast_hash": "aca04d36f7849092caf2bd5dee8a44e0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_multi_asset_universe.py": {
+    "mtime": 1788450953.755335,
+    "ast_hash": "01993b4efe574a07ed59e0fa64020459",
     "semantic_hash": ""
   }
 }
