@@ -107,26 +107,43 @@ def create_portfolio_from_allocations(
     )
 
 
-def update_portfolio_mark_to_market(
+def calculate_day_over_day_mtm(
     portfolio: PortfolioState,
     latest_prices: Dict[str, float],
+    previous_close_prices: Optional[Dict[str, float]] = None,
     benchmark_index_price: Optional[float] = None,
     benchmark_initial_price: Optional[float] = None,
     elapsed_days: int = 0,
     as_of_date: Optional[str] = None,
     current_regime: Optional[MarketRegimeType] = None,
 ) -> PortfolioState:
-    """Update portfolio valuation and P&L based on live prices."""
+    """Calculate Day-over-Day MTM: holding 1D P&L = N * (P_t - P_{t-1}) and aggregate portfolio 1D change."""
     date_str = as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    prev_prices = previous_close_prices or {}
+
     updated_holdings: List[PortfolioHolding] = []
     holdings_value = 0.0
+    agg_pnl_1d = 0.0
 
     for h in portfolio.holdings:
         curr_price = float(latest_prices.get(h.symbol, h.current_price))
+        prev_price = float(prev_prices.get(h.symbol, h.prev_close_price if h.prev_close_price is not None else h.current_price))
+
         curr_val = round(h.shares * curr_price, 2)
-        pnl = round(curr_val - h.invested_amount, 2)
-        pnl_pct = round((curr_val / h.invested_amount - 1.0) * 100.0, 2) if h.invested_amount > 0 else 0.0
+        total_pnl = round(curr_val - h.invested_amount, 2)
+        total_pnl_pct = round((curr_val / h.invested_amount - 1.0) * 100.0, 2) if h.invested_amount > 0 else 0.0
+
+        # Holding 1D Day-over-Day calculation
+        holding_1d_pnl = round(h.shares * (curr_price - prev_price), 2)
+        prev_holding_val = h.shares * prev_price
+        holding_1d_pnl_pct = (
+            round((curr_price / prev_price - 1.0) * 100.0, 2)
+            if prev_price > 0
+            else 0.0
+        )
+
         holdings_value += curr_val
+        agg_pnl_1d += holding_1d_pnl
 
         updated_holdings.append(
             PortfolioHolding(
@@ -136,15 +153,28 @@ def update_portfolio_mark_to_market(
                 shares=h.shares,
                 buy_price=h.buy_price,
                 current_price=round(curr_price, 2),
+                prev_close_price=round(prev_price, 2),
                 invested_amount=h.invested_amount,
                 current_value=curr_val,
-                unrealized_pnl=pnl,
-                unrealized_pnl_pct=pnl_pct,
+                unrealized_pnl=total_pnl,
+                unrealized_pnl_pct=total_pnl_pct,
+                pnl_1d=holding_1d_pnl,
+                pnl_1d_pct=holding_1d_pnl_pct,
                 weight=h.weight,
             )
         )
 
     total_current_val = round(portfolio.cash + holdings_value, 2)
+    agg_pnl_1d = round(agg_pnl_1d, 2)
+
+    # Start-of-day portfolio valuation
+    start_of_day_val = total_current_val - agg_pnl_1d
+    agg_pnl_1d_pct = (
+        round((agg_pnl_1d / start_of_day_val) * 100.0, 2)
+        if start_of_day_val > 0
+        else 0.0
+    )
+
     total_pnl = round(total_current_val - portfolio.initial_capital, 2)
     total_pnl_pct = (
         round((total_current_val / portfolio.initial_capital - 1.0) * 100.0, 2)
@@ -184,6 +214,8 @@ def update_portfolio_mark_to_market(
         current_value=total_current_val,
         total_pnl=total_pnl,
         total_pnl_pct=total_pnl_pct,
+        pnl_1d=agg_pnl_1d,
+        pnl_1d_pct=agg_pnl_1d_pct,
         holdings=updated_holdings,
         benchmark_comparison=benchmark_comp,
         initial_regime=portfolio.initial_regime,
@@ -192,6 +224,29 @@ def update_portfolio_mark_to_market(
         horizon=portfolio.horizon,
         created_at=portfolio.created_at,
         as_of_date=date_str,
+    )
+
+
+def update_portfolio_mark_to_market(
+    portfolio: PortfolioState,
+    latest_prices: Dict[str, float],
+    benchmark_index_price: Optional[float] = None,
+    benchmark_initial_price: Optional[float] = None,
+    elapsed_days: int = 0,
+    as_of_date: Optional[str] = None,
+    current_regime: Optional[MarketRegimeType] = None,
+    previous_close_prices: Optional[Dict[str, float]] = None,
+) -> PortfolioState:
+    """Update portfolio valuation and P&L based on live prices."""
+    return calculate_day_over_day_mtm(
+        portfolio=portfolio,
+        latest_prices=latest_prices,
+        previous_close_prices=previous_close_prices,
+        benchmark_index_price=benchmark_index_price,
+        benchmark_initial_price=benchmark_initial_price,
+        elapsed_days=elapsed_days,
+        as_of_date=as_of_date,
+        current_regime=current_regime,
     )
 
 

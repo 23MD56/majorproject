@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadExploreStocks();
   await initLearningHub();
   initCompoundingVisualizer();
+  await loadUserPortfolios();
   // Pre-generate a default basket for instant preview
   await generateBasket();
   renderHomeTab();
@@ -1604,8 +1605,106 @@ function renderAllocationDonut(allocations) {
 }
 
 // ===================================================================
-// TAB 4: PORTFOLIO TAB & MULTI-PORTFOLIO MANAGEMENT
+// TAB 4: PORTFOLIO TAB & MULTI-PORTFOLIO STORAGE ENGINE (Ticket #19)
 // ===================================================================
+
+// IndexedDB Local-First Offline Cache
+function openQuantNitiDB() {
+  return new Promise((resolve) => {
+    if (!window.indexedDB) {
+      resolve(null);
+      return;
+    }
+    const request = indexedDB.open("QuantNitiDB", 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains("portfolios")) {
+        db.createObjectStore("portfolios", { keyPath: "portfolio_id" });
+      }
+    };
+    request.onsuccess = (e) => resolve(e.target.result);
+    request.onerror = (e) => {
+      console.warn("IndexedDB open error:", e);
+      resolve(null);
+    };
+  });
+}
+
+async function savePortfoliosToIndexedDB(portfolios) {
+  try {
+    const db = await openQuantNitiDB();
+    if (!db) return;
+    const tx = db.transaction("portfolios", "readwrite");
+    const store = tx.objectStore("portfolios");
+    for (const port of portfolios) {
+      store.put(port);
+    }
+  } catch (err) {
+    console.warn("Error saving portfolios to IndexedDB:", err);
+  }
+}
+
+async function loadPortfoliosFromIndexedDB() {
+  try {
+    const db = await openQuantNitiDB();
+    if (!db) return [];
+    return new Promise((resolve) => {
+      const tx = db.transaction("portfolios", "readonly");
+      const store = tx.objectStore("portfolios");
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    });
+  } catch (err) {
+    console.warn("Error loading portfolios from IndexedDB:", err);
+    return [];
+  }
+}
+
+async function deletePortfolioFromIndexedDB(portfolioId) {
+  try {
+    const db = await openQuantNitiDB();
+    if (!db) return;
+    const tx = db.transaction("portfolios", "readwrite");
+    tx.objectStore("portfolios").delete(portfolioId);
+  } catch (err) {
+    console.warn("Error deleting from IndexedDB:", err);
+  }
+}
+
+async function loadUserPortfolios() {
+  // 1. Instant Cache-first render from IndexedDB
+  const cached = await loadPortfoliosFromIndexedDB();
+  if (cached && cached.length > 0) {
+    AppState.portfolios = cached;
+    if (!AppState.activePortfolioId || !AppState.portfolios.some((p) => p.portfolio_id === AppState.activePortfolioId)) {
+      AppState.activePortfolioId = cached[0].portfolio_id;
+      AppState.activePortfolio = cached[0];
+    }
+    updatePortfolioSelector();
+    renderPortfolioState(AppState.activePortfolio);
+  }
+
+  // 2. Network revalidation from backend
+  try {
+    const resp = await fetch("/api/v1/portfolios");
+    if (!resp.ok) return;
+    const remote = await resp.json();
+    if (remote && remote.length > 0) {
+      AppState.portfolios = remote;
+      if (!AppState.activePortfolioId || !AppState.portfolios.some((p) => p.portfolio_id === AppState.activePortfolioId)) {
+        AppState.activePortfolioId = remote[0].portfolio_id;
+      }
+      AppState.activePortfolio = AppState.portfolios.find((p) => p.portfolio_id === AppState.activePortfolioId) || remote[0];
+      await savePortfoliosToIndexedDB(remote);
+      updatePortfolioSelector();
+      renderPortfolioState(AppState.activePortfolio);
+      renderHomeTab();
+    }
+  } catch (err) {
+    console.warn("Could not revalidate portfolios from network (offline mode active):", err);
+  }
+}
 
 async function activateBasketToPortfolio() {
   triggerHaptic(20);
@@ -1622,7 +1721,7 @@ async function activateBasketToPortfolio() {
       risk_persona: AppState.riskPersona,
     };
 
-    const resp = await fetch("/api/portfolio/create", {
+    const resp = await fetch("/api/v1/portfolios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1631,12 +1730,13 @@ async function activateBasketToPortfolio() {
     if (!resp.ok) throw new Error("Failed to activate portfolio");
     const portData = await resp.json();
     
-    // Store in multi-portfolio list
+    // Store in multi-portfolio list & IndexedDB
     AppState.activePortfolioId = portData.portfolio_id;
     AppState.activePortfolio = portData;
     if (!AppState.portfolios.some((p) => p.portfolio_id === portData.portfolio_id)) {
-      AppState.portfolios.push(portData);
+      AppState.portfolios.unshift(portData);
     }
+    await savePortfoliosToIndexedDB([portData]);
     updatePortfolioSelector();
 
     // Switch to Portfolio Tab
@@ -1653,6 +1753,10 @@ async function activateBasketToPortfolio() {
 function updatePortfolioSelector() {
   const sel = document.getElementById("portfolioSelector");
   if (!sel) return;
+  if (!AppState.portfolios.length) {
+    sel.innerHTML = `<option value="">No Active Portfolios</option>`;
+    return;
+  }
   sel.innerHTML = AppState.portfolios.map((p) => 
     `<option value="${p.portfolio_id}" ${p.portfolio_id === AppState.activePortfolioId ? 'selected' : ''}>${p.name}</option>`
   ).join("");
@@ -1674,10 +1778,20 @@ function handlePortfolioSwitch(portId) {
 async function refreshPortfolioView() {
   if (!AppState.activePortfolioId) return;
   try {
-    const resp = await fetch(`/api/portfolio/${AppState.activePortfolioId}`);
+    const resp = await fetch(`/api/v1/portfolios/${AppState.activePortfolioId}`);
     if (!resp.ok) return;
     const data = await resp.json();
     AppState.activePortfolio = data;
+    
+    // Update memory & local store
+    const idx = AppState.portfolios.findIndex((p) => p.portfolio_id === data.portfolio_id);
+    if (idx !== -1) {
+      AppState.portfolios[idx] = data;
+    } else {
+      AppState.portfolios.push(data);
+    }
+    await savePortfoliosToIndexedDB([data]);
+
     renderPortfolioState(data);
     renderHomeTab();
 
@@ -1688,42 +1802,211 @@ async function refreshPortfolioView() {
   }
 }
 
-function renderPortfolioState(port) {
-  document.getElementById("portfolioNameSubtitle").innerText = `${port.name} • ${port.risk_persona}`;
-  document.getElementById("portValuationTotal").innerText = `₹${port.current_value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-  document.getElementById("portValuationInvested").innerText = `₹${port.invested_capital.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+// Create Goal Portfolio Modal Handlers
+function openCreatePortfolioModal() {
+  triggerHaptic(15);
+  const modal = document.getElementById("createGoalModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    document.getElementById("goalPortfolioNameInput").value = "";
+    document.getElementById("goalCapitalRange").value = 50000;
+    document.getElementById("goalCapitalDisplay").innerText = "₹50,000";
+    setTimeout(() => {
+      document.getElementById("goalPortfolioNameInput").focus();
+    }, 100);
+  }
+}
 
+function closeCreatePortfolioModal(e) {
+  if (e && e.target !== e.currentTarget && !e.target.closest(".btn-ghost")) return;
+  const modal = document.getElementById("createGoalModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function setGoalNamePreset(preset) {
+  triggerHaptic(10);
+  const inp = document.getElementById("goalPortfolioNameInput");
+  if (inp) {
+    inp.value = preset;
+  }
+}
+
+async function submitCreateGoalPortfolio() {
+  triggerHaptic(20);
+  const name = document.getElementById("goalPortfolioNameInput").value.trim() || "My Goal Portfolio";
+  const capital = parseFloat(document.getElementById("goalCapitalRange").value) || 50000;
+  
+  const personaEl = document.querySelector('input[name="goalRiskPersona"]:checked');
+  const risk_persona = personaEl ? personaEl.value : "Balanced";
+
+  const horizonEl = document.querySelector('input[name="goalHorizon"]:checked');
+  const horizon = horizonEl ? horizonEl.value : "6M";
+
+  const btn = document.getElementById("createGoalSubmitBtn");
+  if (btn) btn.disabled = true;
+
+  try {
+    const resp = await fetch("/api/v1/portfolios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, capital, risk_persona, horizon }),
+    });
+
+    if (!resp.ok) throw new Error("Failed to create portfolio");
+    const newPort = await resp.json();
+
+    closeCreatePortfolioModal();
+    AppState.activePortfolioId = newPort.portfolio_id;
+    AppState.activePortfolio = newPort;
+    AppState.portfolios.unshift(newPort);
+    await savePortfoliosToIndexedDB([newPort]);
+
+    updatePortfolioSelector();
+    renderPortfolioState(newPort);
+    renderHomeTab();
+    switchTab("portfolio");
+  } catch (err) {
+    console.error("Error creating goal portfolio:", err);
+    alert("Could not create goal portfolio. Please try again.");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function deleteActivePortfolio() {
+  triggerHaptic(20);
+  if (!AppState.activePortfolioId) return;
+  const currName = AppState.activePortfolio?.name || "this portfolio";
+  if (!confirm(`Are you sure you want to delete "${currName}"? This cannot be undone.`)) {
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/v1/portfolios/${AppState.activePortfolioId}`, {
+      method: "DELETE",
+    });
+    if (!resp.ok) throw new Error("Failed to delete portfolio");
+
+    await deletePortfolioFromIndexedDB(AppState.activePortfolioId);
+    AppState.portfolios = AppState.portfolios.filter((p) => p.portfolio_id !== AppState.activePortfolioId);
+    AppState.activePortfolioId = AppState.portfolios.length > 0 ? AppState.portfolios[0].portfolio_id : null;
+    AppState.activePortfolio = AppState.portfolios.length > 0 ? AppState.portfolios[0] : null;
+    updatePortfolioSelector();
+    if (AppState.activePortfolio) {
+      renderPortfolioState(AppState.activePortfolio);
+    } else {
+      // Clear out display
+      document.getElementById("portValuationTotal").innerText = "₹0.00";
+      document.getElementById("portValuation1D").innerText = "+₹0.00 (+0.00%)";
+      document.getElementById("portValuationPnl").innerText = "+₹0.00 (+0.00%)";
+      document.getElementById("portHoldingsBody").innerHTML = "";
+    }
+    renderHomeTab();
+  } catch (err) {
+    console.error("Error deleting portfolio:", err);
+    alert("Could not delete portfolio. Please try again.");
+  }
+}
+
+function renderPortfolioState(port) {
+  if (!port) return;
+
+  // Header subtitle & Tags
+  const subtitleEl = document.getElementById("portfolioNameSubtitle");
+  if (subtitleEl) subtitleEl.innerText = `${port.name} • Goal Tracker`;
+
+  const personaTag = document.getElementById("portfolioPersonaTag");
+  if (personaTag) personaTag.innerText = port.risk_persona;
+
+  const horizonTag = document.getElementById("portfolioHorizonTag");
+  if (horizonTag) horizonTag.innerText = port.horizon;
+
+  // Primary Total Valuation in Indian Number Format (e.g. ₹1,24,560.00)
+  const totalValEl = document.getElementById("portValuationTotal");
+  if (totalValEl) {
+    totalValEl.innerText = `₹${port.current_value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // Dual Metric: 1-Day Return vs Overall Return
+  const pnl1D = port.pnl_1d || 0.0;
+  const pnl1DPct = port.pnl_1d_pct || 0.0;
+  const port1DEl = document.getElementById("portValuation1D");
+  const port1DBadge = document.getElementById("port1DMetricBadge");
+  if (port1DEl) {
+    const sign1D = pnl1D >= 0 ? '+' : '';
+    port1DEl.innerText = `${sign1D}₹${Math.abs(pnl1D).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${sign1D}${pnl1DPct.toFixed(2)}%)`;
+    if (port1DBadge) {
+      port1DBadge.className = `flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-semibold ${
+        pnl1D >= 0 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+      }`;
+    }
+  }
+
+  const totalPnl = port.total_pnl || 0.0;
+  const totalPnlPct = port.total_pnl_pct || 0.0;
   const pnlEl = document.getElementById("portValuationPnl");
-  pnlEl.innerText = `${port.total_pnl >= 0 ? '+' : ''}₹${port.total_pnl.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (${port.total_pnl_pct.toFixed(1)}%)`;
-  pnlEl.className = `text-base font-bold ${port.total_pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 tabular-nums`;
+  const totalBadge = document.getElementById("portTotalMetricBadge");
+  if (pnlEl) {
+    const signTotal = totalPnl >= 0 ? '+' : '';
+    pnlEl.innerText = `${signTotal}₹${Math.abs(totalPnl).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${signTotal}${totalPnlPct.toFixed(2)}%)`;
+    if (totalBadge) {
+      totalBadge.className = `flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-semibold ${
+        totalPnl >= 0 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+      }`;
+    }
+  }
+
+  // Secondary metrics
+  const invEl = document.getElementById("portValuationInvested");
+  if (invEl) invEl.innerText = `₹${port.invested_capital.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const cashEl = document.getElementById("portValuationCash");
+  if (cashEl) cashEl.innerText = `₹${port.cash.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   if (port.benchmark_comparison) {
     const alpha = port.benchmark_comparison.alpha_vs_nifty;
     const alphaEl = document.getElementById("portValuationAlpha");
-    alphaEl.innerText = `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`;
-    alphaEl.className = `text-base font-bold ${alpha >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 tabular-nums`;
+    if (alphaEl) {
+      alphaEl.innerText = `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`;
+      alphaEl.className = `font-bold ${alpha >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 tabular-nums text-xs sm:text-sm`;
+    }
   }
 
-  // Holdings Table
+  // Holdings Table with 1D Return and Overall P&L
   const tbody = document.getElementById("portHoldingsBody");
-  tbody.innerHTML = port.holdings.map((h) => `
-    <tr>
-      <td>
-        <span class="font-bold text-white">${h.symbol}</span>
-        <span class="text-[10px] text-slate-400 block">${h.sector}</span>
-      </td>
-      <td class="text-slate-300 font-medium tabular-nums">${h.shares}</td>
-      <td class="text-slate-300 tabular-nums">₹${h.current_price.toFixed(1)}</td>
-      <td class="font-semibold text-white tabular-nums">₹${h.current_value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-      <td class="text-emerald-400 tabular-nums">${(h.weight * 100).toFixed(1)}%</td>
-      <td class="${h.unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold tabular-nums">
-        ${h.unrealized_pnl >= 0 ? '+' : ''}${h.unrealized_pnl_pct.toFixed(1)}%
-      </td>
-    </tr>
-  `).join("");
+  if (tbody && port.holdings) {
+    tbody.innerHTML = port.holdings.map((h) => {
+      const h1D = h.pnl_1d || 0.0;
+      const h1DPct = h.pnl_1d_pct || 0.0;
+      const hTotal = h.unrealized_pnl || 0.0;
+      const hTotalPct = h.unrealized_pnl_pct || 0.0;
+
+      return `
+        <tr>
+          <td>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-white">${h.symbol}</span>
+              ${h.symbol.includes("BEES") ? `<span class="text-[9px] font-semibold px-1 py-0.2 rounded bg-amber-950/80 text-amber-300 border border-amber-500/30">ETF</span>` : ''}
+            </div>
+            <span class="text-[10px] text-slate-400 block">${h.sector}</span>
+          </td>
+          <td class="text-slate-300 font-medium tabular-nums">${h.shares}</td>
+          <td class="text-slate-300 tabular-nums">₹${h.current_price.toFixed(2)}</td>
+          <td class="font-semibold text-white tabular-nums">₹${h.current_value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+          <td class="${h1D >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold tabular-nums text-xs">
+            ${h1D >= 0 ? '+' : ''}₹${h1D.toFixed(1)} (${h1D >= 0 ? '+' : ''}${h1DPct.toFixed(1)}%)
+          </td>
+          <td class="${hTotal >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold tabular-nums text-xs">
+            ${hTotal >= 0 ? '+' : ''}₹${hTotal.toFixed(1)} (${hTotal >= 0 ? '+' : ''}${hTotalPct.toFixed(1)}%)
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
 
   // Update 10-Year Long-Horizon Compounding Projection vs 7% Bank FD Hurdle (Ticket #18)
   renderPortfolioCompounding(port);
+  if (window.lucide) lucide.createIcons();
 }
 
 async function renderPortfolioCompounding(port) {

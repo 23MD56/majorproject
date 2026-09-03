@@ -847,6 +847,11 @@
                 <option value="">Default AI Portfolio</option>
               </select>
 
+              <button class="btn-primary !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="openCreatePortfolioModal()" title="Create New Goal Portfolio">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">New Goal</span>
+              </button>
+
               <button class="btn-ghost !text-xs !py-1.5 !px-2.5" onclick="openOrderSheetModal()">
                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
                 Order Sheet
@@ -854,23 +859,56 @@
             </div>
           </div>
 
-          <!-- Top Valuation Stats -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-            <div class="glass-card-sm">
-              <div class="text-[10px] text-slate-400 uppercase font-semibold">Total Value</div>
-              <div id="portValuationTotal" class="text-base font-bold text-white mt-0.5 tabular-nums">₹0.00</div>
+          <!-- Groww-Style Dual-Metric Hero Card (Ticket #19) -->
+          <div id="portfolioHeroCard" class="bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-emerald-950/30 border border-emerald-500/25 rounded-2xl p-4 sm:p-5 mb-4 shadow-lg shadow-black/20">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Current Portfolio Value</span>
+              </span>
+              <div class="flex items-center gap-1.5">
+                <span id="portfolioPersonaTag" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">Balanced</span>
+                <span id="portfolioHorizonTag" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">6M</span>
+                <button id="deletePortfolioBtn" class="text-slate-500 hover:text-rose-400 transition-colors p-1" onclick="deleteActivePortfolio()" title="Delete this goal portfolio">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
             </div>
-            <div class="glass-card-sm">
-              <div class="text-[10px] text-slate-400 uppercase font-semibold">Unrealized P&L</div>
-              <div id="portValuationPnl" class="text-base font-bold text-emerald-400 mt-0.5 tabular-nums">+₹0.00 (+0.0%)</div>
+
+            <!-- Primary Large Valuation in Indian Number Format -->
+            <div id="portValuationTotal" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight tabular-nums mb-3">
+              ₹0.00
             </div>
-            <div class="glass-card-sm">
-              <div class="text-[10px] text-slate-400 uppercase font-semibold">Invested Capital</div>
-              <div id="portValuationInvested" class="text-base font-bold text-slate-300 mt-0.5 tabular-nums">₹0.00</div>
+
+            <!-- Dual Metric Badges: 1-Day Return vs Overall Return -->
+            <div class="flex flex-wrap items-center gap-2.5 mb-3.5">
+              <div id="port1DMetricBadge" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                <span class="text-slate-400 font-normal">1-Day:</span>
+                <span id="portValuation1D" class="tabular-nums">+₹0.00 (+0.00%)</span>
+              </div>
+
+              <div id="portTotalMetricBadge" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                <span class="text-slate-400 font-normal">Overall:</span>
+                <span id="portValuationPnl" class="tabular-nums">+₹0.00 (+0.00%)</span>
+              </div>
             </div>
-            <div class="glass-card-sm">
-              <div class="text-[10px] text-slate-400 uppercase font-semibold">Alpha vs NIFTY</div>
-              <div id="portValuationAlpha" class="text-base font-bold text-emerald-400 mt-0.5 tabular-nums">+0.0%</div>
+
+            <!-- Secondary Metrics Strip -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800/80 text-center text-xs">
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Invested</div>
+                <div id="portValuationInvested" class="font-bold text-white mt-0.5 tabular-nums text-xs sm:text-sm">₹0.00</div>
+              </div>
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Cash Buffer</div>
+                <div id="portValuationCash" class="font-bold text-emerald-400 mt-0.5 tabular-nums text-xs sm:text-sm">₹0.00</div>
+              </div>
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Alpha vs NIFTY</div>
+                <div id="portValuationAlpha" class="font-bold text-emerald-400 mt-0.5 tabular-nums text-xs sm:text-sm">+0.0%</div>
+              </div>
             </div>
           </div>
 
@@ -913,8 +951,8 @@
                     <th>Shares</th>
                     <th>Price</th>
                     <th>Value</th>
-                    <th>Weight</th>
-                    <th>P&L</th>
+                    <th>1D Return</th>
+                    <th>Overall P&L</th>
                   </tr>
                 </thead>
                 <tbody id="portHoldingsBody">
@@ -1539,6 +1577,92 @@
               <span>Ask NitiBot Deep Dive</span>
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Goal Portfolio Modal Sheet (Ticket #19) -->
+    <div id="createGoalModal" class="modal-overlay hidden" onclick="closeCreatePortfolioModal(event)">
+      <div class="modal-sheet max-w-md max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeCreatePortfolioModal()"></div>
+        <div class="flex items-center justify-between pb-3 border-b border-subtle mb-4">
+          <div class="flex items-center gap-2">
+            <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <i data-lucide="target" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">Create Goal Portfolio</h3>
+              <p class="text-xs text-slate-400">Set up a distinct virtual investment bucket</p>
+            </div>
+          </div>
+          <button type="button" class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeCreatePortfolioModal()">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Goal Name with Suggestions -->
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Portfolio / Goal Name</label>
+          <input type="text" id="goalPortfolioNameInput" placeholder="e.g. Retirement SIP, Emergency Buffer" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 mb-2">
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Retirement SIP')">Retirement SIP</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Emergency Buffer')">Emergency Buffer</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Defense Alpha')">Defense Alpha</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Child Education')">Child Education</button>
+          </div>
+        </div>
+
+        <!-- Capital Input -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-semibold text-slate-300">Initial Capital</label>
+            <span id="goalCapitalDisplay" class="text-xs font-bold text-emerald-400 tabular-nums">₹50,000</span>
+          </div>
+          <input type="range" id="goalCapitalRange" min="5000" max="1000000" step="5000" value="50000" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('goalCapitalDisplay').innerText = '₹' + Number(this.value).toLocaleString('en-IN')">
+        </div>
+
+        <!-- Risk Persona -->
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Risk Persona</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Conservative" class="mr-1.5 text-emerald-500"> Conservative
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Balanced" checked class="mr-1.5 text-emerald-500"> Balanced
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Aggressive" class="mr-1.5 text-emerald-500"> Aggressive
+            </label>
+          </div>
+        </div>
+
+        <!-- Horizon -->
+        <div class="mb-5">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Target Horizon</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="1M" class="mr-1 text-emerald-500"> 1M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="3M" class="mr-1 text-emerald-500"> 3M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="6M" checked class="mr-1 text-emerald-500"> 6M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="12M" class="mr-1 text-emerald-500"> 12M
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button type="button" class="btn-ghost flex-1 !py-2 !text-xs" onclick="closeCreatePortfolioModal()">Cancel</button>
+          <button type="button" id="createGoalSubmitBtn" class="btn-primary flex-1 !py-2 !text-xs justify-center" onclick="submitCreateGoalPortfolio()">
+            <i data-lucide="plus-circle" class="w-4 h-4 mr-1"></i>
+            Create Portfolio
+          </button>
         </div>
       </div>
     </div>

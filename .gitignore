@@ -11,6 +11,8 @@ htmlcov/
 # Local cache data
 data/cache/
 *.parquet
+*.db
+*.sqlite3
 
 # IDE & OS
 .DS_Store

@@ -29,6 +29,12 @@ def get_portfolio_service(request: Request) -> PortfolioService:
 
 
 @router.post(
+    "/portfolios",
+    response_model=PortfolioState,
+    summary="Create named goal portfolio",
+    description="Initializes a live mark-to-market virtual portfolio with initial capital and recommended/custom holdings.",
+)
+@router.post(
     "/portfolio/create",
     response_model=PortfolioState,
     summary="Activate basket into Virtual Paper Portfolio",
@@ -47,9 +53,27 @@ async def create_portfolio_endpoint(
 
 
 @router.get(
-    "/portfolio/{portfolio_id}",
+    "/portfolios",
+    response_model=List[PortfolioState],
+    summary="List all user goal portfolios",
+)
+async def list_portfolios_endpoint(
+    request: Request,
+) -> List[PortfolioState]:
+    """Return all active goal portfolios."""
+    service = get_portfolio_service(request)
+    return service.list_portfolios()
+
+
+@router.get(
+    "/portfolios/{portfolio_id}",
     response_model=PortfolioState,
     summary="Get live mark-to-market portfolio state",
+)
+@router.get(
+    "/portfolio/{portfolio_id}",
+    response_model=PortfolioState,
+    summary="Get live mark-to-market portfolio state (alias)",
 )
 async def get_portfolio_endpoint(
     portfolio_id: str,
@@ -64,6 +88,29 @@ async def get_portfolio_endpoint(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Portfolio with ID '{portfolio_id}' was not found.",
         )
+
+
+@router.delete(
+    "/portfolios/{portfolio_id}",
+    summary="Delete goal portfolio",
+)
+@router.delete(
+    "/portfolio/{portfolio_id}",
+    summary="Delete goal portfolio (alias)",
+)
+async def delete_portfolio_endpoint(
+    portfolio_id: str,
+    request: Request,
+) -> dict:
+    """Delete a virtual portfolio from persistent storage."""
+    service = get_portfolio_service(request)
+    deleted = service.delete_portfolio(portfolio_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Portfolio with ID '{portfolio_id}' was not found.",
+        )
+    return {"deleted": True, "portfolio_id": portfolio_id}
 
 
 @router.get(

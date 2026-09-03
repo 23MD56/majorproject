@@ -169,3 +169,59 @@ async def test_compounding_visualizer_and_wealth_engine_ui(test_app):
         assert "slider-thumb" in css
         assert "#tippingPointCard" in css
 
+
+@pytest.mark.asyncio
+async def test_multi_portfolio_storage_and_mtm_ui(test_app):
+    """Verify Ticket #19 Multi-Portfolio Switcher, Dual-Metric Hero Card, and Goal Modal."""
+    transport = ASGITransport(app=test_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. HTML DOM validation
+        res_html = await client.get("/")
+        assert res_html.status_code == 200
+        html = res_html.text
+
+        # Portfolio Switcher & Header
+        assert 'id="portfolioSelector"' in html
+        assert "openCreatePortfolioModal()" in html
+
+        # Groww-style Dual-Metric Hero Card
+        assert 'id="portfolioHeroCard"' in html
+        assert 'id="portValuationTotal"' in html
+        assert 'id="port1DMetricBadge"' in html
+        assert 'id="portValuation1D"' in html
+        assert 'id="portTotalMetricBadge"' in html
+        assert 'id="portValuationPnl"' in html
+        assert 'id="portValuationInvested"' in html
+        assert 'id="portValuationCash"' in html
+        assert 'id="deletePortfolioBtn"' in html
+
+        # 1D Return column in holdings table
+        assert "1D Return" in html
+
+        # Create Goal Portfolio Modal
+        assert 'id="createGoalModal"' in html
+        assert 'id="goalPortfolioNameInput"' in html
+        assert 'id="goalCapitalRange"' in html
+        assert 'name="goalRiskPersona"' in html
+        assert 'name="goalHorizon"' in html
+        assert 'id="createGoalSubmitBtn"' in html
+
+        # 2. JavaScript logic validation
+        res_js = await client.get("/static/app.js")
+        assert res_js.status_code == 200
+        js = res_js.text
+
+        # IndexedDB functions
+        assert "openQuantNitiDB" in js
+        assert "savePortfoliosToIndexedDB" in js
+        assert "loadPortfoliosFromIndexedDB" in js
+        assert "deletePortfolioFromIndexedDB" in js
+
+        # Multi-portfolio & Goal handlers
+        assert "loadUserPortfolios" in js
+        assert "openCreatePortfolioModal" in js
+        assert "closeCreatePortfolioModal" in js
+        assert "submitCreateGoalPortfolio" in js
+        assert "deleteActivePortfolio" in js
+        assert "handlePortfolioSwitch" in js
+

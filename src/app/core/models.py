@@ -470,6 +470,9 @@ class PortfolioHolding(BaseModel):
     unrealized_pnl: float
     unrealized_pnl_pct: float
     weight: float
+    prev_close_price: Optional[float] = None
+    pnl_1d: float = 0.0
+    pnl_1d_pct: float = 0.0
 
 
 class BenchmarkComparisonLive(BaseModel):
@@ -489,6 +492,8 @@ class PortfolioState(BaseModel):
     current_value: float
     total_pnl: float
     total_pnl_pct: float
+    pnl_1d: float = 0.0
+    pnl_1d_pct: float = 0.0
     holdings: List[PortfolioHolding]
     benchmark_comparison: Optional[BenchmarkComparisonLive] = None
     initial_regime: MarketRegimeType

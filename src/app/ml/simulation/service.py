@@ -11,6 +11,7 @@ from app.core.models import (
     RiskPersona,
 )
 from app.data.service import MarketDataService
+from app.data.storage import PortfolioRepository
 from app.ml.portfolio.service import GrowService
 from app.ml.regime.service import RegimeService
 from app.ml.simulation.portfolio import (
@@ -32,12 +33,14 @@ class PortfolioService:
         market_service: MarketDataService,
         regime_service: Optional[RegimeService] = None,
         grow_service: Optional[GrowService] = None,
+        repository: Optional[PortfolioRepository] = None,
     ):
         self.market_service = market_service
         self.regime_service = regime_service or RegimeService(market_service=market_service)
         self.grow_service = grow_service or GrowService(
             market_service=market_service, regime_service=self.regime_service
         )
+        self.repository = repository or PortfolioRepository()
         self._portfolios: Dict[str, PortfolioState] = {}
 
     def create_portfolio(self, request: CreatePortfolioRequest) -> PortfolioState:
@@ -74,6 +77,7 @@ class PortfolioService:
             active_regime=active_regime,
         )
 
+        self.repository.save_portfolio(portfolio)
         self._portfolios[portfolio.portfolio_id] = portfolio
         return portfolio
 
@@ -81,16 +85,29 @@ class PortfolioService:
         """Retrieve portfolio and refresh mark-to-market valuations."""
         portfolio = self._portfolios.get(portfolio_id)
         if not portfolio:
-            raise KeyError(f"Portfolio '{portfolio_id}' not found.")
+            portfolio = self.repository.get_portfolio(portfolio_id)
+            if not portfolio:
+                raise KeyError(f"Portfolio '{portfolio_id}' not found.")
 
-        # Fetch latest prices for all holdings
+        # Fetch latest prices and previous close prices for all holdings
         latest_prices: Dict[str, float] = {}
+        prev_prices: Dict[str, float] = {}
         for h in portfolio.holdings:
             try:
                 q = self.market_service.get_latest_quote(h.symbol)
                 latest_prices[h.symbol] = q.current_price
+                prev_prices[h.symbol] = (
+                    q.previous_close
+                    if q.previous_close is not None
+                    else (q.current_price - q.day_change)
+                )
             except Exception:
                 latest_prices[h.symbol] = h.current_price
+                prev_prices[h.symbol] = (
+                    h.prev_close_price
+                    if h.prev_close_price is not None
+                    else h.current_price
+                )
 
         # Fetch benchmark index quotes
         nifty_curr_price = None
@@ -109,12 +126,14 @@ class PortfolioService:
         updated = update_portfolio_mark_to_market(
             portfolio=portfolio,
             latest_prices=latest_prices,
+            previous_close_prices=prev_prices,
             benchmark_index_price=nifty_curr_price,
             benchmark_initial_price=nifty_init_price,
             elapsed_days=30,
             current_regime=current_regime,
         )
 
+        self.repository.save_portfolio(updated)
         self._portfolios[portfolio_id] = updated
         return updated
 
@@ -161,6 +180,7 @@ class PortfolioService:
         portfolio = self.get_portfolio(portfolio_id)
 
         rebalanced = execute_rebalance(portfolio=portfolio, rebalance_alert=diff_alert)
+        self.repository.save_portfolio(rebalanced)
         self._portfolios[portfolio_id] = rebalanced
         return rebalanced
 
@@ -170,5 +190,15 @@ class PortfolioService:
         return generate_broker_order_sheet(portfolio=portfolio)
 
     def list_portfolios(self) -> List[PortfolioState]:
-        """List all active simulated portfolios."""
-        return list(self._portfolios.values())
+        """List all active simulated portfolios from persistent repository."""
+        ports = self.repository.list_portfolios()
+        if not ports and self._portfolios:
+            for p in self._portfolios.values():
+                self.repository.save_portfolio(p)
+            ports = self.repository.list_portfolios()
+        return ports
+
+    def delete_portfolio(self, portfolio_id: str) -> bool:
+        """Delete portfolio from persistent repository and in-memory cache."""
+        self._portfolios.pop(portfolio_id, None)
+        return self.repository.delete_portfolio(portfolio_id)
