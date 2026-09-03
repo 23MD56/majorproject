@@ -91,18 +91,50 @@ class RAGContextBuilder:
                 shares = alloc.get("shares", 0)
                 price = alloc.get("current_price", 0.0)
                 growth = alloc.get("growth_base_pct", 0.0)
+                esg_comp = alloc.get("esg_composite")
+                esg_suffix = f", ESG: {esg_comp:.1f}/100" if esg_comp is not None else ""
                 alloc_lines.append(
                     f"  - **{sym}** ({name} | {sector}): Weight: {wt:.1f}%, "
-                    f"Shares: {shares}, Price: ₹{price:,.2f}, Base 6M Growth: {growth:+.1f}%"
+                    f"Shares: {shares}, Price: ₹{price:,.2f}, Base 6M Growth: {growth:+.1f}%{esg_suffix}"
+                )
+
+            port_esg = basket_data.get("portfolio_esg_score")
+            port_badge = basket_data.get("portfolio_esg_badge", "")
+            port_breakdown = basket_data.get("portfolio_esg_breakdown", {})
+            esg_line = ""
+            if port_esg:
+                sources.append("ESG Conscience Score Layer (BRSR & CRISIL Disclosures)")
+                env = port_breakdown.get("esg_environment", 0.0)
+                soc = port_breakdown.get("esg_social", 0.0)
+                gov = port_breakdown.get("esg_governance", 0.0)
+                esg_line = (
+                    f"\n- **Portfolio ESG Conscience**: Score: {port_esg:.1f}/100 ({port_badge}) "
+                    f"[Environment: {env:.1f}, Social: {soc:.1f}, Governance: {gov:.1f}]"
                 )
 
             alloc_summary = "\n".join(alloc_lines) if alloc_lines else "  - No active allocations."
             sections.append(
                 f"### 2. Active Portfolio Basket Recommendation:\n"
                 f"- **Target Capital**: ₹{capital:,.2f} | **Invested**: ₹{total_invested:,.2f} | **Cash Buffer**: ₹{unallocated_cash:,.2f}\n"
-                f"- **Time Horizon**: {horizon} | **Risk Persona**: {persona}\n"
+                f"- **Time Horizon**: {horizon} | **Risk Persona**: {persona}{esg_line}\n"
                 f"- **Asset Allocations**:\n{alloc_summary}"
             )
+
+            # Stock-level ESG lookup if user query or context specifies a ticker
+            stock_data = user_ctx.get("stock")
+            target_symbol = user_ctx.get("symbol") or (stock_data.get("symbol") if isinstance(stock_data, dict) else None)
+            if target_symbol:
+                from app.universe import get_esg_score_for_symbol
+                esg_info = get_esg_score_for_symbol(target_symbol)
+                if esg_info:
+                    sources.append("ESG Conscience Score Layer (BRSR & CRISIL Disclosures)")
+                    sections.append(
+                        f"### Stock ESG Conscience Profile ({target_symbol}):\n"
+                        f"- **Composite Score**: {esg_info.get('esg_composite', 50.0):.1f}/100 ({esg_info.get('badge', '')})\n"
+                        f"- **Environmental Pillar**: {esg_info.get('esg_environment', 50.0):.1f}/100\n"
+                        f"- **Social Pillar**: {esg_info.get('esg_social', 50.0):.1f}/100\n"
+                        f"- **Governance Pillar**: {esg_info.get('esg_governance', 50.0):.1f}/100"
+                    )
 
             # 3. Growth Projections
             projections = basket_data.get("growth_projections", {})

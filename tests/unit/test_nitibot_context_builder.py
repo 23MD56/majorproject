@@ -218,3 +218,40 @@ def test_rag_context_builder_fallback_defaults():
     assert "Low-Volatility Bull" in context_payload.grounding_text
     assert "RELIANCE" in context_payload.grounding_text
     assert len(context_payload.sources) >= 3
+
+
+def test_rag_context_builder_esg_enrichment():
+    regime_service = MagicMock()
+    regime_service.get_current_regime.return_value = create_sample_regime()
+
+    basket = create_sample_basket()
+    basket.portfolio_esg_score = 78.5
+    basket.portfolio_esg_badge = "🟢 High ESG"
+    basket.portfolio_esg_breakdown = {
+        "esg_environment": 75.0,
+        "esg_social": 80.0,
+        "esg_governance": 81.0,
+    }
+    basket.allocations[0].esg_composite = 86.0
+
+    grow_service = MagicMock()
+    grow_service.recommend_basket.return_value = basket
+
+    builder = RAGContextBuilder(
+        regime_service=regime_service,
+        grow_service=grow_service,
+    )
+
+    context_payload = builder.build_context(
+        user_context={
+            "basket": basket.model_dump(),
+            "symbol": "TCS",
+            "query": "Tell me about TCS ESG conscience score",
+        }
+    )
+
+    assert "Portfolio ESG Conscience" in context_payload.grounding_text
+    assert "78.5/100" in context_payload.grounding_text
+    assert "🟢 High ESG" in context_payload.grounding_text
+    assert "Stock ESG Conscience Profile (TCS)" in context_payload.grounding_text
+    assert any("ESG Conscience" in s for s in context_payload.sources)

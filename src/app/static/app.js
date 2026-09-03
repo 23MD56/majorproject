@@ -760,9 +760,21 @@ function renderExploreStockGrid(stocks) {
           <span class="font-bold text-white text-sm">${stock.symbol}</span>
           <span class="text-[10px] text-slate-400 block">${stock.sector}</span>
         </div>
-        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-          ${stock.regime_badge}
-        </span>
+        <div class="flex items-center gap-1">
+          ${stock.esg_composite ? `
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+            stock.esg_composite >= 70
+              ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30'
+              : (stock.esg_composite >= 40
+                  ? 'bg-amber-950 text-amber-400 border border-amber-500/30'
+                  : 'bg-rose-950 text-rose-400 border border-rose-500/30')
+          }" title="ESG Conscience: ${stock.esg_composite.toFixed(0)}/100">
+            🌱 ${stock.esg_composite.toFixed(0)}
+          </span>` : ''}
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            ${stock.regime_badge}
+          </span>
+        </div>
       </div>
       <div class="flex justify-between items-end mt-2">
         <div>
@@ -819,6 +831,31 @@ async function openStockProfileModal(symbol) {
         <div class="text-xs font-bold text-emerald-400 tabular-nums">${profile.suitability.score.toFixed(0)}/100</div>
       </div>
     `;
+
+    // Render ESG Conscience Dimension
+    if (profile.esg) {
+      const sec = document.getElementById("modalStockEsgSection");
+      if (sec) sec.classList.remove("hidden");
+      const badgeEl = document.getElementById("modalStockEsgBadge");
+      if (badgeEl) {
+        badgeEl.innerText = profile.esg.badge || "🟡 Moderate ESG";
+        badgeEl.className = `text-[10px] font-semibold px-2 py-0.5 rounded border ${
+          profile.esg.esg_composite >= 70
+            ? 'bg-emerald-950 text-emerald-400 border-emerald-500/30'
+            : (profile.esg.esg_composite >= 40
+                ? 'bg-amber-950 text-amber-400 border-amber-500/30'
+                : 'bg-rose-950 text-rose-400 border-rose-500/30')
+        }`;
+      }
+      const compEl = document.getElementById("modalStockEsgComposite");
+      if (compEl) compEl.innerText = `${profile.esg.esg_composite.toFixed(1)} / 100`;
+      const envEl = document.getElementById("modalStockEsgEnv");
+      if (envEl) envEl.innerText = profile.esg.esg_environment.toFixed(0);
+      const socEl = document.getElementById("modalStockEsgSoc");
+      if (socEl) socEl.innerText = profile.esg.esg_social.toFixed(0);
+      const govEl = document.getElementById("modalStockEsgGov");
+      if (govEl) govEl.innerText = profile.esg.esg_governance.toFixed(0);
+    }
   } catch (err) {
     console.error("Error opening profile:", err);
   }
@@ -1244,10 +1281,21 @@ function renderBasketDetails(data) {
   listEl.innerHTML = data.allocations.map((item) => {
     const shares = item.shares || item.shares_approx || 0;
     const allocatedAmt = item.allocated_amount || (shares * item.current_price) || item.target_amount;
+    const esg = item.esg_composite;
     return `
     <div class="flex items-center justify-between p-2 rounded-lg bg-slate-850 border border-slate-750 text-xs">
       <div>
-        <span class="font-bold text-white">${item.symbol}</span>
+        <div class="flex items-center gap-1.5">
+          <span class="font-bold text-white">${item.symbol}</span>
+          ${esg !== null && esg !== undefined ? `
+          <span class="text-[9px] font-semibold px-1 py-0.5 rounded ${
+            esg >= 70
+              ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30'
+              : (esg >= 40
+                  ? 'bg-amber-950 text-amber-400 border border-amber-500/30'
+                  : 'bg-rose-950 text-rose-400 border border-rose-500/30')
+          }">ESG ${esg.toFixed(0)}</span>` : ''}
+        </div>
         <span class="text-[10px] text-slate-400 block">${item.name} (${(item.weight * 100).toFixed(1)}%)</span>
       </div>
       <div class="text-right">
@@ -1257,6 +1305,30 @@ function renderBasketDetails(data) {
     </div>
     `;
   }).join("");
+
+  // Update Portfolio ESG Conscience Card
+  const esgScoreEl = document.getElementById("portfolioEsgScore");
+  const esgBadgeEl = document.getElementById("portfolioEsgBadge");
+  const esgEnvEl = document.getElementById("portfolioEsgEnv");
+  const esgSocEl = document.getElementById("portfolioEsgSoc");
+  const esgGovEl = document.getElementById("portfolioEsgGov");
+  if (esgScoreEl && typeof data.portfolio_esg_score === "number") {
+    esgScoreEl.innerText = `${data.portfolio_esg_score.toFixed(1)} / 100`;
+    if (esgBadgeEl) {
+      esgBadgeEl.innerText = data.portfolio_esg_badge || "🟡 Moderate ESG";
+      esgBadgeEl.className = `text-[10px] font-semibold px-2 py-0.5 rounded border ${
+        data.portfolio_esg_score >= 70
+          ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30'
+          : (data.portfolio_esg_score >= 40
+              ? 'bg-amber-950 text-amber-400 border border-amber-500/30'
+              : 'bg-rose-950 text-rose-400 border border-rose-500/30')
+      }`;
+    }
+    const bd = data.portfolio_esg_breakdown || {};
+    if (esgEnvEl) esgEnvEl.innerText = (bd.esg_environment || 0).toFixed(1);
+    if (esgSocEl) esgSocEl.innerText = (bd.esg_social || 0).toFixed(1);
+    if (esgGovEl) esgGovEl.innerText = (bd.esg_governance || 0).toFixed(1);
+  }
 
   // Render 3-Tier Rupee Projections
   const proj = data.growth_projections;

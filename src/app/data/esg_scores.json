@@ -1,0 +1,502 @@
+{
+  "ADANIENT": {
+    "symbol": "ADANIENT",
+    "name": "Adani Enterprises Ltd.",
+    "sector": "Metals & Mining",
+    "esg_composite": 38.0,
+    "esg_environment": 32.0,
+    "esg_social": 42.0,
+    "esg_governance": 40.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ADANIPORTS": {
+    "symbol": "ADANIPORTS",
+    "name": "Adani Ports and Special Economic Zone Ltd.",
+    "sector": "Services & Logistics",
+    "esg_composite": 54.0,
+    "esg_environment": 48.0,
+    "esg_social": 58.0,
+    "esg_governance": 56.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "APOLLOHOSP": {
+    "symbol": "APOLLOHOSP",
+    "name": "Apollo Hospitals Enterprise Ltd.",
+    "sector": "Healthcare",
+    "esg_composite": 68.0,
+    "esg_environment": 62.0,
+    "esg_social": 74.0,
+    "esg_governance": 68.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ASIANPAINT": {
+    "symbol": "ASIANPAINT",
+    "name": "Asian Paints Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 73.0,
+    "esg_environment": 71.0,
+    "esg_social": 72.0,
+    "esg_governance": 76.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "AXISBANK": {
+    "symbol": "AXISBANK",
+    "name": "Axis Bank Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 67.0,
+    "esg_environment": 60.0,
+    "esg_social": 70.0,
+    "esg_governance": 71.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BAJAJ-AUTO": {
+    "symbol": "BAJAJ-AUTO",
+    "name": "Bajaj Auto Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 63.0,
+    "esg_environment": 59.0,
+    "esg_social": 66.0,
+    "esg_governance": 64.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BAJFINANCE": {
+    "symbol": "BAJFINANCE",
+    "name": "Bajaj Finance Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 66.0,
+    "esg_environment": 58.0,
+    "esg_social": 70.0,
+    "esg_governance": 70.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BAJAJFINSV": {
+    "symbol": "BAJAJFINSV",
+    "name": "Bajaj Finserv Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 65.0,
+    "esg_environment": 57.0,
+    "esg_social": 69.0,
+    "esg_governance": 69.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BEL": {
+    "symbol": "BEL",
+    "name": "Bharat Electronics Ltd.",
+    "sector": "Capital Goods",
+    "esg_composite": 59.0,
+    "esg_environment": 54.0,
+    "esg_social": 62.0,
+    "esg_governance": 61.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BHARTIARTL": {
+    "symbol": "BHARTIARTL",
+    "name": "Bharti Airtel Ltd.",
+    "sector": "Telecommunication",
+    "esg_composite": 69.0,
+    "esg_environment": 65.0,
+    "esg_social": 72.0,
+    "esg_governance": 70.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BPCL": {
+    "symbol": "BPCL",
+    "name": "Bharat Petroleum Corporation Ltd.",
+    "sector": "Energy & Oil",
+    "esg_composite": 48.0,
+    "esg_environment": 40.0,
+    "esg_social": 54.0,
+    "esg_governance": 50.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "BRITANNIA": {
+    "symbol": "BRITANNIA",
+    "name": "Britannia Industries Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 71.0,
+    "esg_environment": 68.0,
+    "esg_social": 72.0,
+    "esg_governance": 73.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "CIPLA": {
+    "symbol": "CIPLA",
+    "name": "Cipla Ltd.",
+    "sector": "Healthcare",
+    "esg_composite": 75.0,
+    "esg_environment": 72.0,
+    "esg_social": 78.0,
+    "esg_governance": 75.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "COALINDIA": {
+    "symbol": "COALINDIA",
+    "name": "Coal India Ltd.",
+    "sector": "Energy & Mining",
+    "esg_composite": 35.0,
+    "esg_environment": 24.0,
+    "esg_social": 45.0,
+    "esg_governance": 36.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "DRREDDY": {
+    "symbol": "DRREDDY",
+    "name": "Dr. Reddy's Laboratories Ltd.",
+    "sector": "Healthcare",
+    "esg_composite": 76.0,
+    "esg_environment": 74.0,
+    "esg_social": 77.0,
+    "esg_governance": 77.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "EICHERMOT": {
+    "symbol": "EICHERMOT",
+    "name": "Eicher Motors Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 62.0,
+    "esg_environment": 58.0,
+    "esg_social": 64.0,
+    "esg_governance": 64.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "GRASIM": {
+    "symbol": "GRASIM",
+    "name": "Grasim Industries Ltd.",
+    "sector": "Materials & Chemicals",
+    "esg_composite": 58.0,
+    "esg_environment": 51.0,
+    "esg_social": 63.0,
+    "esg_governance": 60.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HCLTECH": {
+    "symbol": "HCLTECH",
+    "name": "HCL Technologies Ltd.",
+    "sector": "Information Technology",
+    "esg_composite": 81.0,
+    "esg_environment": 80.0,
+    "esg_social": 82.0,
+    "esg_governance": 81.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HDFCBANK": {
+    "symbol": "HDFCBANK",
+    "name": "HDFC Bank Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 74.0,
+    "esg_environment": 68.0,
+    "esg_social": 78.0,
+    "esg_governance": 76.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HDFCLIFE": {
+    "symbol": "HDFCLIFE",
+    "name": "HDFC Life Insurance Company Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 72.0,
+    "esg_environment": 67.0,
+    "esg_social": 75.0,
+    "esg_governance": 74.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HEROMOTOCO": {
+    "symbol": "HEROMOTOCO",
+    "name": "Hero MotoCorp Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 64.0,
+    "esg_environment": 61.0,
+    "esg_social": 66.0,
+    "esg_governance": 65.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HINDALCO": {
+    "symbol": "HINDALCO",
+    "name": "Hindalco Industries Ltd.",
+    "sector": "Metals & Mining",
+    "esg_composite": 53.0,
+    "esg_environment": 46.0,
+    "esg_social": 58.0,
+    "esg_governance": 55.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "HINDUNILVR": {
+    "symbol": "HINDUNILVR",
+    "name": "Hindustan Unilever Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 84.0,
+    "esg_environment": 83.0,
+    "esg_social": 85.0,
+    "esg_governance": 84.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ICICIBANK": {
+    "symbol": "ICICIBANK",
+    "name": "ICICI Bank Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 73.0,
+    "esg_environment": 67.0,
+    "esg_social": 76.0,
+    "esg_governance": 76.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "INDUSINDBK": {
+    "symbol": "INDUSINDBK",
+    "name": "IndusInd Bank Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 63.0,
+    "esg_environment": 56.0,
+    "esg_social": 67.0,
+    "esg_governance": 66.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "INFY": {
+    "symbol": "INFY",
+    "name": "Infosys Ltd.",
+    "sector": "Information Technology",
+    "esg_composite": 88.0,
+    "esg_environment": 89.0,
+    "esg_social": 87.0,
+    "esg_governance": 88.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ITC": {
+    "symbol": "ITC",
+    "name": "ITC Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 78.0,
+    "esg_environment": 82.0,
+    "esg_social": 76.0,
+    "esg_governance": 76.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "JSWSTEEL": {
+    "symbol": "JSWSTEEL",
+    "name": "JSW Steel Ltd.",
+    "sector": "Metals & Mining",
+    "esg_composite": 49.0,
+    "esg_environment": 39.0,
+    "esg_social": 56.0,
+    "esg_governance": 52.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "KOTAKBANK": {
+    "symbol": "KOTAKBANK",
+    "name": "Kotak Mahindra Bank Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 71.0,
+    "esg_environment": 64.0,
+    "esg_social": 74.0,
+    "esg_governance": 75.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "LT": {
+    "symbol": "LT",
+    "name": "Larsen & Toubro Ltd.",
+    "sector": "Construction & Engineering",
+    "esg_composite": 68.0,
+    "esg_environment": 63.0,
+    "esg_social": 71.0,
+    "esg_governance": 70.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "M&M": {
+    "symbol": "M&M",
+    "name": "Mahindra & Mahindra Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 73.0,
+    "esg_environment": 72.0,
+    "esg_social": 74.0,
+    "esg_governance": 73.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "MARUTI": {
+    "symbol": "MARUTI",
+    "name": "Maruti Suzuki India Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 65.0,
+    "esg_environment": 61.0,
+    "esg_social": 67.0,
+    "esg_governance": 67.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "NESTLEIND": {
+    "symbol": "NESTLEIND",
+    "name": "Nestle India Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 77.0,
+    "esg_environment": 75.0,
+    "esg_social": 78.0,
+    "esg_governance": 78.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "NTPC": {
+    "symbol": "NTPC",
+    "name": "NTPC Ltd.",
+    "sector": "Power & Energy",
+    "esg_composite": 51.0,
+    "esg_environment": 42.0,
+    "esg_social": 58.0,
+    "esg_governance": 53.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ONGC": {
+    "symbol": "ONGC",
+    "name": "Oil & Natural Gas Corporation Ltd.",
+    "sector": "Energy & Oil",
+    "esg_composite": 45.0,
+    "esg_environment": 36.0,
+    "esg_social": 52.0,
+    "esg_governance": 47.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "POWERGRID": {
+    "symbol": "POWERGRID",
+    "name": "Power Grid Corporation of India Ltd.",
+    "sector": "Power & Energy",
+    "esg_composite": 57.0,
+    "esg_environment": 52.0,
+    "esg_social": 61.0,
+    "esg_governance": 58.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "RELIANCE": {
+    "symbol": "RELIANCE",
+    "name": "Reliance Industries Ltd.",
+    "sector": "Energy & Oil",
+    "esg_composite": 64.0,
+    "esg_environment": 58.0,
+    "esg_social": 68.0,
+    "esg_governance": 66.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "SBILIFE": {
+    "symbol": "SBILIFE",
+    "name": "SBI Life Insurance Company Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 69.0,
+    "esg_environment": 62.0,
+    "esg_social": 73.0,
+    "esg_governance": 72.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "SBIN": {
+    "symbol": "SBIN",
+    "name": "State Bank of India",
+    "sector": "Financial Services",
+    "esg_composite": 61.0,
+    "esg_environment": 54.0,
+    "esg_social": 66.0,
+    "esg_governance": 63.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "SHRIRAMFIN": {
+    "symbol": "SHRIRAMFIN",
+    "name": "Shriram Finance Ltd.",
+    "sector": "Financial Services",
+    "esg_composite": 58.0,
+    "esg_environment": 51.0,
+    "esg_social": 63.0,
+    "esg_governance": 60.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "SUNPHARMA": {
+    "symbol": "SUNPHARMA",
+    "name": "Sun Pharmaceutical Industries Ltd.",
+    "sector": "Healthcare",
+    "esg_composite": 72.0,
+    "esg_environment": 69.0,
+    "esg_social": 74.0,
+    "esg_governance": 73.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TATACONSUM": {
+    "symbol": "TATACONSUM",
+    "name": "Tata Consumer Products Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 77.0,
+    "esg_environment": 76.0,
+    "esg_social": 78.0,
+    "esg_governance": 77.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TATAMOTORS": {
+    "symbol": "TATAMOTORS",
+    "name": "Tata Motors Ltd.",
+    "sector": "Automobile",
+    "esg_composite": 71.0,
+    "esg_environment": 70.0,
+    "esg_social": 72.0,
+    "esg_governance": 71.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TATASTEEL": {
+    "symbol": "TATASTEEL",
+    "name": "Tata Steel Ltd.",
+    "sector": "Metals & Mining",
+    "esg_composite": 52.0,
+    "esg_environment": 44.0,
+    "esg_social": 59.0,
+    "esg_governance": 53.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TCS": {
+    "symbol": "TCS",
+    "name": "Tata Consultancy Services Ltd.",
+    "sector": "Information Technology",
+    "esg_composite": 86.0,
+    "esg_environment": 85.0,
+    "esg_social": 86.0,
+    "esg_governance": 87.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TECHM": {
+    "symbol": "TECHM",
+    "name": "Tech Mahindra Ltd.",
+    "sector": "Information Technology",
+    "esg_composite": 80.0,
+    "esg_environment": 79.0,
+    "esg_social": 80.0,
+    "esg_governance": 81.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TITAN": {
+    "symbol": "TITAN",
+    "name": "Titan Company Ltd.",
+    "sector": "Consumer Goods",
+    "esg_composite": 75.0,
+    "esg_environment": 73.0,
+    "esg_social": 76.0,
+    "esg_governance": 76.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "TRENT": {
+    "symbol": "TRENT",
+    "name": "Trent Ltd.",
+    "sector": "Consumer Retail",
+    "esg_composite": 66.0,
+    "esg_environment": 61.0,
+    "esg_social": 69.0,
+    "esg_governance": 68.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "ULTRACEMCO": {
+    "symbol": "ULTRACEMCO",
+    "name": "UltraTech Cement Ltd.",
+    "sector": "Materials & Construction",
+    "esg_composite": 56.0,
+    "esg_environment": 49.0,
+    "esg_social": 61.0,
+    "esg_governance": 58.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  },
+  "WIPRO": {
+    "symbol": "WIPRO",
+    "name": "Wipro Ltd.",
+    "sector": "Information Technology",
+    "esg_composite": 85.0,
+    "esg_environment": 86.0,
+    "esg_social": 84.0,
+    "esg_governance": 85.0,
+    "source": "BRSR / CRISIL ESG / NSE Sustainability"
+  }
+}

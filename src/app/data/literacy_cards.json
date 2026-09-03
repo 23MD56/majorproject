@@ -268,5 +268,13 @@
     "analogy": "Think of reading the mandatory Nutritional Facts label and ISO certification on a food package before buying it, ensuring you know every ingredient and calorie before feeding your family.",
     "category": "quant",
     "related_keys": ["probabilistic_forecasting", "drawdown_guardrails"]
+  },
+  {
+    "key": "esg_conscience_score",
+    "title": "ESG Conscience Score",
+    "explanation": "The ESG Conscience Score measures a company's Environmental, Social, and Governance footprint using public BRSR disclosures and CRISIL ratings. QuantNiti evaluates clean energy adoption, workplace ethics, and corporate board independence to assign standardized sustainability scores across the NIFTY 50. Portfolios tilted with the ESG-Conscious persona direct capital toward sustainable market leaders without sacrificing quantitative risk-adjusted performance.",
+    "analogy": "Think of choosing locally-sourced organic produce with zero chemical pesticides over factory-farmed food, nourishing yourself while supporting farming practices that preserve the soil.",
+    "category": "quant",
+    "related_keys": ["trust_card_transparency", "asset_allocation"]
   }
 ]

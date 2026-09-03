@@ -108,3 +108,45 @@ def test_grow_service_invalid_inputs_raise_error(grow_service: GrowService):
 
     with pytest.raises(ValueError):
         grow_service.recommend_basket(capital=50000.0, horizon="24M", risk_persona=RiskPersona.BALANCED)
+
+
+def test_grow_service_esg_portfolio_score_and_persona(grow_service: GrowService):
+    """Basket results include mathematically correct weighted ESG score, and ESG-Conscious persona tilts to high ESG stocks."""
+    capital = 50000.0
+    horizon = "6M"
+
+    balanced_resp = grow_service.recommend_basket(
+        capital=capital,
+        horizon=horizon,
+        risk_persona=RiskPersona.BALANCED,
+    )
+    esg_resp = grow_service.recommend_basket(
+        capital=capital,
+        horizon=horizon,
+        risk_persona=RiskPersona.ESG_CONSCIOUS,
+    )
+
+    # 1. Verify ESG fields exist on allocations and response
+    for a in balanced_resp.allocations:
+        assert a.esg_composite is not None
+        assert 0.0 <= a.esg_composite <= 100.0
+
+    assert balanced_resp.portfolio_esg_score > 0.0
+    assert balanced_resp.portfolio_esg_badge is not None
+    assert "esg_environment" in balanced_resp.portfolio_esg_breakdown
+    assert "esg_social" in balanced_resp.portfolio_esg_breakdown
+    assert "esg_governance" in balanced_resp.portfolio_esg_breakdown
+
+    # 2. Verify mathematical correctness: sum(w_i * ESG_i)
+    expected_weighted_esg = sum(a.weight * a.esg_composite for a in balanced_resp.allocations)
+    assert pytest.approx(balanced_resp.portfolio_esg_score, rel=1e-2) == expected_weighted_esg
+
+    # 3. Verify ESG-Conscious persona produces weights that demonstrably favor high-ESG stocks
+    assert esg_resp.risk_persona == RiskPersona.ESG_CONSCIOUS
+    assert sum(a.weight for a in esg_resp.allocations) == pytest.approx(1.0, rel=1e-3)
+
+    # Sum of weights of high-ESG stocks (>= 70) should be higher in ESG-Conscious vs Balanced
+    high_esg_stocks_conscious = sum(a.weight for a in esg_resp.allocations if a.esg_composite >= 70.0)
+    high_esg_stocks_balanced = sum(a.weight for a in balanced_resp.allocations if a.esg_composite >= 70.0)
+    assert high_esg_stocks_conscious >= high_esg_stocks_balanced
+    assert esg_resp.portfolio_esg_score >= balanced_resp.portfolio_esg_score

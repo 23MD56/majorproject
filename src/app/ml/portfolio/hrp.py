@@ -15,6 +15,7 @@ from scipy.spatial.distance import squareform
 from sklearn.covariance import LedoitWolf
 
 from app.core.models import RiskPersona
+from app.universe import get_esg_score_for_symbol
 
 
 def compute_shrunk_covariance(
@@ -103,9 +104,16 @@ def get_cluster_variance(cov: np.ndarray, cluster_indices: List[int]) -> float:
     return max(var, 1e-8)
 
 
-def recursive_bisection(cov: np.ndarray, sort_order: List[int]) -> np.ndarray:
+def recursive_bisection(
+    cov: np.ndarray,
+    sort_order: List[int],
+    initial_weights: Optional[np.ndarray] = None,
+) -> np.ndarray:
     """Perform recursive bisection to compute HRP portfolio weights."""
-    weights = pd.Series(1.0, index=sort_order)
+    if initial_weights is not None:
+        weights = pd.Series(initial_weights[sort_order], index=sort_order)
+    else:
+        weights = pd.Series(1.0, index=sort_order)
     clusters = [sort_order]
 
     while len(clusters) > 0:
@@ -133,7 +141,11 @@ def recursive_bisection(cov: np.ndarray, sort_order: List[int]) -> np.ndarray:
 
         clusters = new_clusters
 
-    return weights.sort_index().values
+    raw_vals = weights.sort_index().values
+    total = np.sum(raw_vals)
+    if total > 0:
+        return raw_vals / total
+    return raw_vals
 
 
 def apply_weight_caps(
@@ -185,6 +197,7 @@ def compute_hrp_weights(
     cov_matrix: np.ndarray,
     symbols: List[str],
     max_cap: Optional[float] = None,
+    initial_weights: Optional[np.ndarray] = None,
 ) -> Dict[str, float]:
     """Compute HRP weights from a covariance matrix and asset symbols."""
     n_assets = len(symbols)
@@ -213,7 +226,7 @@ def compute_hrp_weights(
     sort_order = get_quasi_diag_order(link_matrix)
 
     # 5. Recursive Bisection
-    raw_weights_arr = recursive_bisection(cov_matrix, sort_order)
+    raw_weights_arr = recursive_bisection(cov_matrix, sort_order, initial_weights=initial_weights)
     
     weights_dict = {
         symbols[i]: float(raw_weights_arr[i])
@@ -237,6 +250,7 @@ class HRPOptimizer:
         RiskPersona.CONSERVATIVE: 0.15,
         RiskPersona.BALANCED: 0.22,
         RiskPersona.AGGRESSIVE: 0.32,
+        RiskPersona.ESG_CONSCIOUS: 0.22,
     }
 
     def optimize(
@@ -245,6 +259,7 @@ class HRPOptimizer:
         risk_persona: RiskPersona = RiskPersona.BALANCED,
         max_weight_cap: Optional[float] = None,
         use_shrinkage: bool = True,
+        esg_scores: Optional[Dict[str, float]] = None,
     ) -> Dict[str, float]:
         """Optimize portfolio allocation across assets in returns_df."""
         symbols = list(returns_df.columns)
@@ -262,5 +277,26 @@ class HRPOptimizer:
         else:
             cap = self.PERSONA_MAX_CAPS.get(risk_persona, 0.22)
 
-        weights = compute_hrp_weights(cov_matrix, symbols=symbols, max_cap=cap)
+        initial_weights = None
+        if risk_persona == RiskPersona.ESG_CONSCIOUS:
+            init_w_list = []
+            for sym in symbols:
+                esg_val = 50.0
+                if esg_scores and sym in esg_scores:
+                    esg_val = float(esg_scores[sym])
+                else:
+                    esg_meta = get_esg_score_for_symbol(sym)
+                    if esg_meta:
+                        esg_val = float(esg_meta.get("esg_composite", 50.0))
+                # Additive weight bias toward stocks with esg_composite >= 70 before HRP bisection
+                bias = 0.50 if esg_val >= 70.0 else 0.0
+                init_w_list.append(1.0 + bias)
+            initial_weights = np.array(init_w_list, dtype=np.float64)
+
+        weights = compute_hrp_weights(
+            cov_matrix,
+            symbols=symbols,
+            max_cap=cap,
+            initial_weights=initial_weights,
+        )
         return weights

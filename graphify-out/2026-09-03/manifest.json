@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1788406956.0852652,
-    "ast_hash": "cc93e058e84ede202f7d99c2114f314f",
+    "mtime": 1788370290.3648052,
+    "ast_hash": "4c933de4ed6af014fe745fc76add56ea",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1788406376.9223528,
-    "ast_hash": "1c53c6a5dd96fea1caf3ec5cfd7e9a32",
+    "mtime": 1788370243.569346,
+    "ast_hash": "d0235e6684fe4312924d3ecfb7322f84",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2635,8 +2635,8 @@
     "semantic_hash": ""
   },
   "src/app/data/service.py": {
-    "mtime": 1788406489.70129,
-    "ast_hash": "035c800d9773886ba3ae8b1420261f8c",
+    "mtime": 1787505001.5389643,
+    "ast_hash": "f068245753811651916f2f5adacc33d4",
     "semantic_hash": ""
   },
   "src/app/ml/__init__.py": {
@@ -2665,8 +2665,8 @@
     "semantic_hash": ""
   },
   "src/app/universe.py": {
-    "mtime": 1788406413.7869856,
-    "ast_hash": "90eb67abe11101335f3ae2eb10112532",
+    "mtime": 1787503151.5408776,
+    "ast_hash": "d85c68bf658a299977d3e5de2a2103e9",
     "semantic_hash": ""
   },
   "tests/integration/test_regime_api.py": {
@@ -2690,8 +2690,8 @@
     "semantic_hash": ""
   },
   "src/app/api/routes/explore.py": {
-    "mtime": 1788406932.985379,
-    "ast_hash": "4309ecbd71f7540f2dc97594cb1a820e",
+    "mtime": 1787505604.9627926,
+    "ast_hash": "4e507bdaf34f51b22c3ca46e4860bf9a",
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/__init__.py": {
@@ -2710,8 +2710,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/service.py": {
-    "mtime": 1788406824.1959548,
-    "ast_hash": "fcbf0cab105a8b2bbb11e6ea76bc47a8",
+    "mtime": 1787505563.818292,
+    "ast_hash": "020bf46b2ff87488aad69882dede44e2",
     "semantic_hash": ""
   },
   "src/app/ml/forecasting/suitability.py": {
@@ -2720,8 +2720,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_explore_api.py": {
-    "mtime": 1788406533.600921,
-    "ast_hash": "5d59d23a23a25986f99d167518a7b8bd",
+    "mtime": 1787505593.0936472,
+    "ast_hash": "5daa0f8e9befbdd51e18ebe052de9a63",
     "semantic_hash": ""
   },
   "tests/integration/test_explore_service.py": {
@@ -2760,23 +2760,23 @@
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/hrp.py": {
-    "mtime": 1788407343.960672,
-    "ast_hash": "105e53747f6481a0c187a865bb4f2b0a",
+    "mtime": 1787578158.6980534,
+    "ast_hash": "8aeb63de6e82c77ab76ac564a49f357d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/service.py": {
-    "mtime": 1788425545.4616363,
-    "ast_hash": "66228118b30149b979779f6ae31773dd",
+    "mtime": 1787566108.511735,
+    "ast_hash": "ff1b9591186fbed8da155c0389737edd",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_api.py": {
-    "mtime": 1788407785.7715201,
-    "ast_hash": "38f61c3b19414c7a9be69d82c7f953ed",
+    "mtime": 1787507147.698819,
+    "ast_hash": "75c1cd405bf1dfdf6f981a06a7c980a4",
     "semantic_hash": ""
   },
   "tests/integration/test_grow_service.py": {
-    "mtime": 1788407660.6236553,
-    "ast_hash": "80430e03deab7a36e956b0996fbc47f0",
+    "mtime": 1787566174.8318305,
+    "ast_hash": "771c1a9c21aaa165cf78eb9798c1389b",
     "semantic_hash": ""
   },
   "tests/unit/test_basket_growth_calculator.py": {
@@ -2785,8 +2785,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_hrp_optimizer.py": {
-    "mtime": 1788407014.450989,
-    "ast_hash": "b550eba007494179c2b55f4caa8998b4",
+    "mtime": 1787578182.485985,
+    "ast_hash": "080c02960632bbf2a469bbcdf364beb7",
     "semantic_hash": ""
   },
   "src/app/api/routes/backtest.py": {
@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788425821.008883,
-    "ast_hash": "07349c8736e18dad5b6482112fd907be",
+    "mtime": 1788370644.5742464,
+    "ast_hash": "9dd298cab1e3d79c3dbdecab6f63aea2",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788425764.177782,
-    "ast_hash": "d76fcf2e91904349fa9e611035dbe124",
+    "mtime": 1788370529.1679416,
+    "ast_hash": "9c4d859bf1c24d8f637a04d9599c2f7e",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -2975,13 +2975,13 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/13-esg-conscience-score-layer.md": {
-    "mtime": 1788425977.5769136,
-    "ast_hash": "c65d13c5d2dcfe5a7251047111ed322b",
+    "mtime": 1788180327.0307019,
+    "ast_hash": "9d4444dac03c6de9c1ad49b7c46a9b91",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/14-financial-literacy-microlearning-cards.md": {
-    "mtime": 1788370975.7353947,
-    "ast_hash": "b543b36cc9ee26b2fbc4cba2a3df18cf",
+    "mtime": 1788366446.0892928,
+    "ast_hash": "0b3320955ac8283d9952cf899637663c",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/15-sharable-portfolio-report-card.md": {
@@ -3045,8 +3045,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/assistant/context_builder.py": {
-    "mtime": 1788425640.795319,
-    "ast_hash": "86cfc8dfa88a23c924bb44616c715a4a",
+    "mtime": 1788370332.3490953,
+    "ast_hash": "cc31c208b8de706c0dbdd108ae054ba2",
     "semantic_hash": ""
   },
   "src/app/ml/assistant/memory.py": {
@@ -3070,8 +3070,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_nitibot_context_builder.py": {
-    "mtime": 1788425661.4365015,
-    "ast_hash": "a040d3109b964fc5878e0a32c1c5d5cc",
+    "mtime": 1787583898.507443,
+    "ast_hash": "0fc66a0075d5dc1575ce820c1eae0f22",
     "semantic_hash": ""
   },
   "tests/unit/test_nitibot_memory.py": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "src/app/data/literacy_cards.json": {
-    "mtime": 1788425613.452455,
-    "ast_hash": "6121591b5de04536f5d6fc503459aa7e",
+    "mtime": 1788370233.8410394,
+    "ast_hash": "03bc261416a3effd7f6a893e9f87d816",
     "semantic_hash": ""
   },
   "tests/integration/test_literacy_api.py": {
@@ -3167,16 +3167,6 @@
   "tests/unit/test_nitibot_literacy.py": {
     "mtime": 1788370302.0397868,
     "ast_hash": "1bea5fa531cf31de8d658d1dcef37a6a",
-    "semantic_hash": ""
-  },
-  "src/app/data/esg_scores.json": {
-    "mtime": 1788406102.8138597,
-    "ast_hash": "027b34a31af158c3b00d8bea626b8309",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_esg_data.py": {
-    "mtime": 1788406050.5167263,
-    "ast_hash": "75733d80200594e3354353d6c9413de4",
     "semantic_hash": ""
   }
 }

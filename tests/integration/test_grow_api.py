@@ -118,3 +118,25 @@ async def test_grow_recommend_validation_errors(app_instance):
             json={"capital": 50000.0, "horizon": "6M", "risk_persona": "Gambler"},
         )
         assert resp3.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_grow_recommend_esg_conscious_api(app_instance):
+    """POST /api/v1/grow/recommend with ESG-Conscious persona returns valid basket with portfolio ESG."""
+    async with AsyncClient(
+        transport=ASGITransport(app=app_instance),
+        base_url="http://test",
+    ) as client:
+        payload = {
+            "capital": 60000.0,
+            "horizon": "6M",
+            "risk_persona": "ESG-Conscious",
+        }
+        response = await client.post(f"{settings.api_v1_prefix}/grow/recommend", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["risk_persona"] == "ESG-Conscious"
+        assert "portfolio_esg_score" in data
+        assert data["portfolio_esg_score"] > 0.0
+        assert "portfolio_esg_badge" in data
+        assert "portfolio_esg_breakdown" in data

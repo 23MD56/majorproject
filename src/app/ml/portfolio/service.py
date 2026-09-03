@@ -26,7 +26,13 @@ from app.ml.portfolio.growth_calculator import (
 )
 from app.ml.portfolio.hrp import HRPOptimizer
 from app.ml.regime.service import RegimeService
-from app.universe import _SYMBOL_MAP, get_universe_metadata, normalize_symbol
+from app.universe import (
+    _SYMBOL_MAP,
+    get_esg_badge,
+    get_esg_score_for_symbol,
+    get_universe_metadata,
+    normalize_symbol,
+)
 
 
 class GrowService:
@@ -176,6 +182,9 @@ class GrowService:
             act_w = discrete_res.actual_weights.get(sym, 0.0)
 
             cone = getattr(cand["forecast"], attr_name)
+            esg_meta = get_esg_score_for_symbol(sym)
+            esg_comp = float(esg_meta["esg_composite"]) if esg_meta and "esg_composite" in esg_meta else 50.0
+
             allocations.append(
                 BasketAllocationItem(
                     symbol=sym,
@@ -190,13 +199,28 @@ class GrowService:
                     current_price=price,
                     growth_base_pct=cone.base_pct,
                     regime_suitability_score=cand["suitability_score"],
+                    esg_composite=esg_comp,
                 )
             )
 
         # Sort allocations by weight descending
         allocations.sort(key=lambda x: x.weight, reverse=True)
 
-        # 6. Rupee Growth Projections (3 Scenarios)
+        # 6. Portfolio-Level Weighted ESG Conscience Metrics
+        portfolio_esg_score = round(sum(a.weight * (a.esg_composite if a.esg_composite is not None else 50.0) for a in allocations), 2)
+        portfolio_esg_badge = get_esg_badge(portfolio_esg_score)
+
+        env_sum = sum(a.weight * float((get_esg_score_for_symbol(a.symbol) or {}).get("esg_environment", 50.0)) for a in allocations)
+        soc_sum = sum(a.weight * float((get_esg_score_for_symbol(a.symbol) or {}).get("esg_social", 50.0)) for a in allocations)
+        gov_sum = sum(a.weight * float((get_esg_score_for_symbol(a.symbol) or {}).get("esg_governance", 50.0)) for a in allocations)
+
+        portfolio_esg_breakdown = {
+            "esg_environment": round(env_sum, 2),
+            "esg_social": round(soc_sum, 2),
+            "esg_governance": round(gov_sum, 2),
+        }
+
+        # 7. Rupee Growth Projections (3 Scenarios)
         projections = calculate_basket_growth_projections(
             allocations=norm_weights,
             stock_forecasts=stock_forecasts,
@@ -206,7 +230,7 @@ class GrowService:
             regime=active_regime,
         )
 
-        # 7. 4-Pillar Explainable AI Trust Card
+        # 8. 4-Pillar Explainable AI Trust Card
         trust_card = build_trust_card_pillars(
             regime=active_regime,
             regime_confidence=regime_conf,
@@ -217,7 +241,7 @@ class GrowService:
             stress_drawdown_pct=projections.max_stress_drawdown_pct,
         )
 
-        # 8. Benchmark Comparisons (Basket vs NIFTY 50 vs 7% Bank FD)
+        # 9. Benchmark Comparisons (Basket vs NIFTY 50 vs 7% Bank FD)
         # NIFTY baseline return estimate
         nifty_days = HORIZON_DAYS.get(horizon, 180)
         nifty_annual_baseline = 12.0 if active_regime == MarketRegimeType.LOW_VOLATILITY_BULL else 5.0
@@ -248,4 +272,7 @@ class GrowService:
             total_invested=discrete_res.total_invested,
             unallocated_cash=discrete_res.unallocated_cash,
             cash_buffer_pct=discrete_res.cash_buffer_pct,
+            portfolio_esg_score=portfolio_esg_score,
+            portfolio_esg_badge=portfolio_esg_badge,
+            portfolio_esg_breakdown=portfolio_esg_breakdown,
         )

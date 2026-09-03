@@ -6,6 +6,7 @@ import pandas as pd
 
 from app.core.models import (
     BenchmarkComparison,
+    ESGScoreResponse,
     ExploreStockSummary,
     HorizonForecastCone,
     MultiHorizonGrowthForecast,
@@ -20,6 +21,8 @@ from app.ml.forecasting.forecaster import MultiHorizonForecaster
 from app.ml.forecasting.suitability import compute_regime_suitability
 from app.ml.regime.service import RegimeService
 from app.universe import (
+    get_esg_badge,
+    get_esg_score_for_symbol,
     get_sector_for_symbol,
     get_universe_metadata,
     get_universe_symbols,
@@ -57,6 +60,27 @@ class ExploreService:
             index_df=index_df,
             current_price=quote.current_price,
             symbol=canonical,
+        )
+
+    def get_esg_score(self, symbol: str) -> Optional[ESGScoreResponse]:
+        """Retrieve curated ESG Conscience Score for a canonical ticker."""
+        canonical = normalize_symbol(symbol)
+        if not is_valid_symbol(canonical):
+            return None
+        esg_raw = get_esg_score_for_symbol(canonical)
+        if not esg_raw:
+            return None
+        meta = _SYMBOL_MAP.get(canonical, {})
+        return ESGScoreResponse(
+            symbol=canonical,
+            name=meta.get("name", canonical),
+            sector=meta.get("sector", "Diversified"),
+            esg_composite=esg_raw.get("esg_composite", 50.0),
+            esg_environment=esg_raw.get("esg_environment", 50.0),
+            esg_social=esg_raw.get("esg_social", 50.0),
+            esg_governance=esg_raw.get("esg_governance", 50.0),
+            badge=esg_raw.get("badge", get_esg_badge(esg_raw.get("esg_composite", 50.0))),
+            source=esg_raw.get("source", "BRSR / CRISIL ESG / NSE Sustainability"),
         )
 
     def get_stock_profile(self, symbol: str) -> StockIntelligenceProfile:
@@ -163,6 +187,7 @@ class ExploreService:
             factors=factor_snapshot,
             benchmark_comparison=bench_comp,
             peers=peers,
+            esg=self.get_esg_score(canonical),
         )
 
     def list_explore_stocks(
@@ -199,6 +224,10 @@ class ExploreService:
                 suit = compute_regime_suitability(factors, active_regime=current_regime)
                 forecast = self.forecaster.predict_growth_cones(stock_df, index_df, current_price=quote.current_price, symbol=sym)
 
+                esg_score = get_esg_score_for_symbol(sym)
+                esg_comp = esg_score.get("esg_composite") if esg_score else None
+                esg_badge = esg_score.get("badge") if esg_score else None
+
                 results.append(
                     ExploreStockSummary(
                         symbol=sym,
@@ -213,6 +242,8 @@ class ExploreService:
                         regime_suitability_score=suit.score,
                         regime_badge=suit.badge,
                         volume=quote.volume,
+                        esg_composite=esg_comp,
+                        esg_badge=esg_badge,
                     )
                 )
             except Exception:

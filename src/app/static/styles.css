@@ -426,7 +426,7 @@ input, button, table, td, th, .tabular-nums {
   border-radius: var(--radius-md);
   padding: 4px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 4px;
 }
 
@@ -434,13 +434,16 @@ input, button, table, td, th, .tabular-nums {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  padding: 8px 0;
+  padding: 8px 2px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .segment-btn.active {

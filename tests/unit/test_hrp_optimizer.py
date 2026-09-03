@@ -223,6 +223,7 @@ def test_hrp_optimizer_all_personas_and_caps():
         (RiskPersona.CONSERVATIVE, 0.15),
         (RiskPersona.BALANCED, 0.22),
         (RiskPersona.AGGRESSIVE, 0.32),
+        (RiskPersona.ESG_CONSCIOUS, 0.22),
     ]:
         weights = optimizer.optimize(
             returns_df=df,
@@ -232,3 +233,40 @@ def test_hrp_optimizer_all_personas_and_caps():
         assert sum(weights.values()) == pytest.approx(1.0, rel=1e-5)
         for sym, w in weights.items():
             assert w <= expected_cap + 1e-4, f"{sym} weight {w} exceeded {expected_cap} for {persona}"
+
+
+def test_hrp_optimizer_esg_conscious_favors_high_esg_stocks(sample_returns_df: pd.DataFrame):
+    """ESG-Conscious persona produces weights that demonstrably favor high-ESG stocks compared to Balanced."""
+    optimizer = HRPOptimizer()
+    symbols = list(sample_returns_df.columns)  # ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ITC", "LT"]
+    # Curated ESG composites for these symbols:
+    # TCS: 86.0 (>=70), INFY: 88.0 (>=70), ITC: 78.0 (>=70), HDFCBANK: 74.0 (>=70)
+    # RELIANCE: 64.0 (<70), LT: 68.0 (<70)
+    balanced_weights = optimizer.optimize(
+        returns_df=sample_returns_df,
+        risk_persona=RiskPersona.BALANCED,
+    )
+    esg_weights = optimizer.optimize(
+        returns_df=sample_returns_df,
+        risk_persona=RiskPersona.ESG_CONSCIOUS,
+    )
+
+    # Both must sum to 1.0 and be non-negative
+    assert sum(balanced_weights.values()) == pytest.approx(1.0, rel=1e-5)
+    assert sum(esg_weights.values()) == pytest.approx(1e0, rel=1e-5)
+    for sym in symbols:
+        assert esg_weights[sym] >= 0.0
+
+    # High ESG stocks: TCS, INFY, ITC, HDFCBANK
+    high_esg_symbols = ["TCS", "INFY", "ITC", "HDFCBANK"]
+    low_esg_symbols = ["RELIANCE", "LT"]
+
+    high_esg_balanced_total = sum(balanced_weights[s] for s in high_esg_symbols)
+    high_esg_conscious_total = sum(esg_weights[s] for s in high_esg_symbols)
+
+    assert high_esg_conscious_total > high_esg_balanced_total, (
+        f"ESG-Conscious total ({high_esg_conscious_total:.4f}) must exceed Balanced total ({high_esg_balanced_total:.4f})"
+    )
+    low_esg_conscious_total = sum(esg_weights[s] for s in low_esg_symbols)
+    low_esg_balanced_total = sum(balanced_weights[s] for s in low_esg_symbols)
+    assert low_esg_conscious_total < low_esg_balanced_total

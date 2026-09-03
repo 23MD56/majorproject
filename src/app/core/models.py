@@ -11,6 +11,22 @@ class UniverseStock(BaseModel):
     name: str
     sector: str
     is_benchmark: bool = False
+    esg_composite: Optional[float] = None
+    esg_environment: Optional[float] = None
+    esg_social: Optional[float] = None
+    esg_governance: Optional[float] = None
+
+
+class ESGScoreResponse(BaseModel):
+    symbol: str
+    name: str
+    sector: str
+    esg_composite: float
+    esg_environment: float
+    esg_social: float
+    esg_governance: float
+    badge: str
+    source: str = "BRSR / CRISIL ESG / NSE Sustainability"
 
 
 class OHLCVBar(BaseModel):
@@ -206,6 +222,7 @@ class StockIntelligenceProfile(BaseModel):
     factors: StockFactorSnapshot
     benchmark_comparison: BenchmarkComparison
     peers: List[StockPeerSummary]
+    esg: Optional[ESGScoreResponse] = None
 
 
 class ExploreStockSummary(BaseModel):
@@ -221,6 +238,8 @@ class ExploreStockSummary(BaseModel):
     regime_suitability_score: float
     regime_badge: str
     volume: float
+    esg_composite: Optional[float] = None
+    esg_badge: Optional[str] = None
 
 
 # ==========================================
@@ -231,6 +250,7 @@ class RiskPersona(str, Enum):
     CONSERVATIVE = "Conservative"
     BALANCED = "Balanced"
     AGGRESSIVE = "Aggressive"
+    ESG_CONSCIOUS = "ESG-Conscious"
 
 
 class BasketAllocationItem(BaseModel):
@@ -246,6 +266,7 @@ class BasketAllocationItem(BaseModel):
     current_price: float
     growth_base_pct: float
     regime_suitability_score: float
+    esg_composite: Optional[float] = None
 
 
 class RupeeGrowthTier(BaseModel):
@@ -326,6 +347,9 @@ class BasketRecommendationResponse(BaseModel):
     total_invested: float = 0.0
     unallocated_cash: float = 0.0
     cash_buffer_pct: float = 0.0
+    portfolio_esg_score: float = 0.0
+    portfolio_esg_badge: str = "🟡 Moderate ESG"
+    portfolio_esg_breakdown: Dict[str, float] = Field(default_factory=dict)
 
 
 # ==========================================

@@ -4,6 +4,8 @@ Provides canonical list of NIFTY 50 constituents, sector mapping, benchmark
 indices, and normalization helpers across data providers (e.g. Yahoo Finance .NS suffix).
 """
 
+import json
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 # Benchmark indices tracked by QuantNiti
@@ -81,12 +83,52 @@ NIFTY50_CONSTITUENTS: List[Dict[str, Any]] = [
     {"symbol": "WIPRO", "name": "Wipro Ltd.", "sector": "Information Technology"},
 ]
 
+# Load curated ESG scores dataset
+_ESG_DATA_PATH = Path(__file__).resolve().parent / "data" / "esg_scores.json"
+ESG_DATA: Dict[str, Dict[str, Any]] = {}
+if _ESG_DATA_PATH.exists():
+    try:
+        with open(_ESG_DATA_PATH, "r", encoding="utf-8") as f:
+            ESG_DATA = json.load(f)
+    except Exception:
+        ESG_DATA = {}
+
+# Enrich NIFTY 50 constituents with ESG scores
+for item in NIFTY50_CONSTITUENTS:
+    sym = item["symbol"]
+    if sym in ESG_DATA:
+        esg = ESG_DATA[sym]
+        item["esg_composite"] = esg.get("esg_composite")
+        item["esg_environment"] = esg.get("esg_environment")
+        item["esg_social"] = esg.get("esg_social")
+        item["esg_governance"] = esg.get("esg_governance")
+
 # Lookup map from symbol to metadata dict
 _SYMBOL_MAP: Dict[str, Dict[str, Any]] = {
     item["symbol"]: item for item in NIFTY50_CONSTITUENTS
 }
 for bm in BENCHMARK_METADATA:
     _SYMBOL_MAP[bm["symbol"]] = bm
+
+
+def get_esg_badge(score: float) -> str:
+    """Return ESG badge with color indicator based on composite score."""
+    if score >= 70.0:
+        return "🟢 High ESG"
+    elif score >= 40.0:
+        return "🟡 Moderate ESG"
+    else:
+        return "🔴 Low ESG"
+
+
+def get_esg_score_for_symbol(symbol: str) -> Optional[Dict[str, Any]]:
+    """Retrieve curated ESG score dictionary for a canonical symbol."""
+    canonical = normalize_symbol(symbol)
+    if canonical in ESG_DATA:
+        esg = dict(ESG_DATA[canonical])
+        esg["badge"] = get_esg_badge(esg.get("esg_composite", 50.0))
+        return esg
+    return None
 
 
 def normalize_symbol(symbol: str) -> str:

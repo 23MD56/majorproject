@@ -1,7 +1,7 @@
 """Market Data Service layer coordinating Providers, Cleaner, and Local Cache."""
 
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 
 from app.core.config import settings
@@ -40,9 +40,18 @@ class MarketDataService:
                 name=item["name"],
                 sector=item["sector"],
                 is_benchmark=item.get("is_benchmark", False),
+                esg_composite=item.get("esg_composite"),
+                esg_environment=item.get("esg_environment"),
+                esg_social=item.get("esg_social"),
+                esg_governance=item.get("esg_governance"),
             )
             for item in raw_meta
         ]
+
+    def get_esg_score(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """Retrieve curated ESG score for a given symbol."""
+        from app.universe import get_esg_score_for_symbol
+        return get_esg_score_for_symbol(symbol)
 
     def get_history(
         self,

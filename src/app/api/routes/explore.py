@@ -4,6 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.core.models import (
+    ESGScoreResponse,
     ExploreStockSummary,
     MultiHorizonGrowthForecast,
     StockIntelligenceProfile,
@@ -62,3 +63,20 @@ def get_growth_forecast(
         return service.get_growth_forecast(canonical)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate growth forecast for '{symbol}': {str(e)}")
+
+
+@router.get("/{ticker}/esg", response_model=ESGScoreResponse)
+@router.get("/esg/{ticker}", response_model=ESGScoreResponse)
+def get_ticker_esg(
+    ticker: str,
+    service: ExploreService = Depends(get_explore_service),
+):
+    """Retrieve ESG score triplet (Environment, Social, Governance) and composite for a given ticker."""
+    canonical = normalize_symbol(ticker)
+    if not is_valid_symbol(canonical):
+        raise HTTPException(status_code=404, detail=f"Symbol '{ticker}' not found in NIFTY 50 universe")
+
+    esg = service.get_esg_score(canonical)
+    if not esg:
+        raise HTTPException(status_code=404, detail=f"ESG data not found for symbol '{ticker}'")
+    return esg
