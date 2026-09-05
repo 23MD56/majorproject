@@ -20,6 +20,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2canvas & jsPDF CDN (Ticket #15: Client-Side PDF/Image Report Card) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <!-- Custom Design Tokens & Styles -->
   <link rel="stylesheet" href="/static/styles.css">
@@ -707,10 +710,20 @@
                 <h3 class="text-base font-bold text-white">Recommended Allocation</h3>
                 <div id="basketRegimeContext" class="text-xs text-emerald-400 font-medium mt-0.5">Optimized for Bull Regime</div>
               </div>
-              <button class="btn-ghost !text-xs !py-1 !px-2.5" onclick="openOrderSheetModal()">
-                <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
-                Order Sheet
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button id="basketDownloadReportBtn" class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="downloadPortfolioReportPDF('basket')" title="Download Basket Intelligence Report PDF">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="hidden sm:inline">Report</span>
+                </button>
+                <button id="basketShareReportBtn" class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="sharePortfolioReport('basket')" title="Share Basket Intelligence Card">
+                  <i data-lucide="share-2" class="w-3.5 h-3.5 text-teal-400"></i>
+                  <span class="hidden sm:inline">Share</span>
+                </button>
+                <button class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="openOrderSheetModal()">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="hidden sm:inline">Order Sheet</span>
+                </button>
+              </div>
             </div>
 
             <!-- Chart & Legend -->
@@ -931,6 +944,16 @@
               <button class="btn-primary !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="openCreatePortfolioModal()" title="Create New Goal Portfolio">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">New Goal</span>
+              </button>
+
+              <button id="portfolioDownloadReportBtn" class="btn-ghost !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="downloadPortfolioReportPDF('portfolio')" title="Download Portfolio Report Card PDF">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span class="hidden sm:inline">Report</span>
+              </button>
+
+              <button id="portfolioShareReportBtn" class="btn-ghost !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="sharePortfolioReport('portfolio')" title="Share Portfolio Report Card Image">
+                <i data-lucide="share-2" class="w-3.5 h-3.5 text-teal-400"></i>
+                <span class="hidden sm:inline">Share</span>
               </button>
 
               <button class="btn-ghost !text-xs !py-1.5 !px-2.5" onclick="openOrderSheetModal()">
@@ -1895,6 +1918,198 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+  <!-- ===================================================================
+       Ticket #15: Fixed-Width Sharable Portfolio Report Card Template
+       Optimized for A4 portrait PDF (794px width) & High-Resolution Social PNG
+       =================================================================== -->
+  <div id="portfolioReportCardTemplate" class="report-card-template">
+    
+    <!-- Section 1: QuantNiti Branded Header -->
+    <div class="report-header">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-slate-950 font-black text-xl">
+            Q
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-xl font-extrabold text-white tracking-tight">QuantNiti</h1>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                Portfolio Intelligence Report
+              </span>
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5">
+              Regime-Adaptive Asset Allocation • Quantitative Risk Guardrails • HRP Optimization
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <div class="text-[10px] uppercase font-semibold text-slate-400">Generated On</div>
+          <div id="reportTimestamp" class="text-xs font-bold text-white tabular-nums">05 Sep 2026, 23:15 IST</div>
+          <div id="reportPersonaHorizonTag" class="text-[10px] text-emerald-400 font-medium mt-0.5">Balanced • 6M Horizon</div>
+        </div>
+      </div>
+
+      <!-- Portfolio Name & Market Regime Banner -->
+      <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800 mb-4">
+        <div>
+          <div class="text-[10px] uppercase font-semibold text-slate-400">Portfolio Identity</div>
+          <div id="reportPortfolioName" class="text-base font-bold text-white">AI Balanced Portfolio</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Market Regime:</span>
+          <span id="reportRegimeBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Low-Volatility Bull
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Key Metrics Overview Grid -->
+    <div class="grid grid-cols-4 gap-2.5 mb-5 text-center">
+      <div class="report-metric-box">
+        <div class="metric-label">Current Value</div>
+        <div id="reportTotalValue" class="metric-val text-white">₹1,24,560.00</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Invested Capital</div>
+        <div id="reportInvestedCapital" class="metric-val text-slate-200">₹1,00,000.00</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Total Return</div>
+        <div id="reportTotalReturn" class="metric-val text-emerald-400">+₹24,560.50 (+24.56%)</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Alpha vs NIFTY 50</div>
+        <div id="reportBenchmarkAlpha" class="metric-val text-emerald-400">+6.36%</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2.5 mb-5 text-center text-xs">
+      <div class="report-metric-box !p-2 flex items-center justify-between px-4">
+        <span class="text-slate-400">1-Day Change:</span>
+        <span id="report1DReturn" class="font-bold text-emerald-400 tabular-nums">+₹1,250.00 (+1.02%)</span>
+      </div>
+      <div class="report-metric-box !p-2 flex items-center justify-between px-4">
+        <span class="text-slate-400">Unallocated Cash Buffer:</span>
+        <span id="reportCashBuffer" class="font-bold text-emerald-400 tabular-nums">₹0.00</span>
+      </div>
+    </div>
+
+    <!-- Section 2: Portfolio Asset Allocation Donut Chart & Holdings -->
+    <div class="report-section mb-5">
+      <div class="section-title">
+        <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
+        <span>Portfolio Asset Allocation & Discrete Holdings</span>
+      </div>
+      <div class="grid grid-cols-12 gap-4 items-center bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+        <div class="col-span-4 flex flex-col items-center justify-center">
+          <div class="w-40 h-40 relative">
+            <canvas id="reportAllocationChart" width="160" height="160"></canvas>
+          </div>
+          <div class="text-[10px] text-slate-400 text-center mt-1">Hierarchical Risk Parity Sizing</div>
+        </div>
+        <div class="col-span-8 overflow-hidden">
+          <table class="report-table w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 text-[10px] uppercase">
+                <th class="py-1">Asset</th>
+                <th class="py-1">Sector</th>
+                <th class="py-1 text-right">Shares</th>
+                <th class="py-1 text-right">Weight</th>
+                <th class="py-1 text-right">Value</th>
+                <th class="py-1 text-right">P&L</th>
+              </tr>
+            </thead>
+            <tbody id="reportHoldingsList">
+              <!-- Injected Holdings Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Probabilistic Growth Projection Chart -->
+    <div class="report-section mb-5">
+      <div class="section-title">
+        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+        <span>Probabilistic Capital Growth Trajectory (Uncertainty Cones)</span>
+      </div>
+      <div class="bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+        <div class="h-40 w-full mb-3">
+          <canvas id="reportGrowthChart" width="720" height="160"></canvas>
+        </div>
+        <!-- 3 Scenarios Tiers -->
+        <div id="reportGrowthTiers" class="grid grid-cols-3 gap-2 text-center text-xs">
+          <!-- Injected Scenario Cards (Pessimistic, Base, Optimistic) -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4 & 5: Trust Card 4 Pillars + ESG Conscience Score -->
+    <div class="grid grid-cols-12 gap-4 mb-5">
+      
+      <!-- Section 4: Explainable AI Trust Card -->
+      <div class="col-span-7 report-section">
+        <div class="section-title">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Explainable AI Trust Card</span>
+        </div>
+        <div id="reportTrustPillarsContainer" class="grid grid-cols-2 gap-2">
+          <!-- 4 Pillars Injected -->
+        </div>
+      </div>
+
+      <!-- Section 5: ESG Conscience Score -->
+      <div class="col-span-5 report-section" id="reportEsgCard">
+        <div class="section-title">
+          <span>🌱</span>
+          <span>ESG Conscience Score</span>
+        </div>
+        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/80 h-[calc(100%-28px)] flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase">Portfolio Rating</div>
+              <div id="reportEsgScore" class="text-lg font-extrabold text-emerald-400 tabular-nums">78.5 / 100</div>
+            </div>
+            <span id="reportEsgBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/30 text-emerald-300">
+              🟢 High ESG
+            </span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Env</div>
+              <div id="reportEsgEnv" class="font-bold text-white tabular-nums">82.0</div>
+            </div>
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Soc</div>
+              <div id="reportEsgSoc" class="font-bold text-white tabular-nums">76.0</div>
+            </div>
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Gov</div>
+              <div id="reportEsgGov" class="font-bold text-white tabular-nums">77.5</div>
+            </div>
+          </div>
+          <div class="text-[9px] text-slate-400 text-center mt-2">
+            Audited against SEBI BRSR Core Disclosures
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 8: Branded Watermark & SEBI Disclaimer Footer -->
+    <div class="report-footer pt-3 border-t border-slate-800 mt-auto">
+      <div id="reportWatermark" class="report-watermark mb-2">
+        QUANTNITI ALGORITHMIC INTELLIGENCE • ZERO MIDDLEMAN FEES • SEBI RESEARCH ANALYST SIMULATION
+      </div>
+      <div id="reportDisclaimer" class="text-[9px] text-slate-400 leading-relaxed text-justify">
+        <strong>SEBI Registered Research Analyst Disclaimer:</strong> QuantNiti is an algorithmic quantitative education, financial literacy, and portfolio research simulation platform. All portfolio baskets, growth trajectory cones, and regime classifications are probabilistic mathematical estimates derived from historical NSE/BSE market data and Hierarchical Risk Parity models. Past performance and backtested simulations do not guarantee future returns. Equity and ETF investments are subject to market risks. Read all scheme and offer documents carefully before investing. QuantNiti does not collect advisory commissions or execute broker trades directly.
       </div>
     </div>
 

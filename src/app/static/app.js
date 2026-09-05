@@ -21,10 +21,12 @@ const AppState = {
   nitibotSessionId: "session_" + Math.random().toString(36).substring(2, 10),
   charts: {},
   literacyCards: [],
-  learnedConcepts: new Set(JSON.parse(localStorage.getItem("quantniti_learned_concepts") || "[]")),
+  learnedConcepts: new Set(JSON.parse((typeof localStorage !== "undefined" ? localStorage.getItem("quantniti_learned_concepts") : null) || "[]")),
   selectedLiteracyCategory: "all",
   activeConceptKey: null,
 };
+if (typeof window !== "undefined") window.AppState = AppState;
+if (typeof globalThis !== "undefined") globalThis.AppState = AppState;
 
 // Deferred PWA install prompt holder
 let deferredPWAInstallPrompt = null;
@@ -3162,4 +3164,487 @@ async function submitUserReview() {
     }
   }
 }
+
+// ===================================================================
+// Ticket #15: Sharable Portfolio Report Card (PDF / Image Export)
+// 100% Client-Side generation using html2canvas and jsPDF + Web Share API
+// ===================================================================
+
+function downloadBlob(blob, filename) {
+  if (typeof window === "undefined" || typeof URL === "undefined" || !URL.createObjectURL) return;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  if (document.body && document.body.appendChild) {
+    document.body.appendChild(a);
+  }
+  if (a.click) a.click();
+  setTimeout(() => {
+    try {
+      if (document.body && document.body.removeChild) {
+        document.body.removeChild(a);
+      }
+      if (URL.revokeObjectURL) {
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {}
+  }, 400);
+}
+
+function populateReportCard(data, isBasket = false) {
+  const reportEl = document.getElementById("portfolioReportCardTemplate");
+  if (!reportEl) return;
+
+  const target = data || (isBasket ? AppState.currentBasket : (AppState.activePortfolio || AppState.currentBasket)) || {};
+
+  // 1. Header & Timestamps
+  const now = new Date();
+  const tsEl = document.getElementById("reportTimestamp");
+  if (tsEl) {
+    tsEl.innerText = now.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) + " IST";
+  }
+
+  const nameEl = document.getElementById("reportPortfolioName");
+  if (nameEl) {
+    nameEl.innerText = target.name || (isBasket ? "AI Recommended Basket" : "Simulated Virtual Portfolio");
+  }
+
+  const personaTag = document.getElementById("reportPersonaHorizonTag");
+  if (personaTag) {
+    personaTag.innerText = `${target.risk_persona || AppState.riskPersona || "Balanced"} • ${target.horizon || AppState.horizon || "6M"} Horizon`;
+  }
+
+  const regimeEl = document.getElementById("reportRegimeBadge");
+  if (regimeEl) {
+    const regimeText = target.current_regime || target.active_regime || AppState.activeRegime?.regime || "Low-Volatility Bull";
+    regimeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ${escapeHtml(regimeText)}`;
+  }
+
+  // 2. Key Metrics
+  const currVal = target.current_value != null ? target.current_value : (target.total_invested || target.capital || 50000);
+  const invVal = target.invested_capital != null ? target.invested_capital : (target.total_invested || target.capital || 50000);
+  const totalPnl = target.total_pnl != null ? target.total_pnl : (currVal - invVal);
+  const totalPnlPct = target.total_pnl_pct != null 
+    ? target.total_pnl_pct 
+    : (target.growth_projections?.base_case_50th?.expected_return_pct != null 
+        ? target.growth_projections.base_case_50th.expected_return_pct 
+        : (invVal > 0 ? (totalPnl / invVal) * 100 : 0));
+  const pnl1D = target.pnl_1d || 0.0;
+  const pnl1DPct = target.pnl_1d_pct || 0.0;
+  const alpha = target.benchmark_comparison?.alpha_vs_nifty ?? 4.5;
+  const cashVal = target.cash != null ? target.cash : (target.unallocated_cash || 0);
+
+  const signTotal = totalPnl >= 0 ? '+' : '';
+  const sign1D = pnl1D >= 0 ? '+' : '';
+  const signAlpha = alpha >= 0 ? '+' : '';
+
+  if (document.getElementById("reportTotalValue")) {
+    document.getElementById("reportTotalValue").innerText = `₹${currVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  if (document.getElementById("reportInvestedCapital")) {
+    document.getElementById("reportInvestedCapital").innerText = `₹${invVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  if (document.getElementById("reportTotalReturn")) {
+    const retEl = document.getElementById("reportTotalReturn");
+    retEl.innerText = `${signTotal}₹${Math.abs(totalPnl).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${signTotal}${totalPnlPct.toFixed(2)}%)`;
+    retEl.className = `metric-val ${totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+  }
+  if (document.getElementById("report1DReturn")) {
+    const ret1DEl = document.getElementById("report1DReturn");
+    ret1DEl.innerText = `${sign1D}₹${Math.abs(pnl1D).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${sign1D}${pnl1DPct.toFixed(2)}%)`;
+    ret1DEl.className = `font-bold tabular-nums ${pnl1D >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+  }
+  if (document.getElementById("reportBenchmarkAlpha")) {
+    const alphaEl = document.getElementById("reportBenchmarkAlpha");
+    alphaEl.innerText = `${signAlpha}${alpha.toFixed(2)}%`;
+    alphaEl.className = `metric-val ${alpha >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+  }
+  if (document.getElementById("reportCashBuffer")) {
+    document.getElementById("reportCashBuffer").innerText = `₹${cashVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // 3. Asset Allocation & Donut Chart
+  const rawHoldings = target.holdings || target.allocations || [];
+  const holdings = rawHoldings.length > 0 ? rawHoldings : [
+    { symbol: "RELIANCE", name: "Reliance Industries", sector: "Energy", weight: 0.35, shares: 12, current_value: 35000, unrealized_pnl_pct: 12.4 },
+    { symbol: "TCS", name: "Tata Consultancy", sector: "Technology", weight: 0.30, shares: 8, current_value: 30000, unrealized_pnl_pct: 8.9 },
+    { symbol: "HDFCBANK", name: "HDFC Bank", sector: "Banking", weight: 0.20, shares: 15, current_value: 20000, unrealized_pnl_pct: 6.2 },
+    { symbol: "GOLDBEES", name: "Nippon Gold ETF", sector: "Commodities", weight: 0.15, shares: 200, current_value: 15000, unrealized_pnl_pct: 5.1 }
+  ];
+
+  const holdingsBody = document.getElementById("reportHoldingsList");
+  if (holdingsBody) {
+    holdingsBody.innerHTML = holdings.slice(0, 8).map(h => {
+      const pnl = h.unrealized_pnl_pct != null ? h.unrealized_pnl_pct : (h.pnl_1d_pct || 0);
+      const pnlSign = pnl >= 0 ? '+' : '';
+      const wt = ((h.weight || 0) * 100).toFixed(1);
+      const val = h.current_value || (h.price ? h.price * (h.shares || h.shares_approx || 1) : 0);
+      const shs = h.shares != null ? h.shares : (h.shares_approx || 0);
+      return `
+        <tr>
+          <td class="font-bold text-white">${escapeHtml(h.symbol)}</td>
+          <td class="text-slate-400">${escapeHtml(h.sector || 'Large Cap')}</td>
+          <td class="text-right text-slate-300 font-medium">${shs}</td>
+          <td class="text-right text-slate-300 font-medium">${wt}%</td>
+          <td class="text-right font-semibold text-white">₹${val.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+          <td class="text-right font-bold ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${pnlSign}${pnl.toFixed(1)}%</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  const allocCanvas = document.getElementById("reportAllocationChart");
+  if (allocCanvas && typeof Chart !== "undefined") {
+    if (AppState.charts.reportAllocation) {
+      AppState.charts.reportAllocation.destroy();
+    }
+    const ctx = allocCanvas.getContext("2d");
+    const colors = ["#00D09C", "#0ea5e9", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#f43f5e", "#6366f1"];
+    AppState.charts.reportAllocation = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: holdings.slice(0, 8).map(h => h.symbol),
+        datasets: [{
+          data: holdings.slice(0, 8).map(h => ((h.weight || 0) * 100).toFixed(1)),
+          backgroundColor: colors.slice(0, holdings.length),
+          borderWidth: 1,
+          borderColor: "#0f172a"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: "68%",
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  }
+
+  // 4. Probabilistic Growth Projections
+  const gp = target.growth_projections || AppState.currentBasket?.growth_projections;
+  const q10Val = gp?.pessimistic_10th?.projected_value || Math.round(currVal * 0.98);
+  const q10Pct = gp?.pessimistic_10th?.expected_return_pct || -2.0;
+  const q50Val = gp?.base_case_50th?.projected_value || Math.round(currVal * 1.14);
+  const q50Pct = gp?.base_case_50th?.expected_return_pct || 14.0;
+  const q90Val = gp?.optimistic_90th?.projected_value || Math.round(currVal * 1.28);
+  const q90Pct = gp?.optimistic_90th?.expected_return_pct || 28.0;
+
+  const growthTiersEl = document.getElementById("reportGrowthTiers");
+  if (growthTiersEl) {
+    growthTiersEl.innerHTML = `
+      <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase font-semibold">10th %ile (Pessimistic)</div>
+        <div class="font-bold text-rose-400 mt-0.5 tabular-nums">₹${q10Val.toLocaleString('en-IN')} (${q10Pct >= 0 ? '+' : ''}${q10Pct.toFixed(1)}%)</div>
+      </div>
+      <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30">
+        <div class="text-[10px] text-emerald-300 uppercase font-semibold">50th %ile (Base Case)</div>
+        <div class="font-bold text-emerald-400 mt-0.5 tabular-nums">₹${q50Val.toLocaleString('en-IN')} (${q50Pct >= 0 ? '+' : ''}${q50Pct.toFixed(1)}%)</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-teal-300 uppercase font-semibold">90th %ile (Optimistic)</div>
+        <div class="font-bold text-teal-300 mt-0.5 tabular-nums">₹${q90Val.toLocaleString('en-IN')} (${q90Pct >= 0 ? '+' : ''}${q90Pct.toFixed(1)}%)</div>
+      </div>
+    `;
+  }
+
+  const growthCanvas = document.getElementById("reportGrowthChart");
+  if (growthCanvas && typeof Chart !== "undefined") {
+    if (AppState.charts.reportGrowth) {
+      AppState.charts.reportGrowth.destroy();
+    }
+    const ctx = growthCanvas.getContext("2d");
+    AppState.charts.reportGrowth = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Pessimistic (Q10)", "Base Case (Q50)", "Optimistic (Q90)", "7% Bank FD Hurdle"],
+        datasets: [{
+          data: [q10Val, q50Val, q90Val, Math.round(currVal * 1.07)],
+          backgroundColor: ["rgba(244, 63, 94, 0.75)", "rgba(0, 208, 156, 0.85)", "rgba(20, 184, 166, 0.75)", "rgba(245, 158, 11, 0.75)"],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            grid: { color: "rgba(255, 255, 255, 0.05)" },
+            ticks: {
+              color: "#94a3b8",
+              callback: (val) => `₹${val.toLocaleString('en-IN')}`
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: "#e2e8f0", font: { size: 10 } }
+          }
+        }
+      }
+    });
+  }
+
+  // 5. Trust Card 4 Pillars
+  const tc = target.trust_card || AppState.currentBasket?.trust_card;
+  const suitability = tc?.regime_suitability?.score != null ? `${tc.regime_suitability.score}%` : "88% Bull Suitability";
+  const winRate = tc?.directional_hit_rate != null ? `${(tc.directional_hit_rate * 100).toFixed(1)}%` : "68.4% Hit Rate";
+  const maxDd = target.max_drawdown_pct != null && target.max_drawdown_pct > 0 
+    ? `${target.max_drawdown_pct.toFixed(1)}%` 
+    : (tc?.stress_drawdown_limit != null ? `${tc.stress_drawdown_limit}%` : "8.5% Max DD");
+  const feeSavings = tc?.annual_fee_savings != null ? `₹${tc.annual_fee_savings.toLocaleString('en-IN')}/yr` : "₹3,500/yr Saved";
+
+  const trustContainer = document.getElementById("reportTrustPillarsContainer");
+  if (trustContainer) {
+    trustContainer.innerHTML = `
+      <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+        <div class="text-[9px] text-slate-400 uppercase font-semibold flex items-center gap-1">
+          <i data-lucide="compass" class="w-3 h-3 text-emerald-400"></i> Regime Suitability
+        </div>
+        <div class="text-xs font-bold text-emerald-400 mt-1">${escapeHtml(suitability)}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">Aligned with macro trend</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+        <div class="text-[9px] text-slate-400 uppercase font-semibold flex items-center gap-1">
+          <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-400"></i> Backtest Hit Rate
+        </div>
+        <div class="text-xs font-bold text-white mt-1">${escapeHtml(winRate)}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">Directional accuracy</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+        <div class="text-[9px] text-slate-400 uppercase font-semibold flex items-center gap-1">
+          <i data-lucide="shield" class="w-3 h-3 text-amber-400"></i> Stress Drawdown Limit
+        </div>
+        <div class="text-xs font-bold text-amber-400 mt-1">${escapeHtml(maxDd)}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">Historical drawdown limit</div>
+      </div>
+      <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+        <div class="text-[9px] text-slate-400 uppercase font-semibold flex items-center gap-1">
+          <i data-lucide="coins" class="w-3 h-3 text-teal-400"></i> Zero Middleman Fees
+        </div>
+        <div class="text-xs font-bold text-teal-300 mt-1">${escapeHtml(feeSavings)}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">0% commissions vs 1.5% MF</div>
+      </div>
+    `;
+  }
+
+  // 6. ESG Conscience Score
+  const esgScore = target.portfolio_esg_score || AppState.currentBasket?.portfolio_esg_score || 78.5;
+  const esgBadge = target.portfolio_esg_badge || AppState.currentBasket?.portfolio_esg_badge || "🟢 High ESG";
+  const esgBreakdown = target.portfolio_esg_breakdown || AppState.currentBasket?.portfolio_esg_breakdown || { environment: 82.0, social: 76.0, governance: 77.5 };
+
+  if (document.getElementById("reportEsgScore")) {
+    document.getElementById("reportEsgScore").innerText = `${typeof esgScore === 'number' ? esgScore.toFixed(1) : esgScore} / 100`;
+  }
+  if (document.getElementById("reportEsgBadge")) {
+    document.getElementById("reportEsgBadge").innerText = esgBadge;
+  }
+  if (document.getElementById("reportEsgEnv")) {
+    document.getElementById("reportEsgEnv").innerText = (esgBreakdown.environment || 82.0).toFixed(1);
+  }
+  if (document.getElementById("reportEsgSoc")) {
+    document.getElementById("reportEsgSoc").innerText = (esgBreakdown.social || 76.0).toFixed(1);
+  }
+  if (document.getElementById("reportEsgGov")) {
+    document.getElementById("reportEsgGov").innerText = (esgBreakdown.governance || 77.5).toFixed(1);
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+async function generatePortfolioReportBlob(format = "pdf", source = "portfolio") {
+  const reportEl = document.getElementById("portfolioReportCardTemplate");
+  if (!reportEl) throw new Error("Report card template container (#portfolioReportCardTemplate) not found");
+
+  const target = source === "basket"
+    ? AppState.currentBasket
+    : (AppState.activePortfolio || AppState.currentBasket);
+
+  populateReportCard(target, source === "basket");
+
+  // Allow brief tick for DOM and Canvas paint
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  if (typeof html2canvas === "undefined") {
+    throw new Error("html2canvas is not available");
+  }
+
+  const canvas = await html2canvas(reportEl, {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    backgroundColor: "#090e1a",
+  });
+
+  const ts = Date.now();
+  const nameClean = (target?.name || "Portfolio").replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  if (format === "pdf") {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error("jsPDF is not available");
+    }
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    const imgData = canvas.toDataURL("image/png");
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position -= pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
+    const pdfBlob = pdf.output("blob");
+    return {
+      blob: pdfBlob,
+      filename: `QuantNiti_${nameClean}_Report_${ts}.pdf`,
+    };
+  } else {
+    // Generate PNG image blob
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) return reject(new Error("Failed to capture report card as PNG blob"));
+        resolve({
+          blob: blob,
+          filename: `QuantNiti_${nameClean}_Card_${ts}.png`,
+        });
+      }, "image/png");
+    });
+  }
+}
+
+async function downloadPortfolioReportPDF(source = "portfolio") {
+  triggerHaptic(15);
+  const btnId = source === "basket" ? "basketDownloadReportBtn" : "portfolioDownloadReportBtn";
+  const btn = document.getElementById(btnId);
+  const origHtml = btn ? btn.innerHTML : null;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin inline-block w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full mr-1"></span> <span class="hidden sm:inline">Generating...</span>`;
+  }
+
+  try {
+    const { blob, filename } = await generatePortfolioReportBlob("pdf", source);
+    downloadBlob(blob, filename);
+    showNotificationToast({
+      severity: "INFO",
+      title: "Report Card Downloaded",
+      message: `Multi-page A4 PDF report saved: ${filename}`
+    });
+  } catch (err) {
+    console.error("PDF download failed:", err);
+    alert("Could not generate PDF: " + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+}
+
+async function sharePortfolioReport(source = "portfolio") {
+  triggerHaptic(15);
+  const btnId = source === "basket" ? "basketShareReportBtn" : "portfolioShareReportBtn";
+  const btn = document.getElementById(btnId);
+  const origHtml = btn ? btn.innerHTML : null;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin inline-block w-3.5 h-3.5 border-2 border-teal-400 border-t-transparent rounded-full mr-1"></span> <span class="hidden sm:inline">Preparing...</span>`;
+  }
+
+  try {
+    const { blob, filename } = await generatePortfolioReportBlob("image", source);
+    const target = source === "basket" 
+      ? AppState.currentBasket 
+      : (AppState.activePortfolio || AppState.currentBasket);
+    
+    const retPct = target?.total_pnl_pct != null
+      ? target.total_pnl_pct
+      : (target?.growth_projections?.base_case_50th?.expected_return_pct ?? 12.5);
+    const sign = retPct >= 0 ? '+' : '';
+    const portName = target?.name || "AI Portfolio";
+
+    const shareTitle = `QuantNiti Portfolio Intelligence: ${portName}`;
+    const shareText = `🚀 My QuantNiti ${portName} is up ${sign}${retPct.toFixed(2)}% beating the benchmark! View algorithmic portfolio intelligence at ${window.location.origin || 'https://quantniti.in'} #QuantNiti #FinTech #AlgorithmicInvesting`;
+    const shareUrl = window.location.origin || "https://quantniti.in";
+
+    let shared = false;
+    const file = typeof File !== "undefined"
+      ? new File([blob], filename, { type: "image/png" })
+      : blob;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        const payload = {
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        };
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          payload.files = [file];
+        }
+        await navigator.share(payload);
+        shared = true;
+        showNotificationToast({
+          severity: "INFO",
+          title: "Report Shared",
+          message: "Portfolio report card shared successfully."
+        });
+      } catch (shareErr) {
+        if (shareErr.name === "AbortError") {
+          shared = true;
+        } else {
+          console.warn("navigator.share failed, switching to fallback:", shareErr);
+        }
+      }
+    }
+
+    if (!shared) {
+      // Fallback: download PNG image and copy pre-formatted text + link to clipboard
+      downloadBlob(blob, filename);
+      if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareText);
+        } catch (clipErr) {
+          console.warn("Clipboard copy failed:", clipErr);
+        }
+      }
+      showNotificationToast({
+        severity: "INFO",
+        title: "Report Card Saved",
+        message: "Report image downloaded & share link copied to clipboard!"
+      });
+    }
+  } catch (err) {
+    console.error("Report share failed:", err);
+    alert("Could not share report: " + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+}
+
 

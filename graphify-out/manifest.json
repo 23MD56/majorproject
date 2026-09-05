@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788628974.4555597,
-    "ast_hash": "d4ece39ea5b9ba7d295fd831a9208baa",
+    "mtime": 1788631691.1001487,
+    "ast_hash": "a3803db33568f4f4f76d1bfcab0e873a",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788628935.5580008,
-    "ast_hash": "d73a32d56d459a17a8196ddb47088446",
+    "mtime": 1788631543.9006972,
+    "ast_hash": "a82d4fc40c7e22124f28044e81a4ac5e",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -2985,8 +2985,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/15-sharable-portfolio-report-card.md": {
-    "mtime": 1788180327.0307934,
-    "ast_hash": "d7e6123c958fef315138933d16714fbb",
+    "mtime": 1788631870.1010492,
+    "ast_hash": "2a21770c44020c8069fc228a2af9e4c7",
     "semantic_hash": ""
   },
   "docs/adr/0006-rag-powered-conversational-assistant-nitibot.md": {
@@ -3347,6 +3347,16 @@
   "tests/unit/test_review_verification_agent.py": {
     "mtime": 1788628702.722824,
     "ast_hash": "f5bf3e5b4b80bbe9b861b48fdcc67e9f",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_report_card_client.py": {
+    "mtime": 1788631454.1562512,
+    "ast_hash": "e95e8fba4340e8bcd49afae133989825",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_report_card.py": {
+    "mtime": 1788631815.3689969,
+    "ast_hash": "aa051d470c4bcc797a933a5a59e195f6",
     "semantic_hash": ""
   }
 }
