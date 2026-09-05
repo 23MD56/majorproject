@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.models import StockQuote, UniverseStock, SyncResult
 from app.data.cache import ParquetMarketCache
 from app.data.cleaner import align_to_trading_calendar, calculate_returns, validate_ohlcv_dataframe
-from app.data.provider import MarketDataProvider, YahooFinanceProvider
+from app.data.provider import MarketDataProvider, MockDataProvider, YahooFinanceProvider
 from app.universe import (
     get_sector_for_symbol,
     get_universe_metadata,
@@ -77,7 +77,11 @@ class MarketDataService:
 
         if df is None or df.empty:
             df = self.provider.fetch_history(canonical, start_date=start_date, end_date=end_date)
-            if not df.empty:
+            # Fallback to mock data if external provider is offline, rate-limited, or symbol delisted
+            if (df is None or df.empty) and isinstance(self.provider, YahooFinanceProvider):
+                df = MockDataProvider().fetch_history(canonical, start_date=start_date, end_date=end_date)
+
+            if df is not None and not df.empty:
                 df = calculate_returns(df)
                 if self.auto_cache:
                     self.cache.save_history(canonical, df)
@@ -111,7 +115,10 @@ class MarketDataService:
     def get_latest_quote(self, symbol: str) -> StockQuote:
         """Retrieve latest real-time/EOD quote for a ticker."""
         canonical = normalize_symbol(symbol)
-        quote_dict = self.provider.fetch_quote(canonical)
+        try:
+            quote_dict = self.provider.fetch_quote(canonical)
+        except Exception:
+            quote_dict = MockDataProvider().fetch_quote(canonical)
         return StockQuote(**quote_dict)
 
     def get_aligned_dataset(

@@ -18,6 +18,7 @@ from app.api.routes.literacy import router as literacy_router
 from app.api.routes.market import router as market_router
 from app.api.routes.portfolio import router as portfolio_router
 from app.api.routes.regime import router as regime_router
+from app.api.routes.reviews import router as reviews_router
 from app.api.routes.stream import router as stream_router
 from app.core.config import settings
 from app.data.service import MarketDataService
@@ -27,6 +28,8 @@ from app.ml.backtest.service import BacktestService
 from app.ml.forecasting.service import ExploreService
 from app.ml.portfolio.service import GrowService
 from app.ml.regime.service import RegimeService
+from app.ml.reviews.agent import ReviewVerificationAgent
+from app.ml.reviews.service import ReviewService
 from app.ml.simulation.service import PortfolioService
 
 
@@ -39,6 +42,7 @@ def create_app(
     portfolio_service: Optional[PortfolioService] = None,
     nitibot_service: Optional[NitiBotService] = None,
     alert_service: Optional[AlertService] = None,
+    review_service: Optional[ReviewService] = None,
 ) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(
@@ -80,6 +84,14 @@ def create_app(
     )
 
     alert_svc = alert_service or AlertService()
+    review_svc = review_service or ReviewService(
+        agent=ReviewVerificationAgent(
+            grow_service=grow_svc,
+            portfolio_service=portfolio_svc,
+            backtest_service=backtest_svc,
+            market_service=market_svc,
+        )
+    )
 
     app.state.market_service = market_svc
     app.state.regime_service = regime_svc
@@ -89,6 +101,7 @@ def create_app(
     app.state.portfolio_service = portfolio_svc
     app.state.nitibot_service = nitibot_svc
     app.state.alert_service = alert_svc
+    app.state.review_service = review_svc
 
     # Static assets directory
     static_dir = Path(__file__).resolve().parent.parent / "static"
@@ -147,6 +160,8 @@ def create_app(
     app.include_router(stream_router, prefix="/api/v1")
     app.include_router(alerts_router, prefix=settings.api_v1_prefix)
     app.include_router(alerts_router, prefix="/api/v1")
+    app.include_router(reviews_router, prefix=settings.api_v1_prefix)
+    app.include_router(reviews_router, prefix="/api/v1")
 
     return app
 

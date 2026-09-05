@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1788628831.3717177,
-    "ast_hash": "3926e1a3a23f5bb9cb342bdc95cb6de7",
+    "mtime": 1788457281.1351686,
+    "ast_hash": "6a0b414a1eab54ab691f9bfa26e89f6d",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1788628624.2225494,
-    "ast_hash": "d0c22e15947621058b6e9e99eb8b171b",
+    "mtime": 1788457187.916366,
+    "ast_hash": "bfd85445ece283001c7d8cb369b22a52",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2635,8 +2635,8 @@
     "semantic_hash": ""
   },
   "src/app/data/service.py": {
-    "mtime": 1788629458.3755038,
-    "ast_hash": "dfdb8a582b30a61a36b6095cbb57d48d",
+    "mtime": 1788451437.5741742,
+    "ast_hash": "4b11397fa6ecbcdbe50d3cc17103bd17",
     "semantic_hash": ""
   },
   "src/app/ml/__init__.py": {
@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788628974.4555597,
-    "ast_hash": "d4ece39ea5b9ba7d295fd831a9208baa",
+    "mtime": 1788457409.5468953,
+    "ast_hash": "a60f969e97b6258fc916f3dc72fac4a4",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788628935.5580008,
-    "ast_hash": "d73a32d56d459a17a8196ddb47088446",
+    "mtime": 1788457355.4475427,
+    "ast_hash": "2a942ec5fdc98f67596e2e5854d5fa2d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -3110,8 +3110,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/21-ai-review-fact-checking-agent.md": {
-    "mtime": 1788629002.6355722,
-    "ast_hash": "ca8206e4d7748209d687eb005f6a2651",
+    "mtime": 1788366435.438336,
+    "ast_hash": "944de6f95a2e2fbedf79e04a9485b72c",
     "semantic_hash": ""
   },
   "docs/adr/0009-portfolio-intelligence-over-strategy-testing.md": {
@@ -3205,8 +3205,8 @@
     "semantic_hash": ""
   },
   "src/app/data/storage.py": {
-    "mtime": 1788628742.101144,
-    "ast_hash": "6dc087b91436a873e9114a80c0721456",
+    "mtime": 1788454781.5883214,
+    "ast_hash": "4ef1feb8fe65a4474b1756bd6c187df7",
     "semantic_hash": ""
   },
   "tests/integration/test_multi_portfolio_api.py": {
@@ -3277,76 +3277,6 @@
   "tests/unit/test_tick_generator.py": {
     "mtime": 1788456696.3281126,
     "ast_hash": "410384f7b8d3b61410460eac7fb5c818",
-    "semantic_hash": ""
-  },
-  "src/app/api/routes/reviews.py": {
-    "mtime": 1788628793.7903073,
-    "ast_hash": "63200bb23cb0df9cd53ab805d10026d0",
-    "semantic_hash": ""
-  },
-  "src/app/data/reviews_repo.py": {
-    "mtime": 1788628752.1182961,
-    "ast_hash": "b1bd5f975269350e2dbdcfc00a33b463",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/__init__.py": {
-    "mtime": 1788628763.4453194,
-    "ast_hash": "096d86fc92c9b4d6c23298d973a16626",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/agent.py": {
-    "mtime": 1788628720.7932966,
-    "ast_hash": "76ba9b913a319387a9c5ae323da9033a",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/service.py": {
-    "mtime": 1788628758.081305,
-    "ast_hash": "bb5b666835e56f6107e764eba647a3a7",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/tier1_filters.py": {
-    "mtime": 1788628659.0308633,
-    "ast_hash": "3a90d0b96b19a3fdc2f12f13f7aa330a",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/tier2_factchecker.py": {
-    "mtime": 1788628689.4306247,
-    "ast_hash": "b617b0bea71dd4acd4568a6835c92a0c",
-    "semantic_hash": ""
-  },
-  "src/app/ml/reviews/tier3_llm.py": {
-    "mtime": 1788628711.5564187,
-    "ast_hash": "fec46b755a9349d6e3635a287819fff0",
-    "semantic_hash": ""
-  },
-  "tests/integration/test_reviews_api.py": {
-    "mtime": 1788628780.942362,
-    "ast_hash": "4400bbfec29d4035d1a90e7651203b17",
-    "semantic_hash": ""
-  },
-  "tests/integration/test_reviews_client.py": {
-    "mtime": 1788628848.1532998,
-    "ast_hash": "3e8b28fe5de290b3224f9ed30ade16fb",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_review_factchecker.py": {
-    "mtime": 1788628675.4141197,
-    "ast_hash": "ee30d6ffa5830308ff7775020eb023d4",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_review_service.py": {
-    "mtime": 1788628769.1994731,
-    "ast_hash": "c9c713a9433e27224ec1193f16e086bb",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_review_tier1_filters.py": {
-    "mtime": 1788628631.79475,
-    "ast_hash": "2983f622636e03f602414c0653d70aff",
-    "semantic_hash": ""
-  },
-  "tests/unit/test_review_verification_agent.py": {
-    "mtime": 1788628702.722824,
-    "ast_hash": "f5bf3e5b4b80bbe9b861b48fdcc67e9f",
     "semantic_hash": ""
   }
 }

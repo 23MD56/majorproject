@@ -827,6 +827,81 @@
           </div>
         </div>
 
+        <!-- Community Reviews & AI Verified Testimonials (Ticket #21) -->
+        <div id="basketReviewsSection" class="glass-card p-5 mt-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 border-b border-subtle pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="message-square-check" class="w-4 h-4 text-emerald-400"></i>
+                <h3 class="text-sm sm:text-base font-bold text-white">Community Reviews & Verified Testimonials</h3>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Audited in real-time by automated AI Ground-Truth Fact-Checking Agent</p>
+            </div>
+            <button id="openWriteReviewBtn" class="btn-primary !text-xs !py-1.5 !px-3 self-start sm:self-auto" onclick="openWriteReviewModal('basket')">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 mr-1"></i>
+              Write a Review
+            </button>
+          </div>
+
+          <!-- Rating Summary Bar -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 bg-slate-900/50 rounded-xl border border-slate-800/80 mb-4">
+            <div class="flex flex-col items-center justify-center text-center p-2 border-b md:border-b-0 md:border-r border-slate-800">
+              <div id="reviewAvgRatingVal" class="text-3xl font-extrabold text-white">4.8</div>
+              <div class="star-rating my-1">
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+              </div>
+              <div id="reviewTotalCountLabel" class="text-[10px] text-slate-400">Based on 3 reviews</div>
+            </div>
+
+            <div class="col-span-2 flex flex-col justify-center gap-1.5 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">5 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar5" class="bg-emerald-400 h-full rounded-full" style="width: 67%"></div>
+                </div>
+                <span id="starCount5" class="text-[10px] text-slate-400 w-6 text-right">2</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">4 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar4" class="bg-emerald-400 h-full rounded-full" style="width: 33%"></div>
+                </div>
+                <span id="starCount4" class="text-[10px] text-slate-400 w-6 text-right">1</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">3 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar3" class="bg-emerald-400 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <span id="starCount3" class="text-[10px] text-slate-400 w-6 text-right">0</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">1-2 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar12" class="bg-emerald-400 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <span id="starCount12" class="text-[10px] text-slate-400 w-6 text-right">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Filter Tabs -->
+          <div class="flex items-center gap-2 mb-3 overflow-x-auto no-scrollbar">
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 review-filter-pill active" onclick="filterReviewsList('ALL')">All Reviews</button>
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white review-filter-pill" onclick="filterReviewsList('VERIFIED')">✅ Verified Only</button>
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white review-filter-pill" onclick="filterReviewsList('QUALITATIVE')">ℹ️ Qualitative</button>
+          </div>
+
+          <!-- Reviews List -->
+          <div id="reviewsListContainer" class="space-y-3">
+            <!-- Dynamic review cards injected here -->
+          </div>
+        </div>
+
       </section>
 
       <!-- ======================================================== -->
@@ -1733,6 +1808,95 @@
         </button>
       </div>
     </aside>
+
+    <!-- Write Review Modal (Ticket #21) -->
+    <div id="writeReviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-subtle mb-4">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Write a Review</h3>
+              <p class="text-[10px] text-slate-400">Moderated by AI Ground-Truth Fact-Checking Agent</p>
+            </div>
+          </div>
+          <button type="button" class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeWriteReviewModal()">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form id="writeReviewForm" onsubmit="event.preventDefault(); submitUserReview();">
+          <input type="hidden" id="reviewTargetType" value="basket">
+          <input type="hidden" id="reviewTargetId" value="balanced_6m">
+          <input type="hidden" id="reviewRatingInput" value="5">
+
+          <!-- User Name -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Your Name</label>
+            <input type="text" id="reviewAuthorName" required placeholder="e.g. Priya Sharma" class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <!-- Star Rating -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Star Rating</label>
+            <div class="flex items-center gap-1.5" id="reviewRatingStars">
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(1)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(2)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(3)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(4)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(5)"></i>
+              <span id="reviewRatingLabel" class="text-xs font-bold text-emerald-400 ml-2">5 Stars</span>
+            </div>
+          </div>
+
+          <!-- Review Text -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Your Review & Experience</label>
+            <textarea id="reviewTextInput" rows="3" required placeholder="Share your experience with the portfolio's allocation, drawdowns, and explainability..." class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500"></textarea>
+            <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+              <span>Notice: Phone numbers, URLs, Telegram links, and stock tips are blocked.</span>
+            </div>
+          </div>
+
+          <!-- Optional Claimed Return & Duration -->
+          <div class="grid grid-cols-2 gap-3 mb-4 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+            <div>
+              <label class="text-[11px] font-semibold text-slate-300 block mb-1">Claimed Return (Optional %)</label>
+              <input type="number" step="0.1" id="reviewClaimedReturn" placeholder="e.g. 13.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-slate-300 block mb-1">Holding Duration</label>
+              <select id="reviewClaimedDuration" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <option value="1M">1 Month (1M)</option>
+                <option value="3M">3 Months (3M)</option>
+                <option value="6M" selected>6 Months (6M)</option>
+                <option value="12M">1 Year (12M)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fact Check Info Card -->
+          <div class="text-[11px] text-slate-400 bg-slate-900 p-2.5 rounded-lg border border-slate-800 flex items-start gap-2 mb-4">
+            <i data-lucide="info" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+            <span>QuantNiti's Fact-Checking Agent will verify your claimed return against actual historical data. Reviews matching within ±3% receive a verified trust badge.</span>
+          </div>
+
+          <!-- Audit Feedback Message -->
+          <div id="reviewFeedbackMsg" class="text-xs p-3 rounded-lg hidden mb-3"></div>
+
+          <!-- Submit Buttons -->
+          <div class="flex gap-2">
+            <button type="button" class="btn-ghost flex-1 !py-2 !text-xs" onclick="closeWriteReviewModal()">Cancel</button>
+            <button type="submit" id="submitReviewBtn" class="btn-primary flex-1 !py-2 !text-xs justify-center">
+              <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+              Submit for Fact-Check
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
   </div>
 

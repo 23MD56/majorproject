@@ -154,6 +154,27 @@ class DailySnapshotRecord(Base):
     portfolio: Mapped["PortfolioRecord"] = relationship("PortfolioRecord", back_populates="daily_snapshots")
 
 
+class ReviewRecord(Base):
+    """Relational table storing verified user reviews and fact-checking audit logs (Ticket #21)."""
+
+    __tablename__ = "reviews"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    target_type: Mapped[str] = mapped_column(String(32), index=True)
+    target_id: Mapped[str] = mapped_column(String(64), index=True)
+    user_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    review_text: Mapped[str] = mapped_column(String(2048), nullable=False)
+    claimed_return_pct: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    claimed_duration: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    actual_return_pct: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    return_discrepancy_pct: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    status: Mapped[str] = mapped_column(String(32), index=True, default="APPROVED")
+    verification_badge: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
+    rejection_reason: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    created_at: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
 class PortfolioRepository:
     """Relational persistence repository for QuantNiti Virtual Portfolios."""
 

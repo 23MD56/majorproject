@@ -777,3 +777,88 @@ class PushSubscriptionRequest(BaseModel):
     endpoint: str
     keys: PushSubscriptionKeys
     user_id: Optional[str] = "default_user"
+
+
+# =====================================================================
+# Ticket #21: AI Review Legitimacy & Ground-Truth Fact-Checking Models
+# =====================================================================
+
+class ReviewStatus(str, Enum):
+    VERIFIED = "VERIFIED"
+    APPROVED = "APPROVED"
+    FLAGGED = "FLAGGED"
+    REJECTED = "REJECTED"
+
+
+class ReviewTargetType(str, Enum):
+    BASKET = "basket"
+    PORTFOLIO = "portfolio"
+    STRATEGY = "strategy"
+    PLATFORM = "platform"
+
+
+class ReviewSubmissionRequest(BaseModel):
+    target_type: ReviewTargetType = ReviewTargetType.BASKET
+    target_id: str
+    user_name: str
+    rating: int = Field(..., ge=1, le=5)
+    review_text: str = Field(..., min_length=5, max_length=2000)
+    claimed_return_pct: Optional[float] = None
+    claimed_duration: Optional[str] = None
+
+
+class ReviewItem(BaseModel):
+    id: str
+    target_type: ReviewTargetType
+    target_id: str
+    user_name: str
+    rating: int
+    review_text: str
+    claimed_return_pct: Optional[float] = None
+    claimed_duration: Optional[str] = None
+    actual_return_pct: Optional[float] = None
+    return_discrepancy_pct: Optional[float] = None
+    status: ReviewStatus
+    verification_badge: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    created_at: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class ReviewSummary(BaseModel):
+    average_rating: float
+    total_reviews: int
+    verified_reviews_count: int
+    rating_distribution: Dict[int, int]
+
+
+class ReviewsListResponse(BaseModel):
+    target_type: ReviewTargetType
+    target_id: str
+    summary: ReviewSummary
+    reviews: List[ReviewItem]
+
+
+class ReviewVerificationResult(BaseModel):
+    is_approved: bool
+    status: ReviewStatus
+    verification_badge: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    claimed_return_pct: Optional[float] = None
+    claimed_duration: Optional[str] = None
+    actual_return_pct: Optional[float] = None
+    return_discrepancy_pct: Optional[float] = None
+    tier1_passed: bool
+    tier2_passed: bool
+    tier3_passed: bool
+    audit_notes: Optional[str] = None
+
+
+class ReviewSubmissionResponse(BaseModel):
+    is_approved: bool
+    status: ReviewStatus
+    review: Optional[ReviewItem] = None
+    verification_badge: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    audit_details: Optional[Dict[str, Any]] = None
+

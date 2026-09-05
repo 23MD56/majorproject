@@ -157,6 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderHomeTab();
   initMarketStream();
   initNotificationCenter();
+  loadBasketReviews();
 });
 
 // PWA & SERVICE WORKER LIFECYCLE CONTROLLER
@@ -2894,3 +2895,271 @@ function initNotificationCenter() {
     }
   }, 60000);
 }
+
+// =====================================================================
+// Ticket #21: Community Reviews & AI Fact-Checking Client Controller
+// =====================================================================
+
+let ReviewState = {
+  currentReviews: [],
+  currentSummary: null,
+  activeFilter: "ALL",
+  targetType: "basket",
+  targetId: "balanced_6m",
+  selectedRating: 5,
+};
+
+async function loadBasketReviews(targetType = "basket", targetId = "balanced_6m") {
+  ReviewState.targetType = targetType;
+  ReviewState.targetId = targetId;
+
+  try {
+    const resp = await fetch(`/api/v1/reviews/${targetType}/${targetId}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    ReviewState.currentReviews = data.reviews || [];
+    ReviewState.currentSummary = data.summary;
+    renderReviewsSummary(data.summary);
+    renderReviewsList();
+  } catch (err) {
+    console.warn("Failed to load reviews:", err);
+  }
+}
+
+function renderReviewsSummary(summary) {
+  if (!summary) return;
+
+  const avgEl = document.getElementById("reviewAvgRatingVal");
+  if (avgEl) avgEl.textContent = summary.average_rating ? summary.average_rating.toFixed(1) : "0.0";
+
+  const countEl = document.getElementById("reviewTotalCountLabel");
+  if (countEl) {
+    countEl.textContent = `Based on ${summary.total_reviews} reviews (${summary.verified_reviews_count} AI-verified)`;
+  }
+
+  const dist = summary.rating_distribution || {};
+  const total = summary.total_reviews || 1;
+
+  const c5 = dist[5] || 0;
+  const c4 = dist[4] || 0;
+  const c3 = dist[3] || 0;
+  const c12 = (dist[1] || 0) + (dist[2] || 0);
+
+  const setBar = (barId, countId, count) => {
+    const bar = document.getElementById(barId);
+    const lbl = document.getElementById(countId);
+    if (bar) bar.style.width = `${Math.round((count / total) * 100)}%`;
+    if (lbl) lbl.textContent = count;
+  };
+
+  setBar("starBar5", "starCount5", c5);
+  setBar("starBar4", "starCount4", c4);
+  setBar("starBar3", "starCount3", c3);
+  setBar("starBar12", "starCount12", c12);
+}
+
+function filterReviewsList(filterType) {
+  ReviewState.activeFilter = filterType;
+  document.querySelectorAll(".review-filter-pill").forEach((btn) => {
+    const isTarget = filterType === "ALL" ? btn.textContent.includes("All") :
+                     filterType === "VERIFIED" ? btn.textContent.includes("Verified") :
+                     btn.textContent.includes("Qualitative");
+    if (isTarget) {
+      btn.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 review-filter-pill active";
+    } else {
+      btn.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white review-filter-pill";
+    }
+  });
+  renderReviewsList();
+}
+
+function renderReviewsList() {
+  const container = document.getElementById("reviewsListContainer");
+  if (!container) return;
+
+  let reviews = ReviewState.currentReviews || [];
+  if (ReviewState.activeFilter === "VERIFIED") {
+    reviews = reviews.filter((r) => r.status === "VERIFIED");
+  } else if (ReviewState.activeFilter === "QUALITATIVE") {
+    reviews = reviews.filter((r) => r.status === "APPROVED");
+  }
+
+  if (reviews.length === 0) {
+    container.innerHTML = `
+      <div class="p-6 text-center text-slate-400 bg-slate-900/30 rounded-xl border border-slate-800">
+        <i data-lucide="message-square" class="w-6 h-6 mx-auto mb-2 text-slate-500"></i>
+        <div class="text-xs font-semibold text-white">No reviews match this filter</div>
+        <div class="text-[11px] text-slate-400 mt-1">Be the first to share your experience with this portfolio!</div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = reviews.map((r) => {
+    const starsHtml = Array.from({ length: 5 }, (_, i) => {
+      return i < r.rating
+        ? `<i data-lucide="star" class="star-icon"></i>`
+        : `<i data-lucide="star" class="star-icon-empty"></i>`;
+    }).join("");
+
+    let badgeHtml = "";
+    if (r.verification_badge) {
+      if (r.status === "VERIFIED") {
+        badgeHtml = `<span class="badge-verified"><i data-lucide="check-check" class="w-3.5 h-3.5"></i>${escapeHtml(r.verification_badge)}</span>`;
+      } else if (r.status === "FLAGGED") {
+        badgeHtml = `<span class="badge-discrepancy"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>${escapeHtml(r.verification_badge)}</span>`;
+      } else {
+        badgeHtml = `<span class="badge-qualitative"><i data-lucide="shield" class="w-3.5 h-3.5"></i>${escapeHtml(r.verification_badge)}</span>`;
+      }
+    }
+
+    const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString() : "";
+
+    return `
+      <div class="review-card">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">
+              ${escapeHtml(r.user_name.charAt(0))}
+            </div>
+            <span class="text-xs font-bold text-white">${escapeHtml(r.user_name)}</span>
+            <div class="star-rating ml-1">${starsHtml}</div>
+          </div>
+          <span class="text-[10px] text-slate-500">${dateStr}</span>
+        </div>
+
+        <div class="text-xs text-slate-300 leading-relaxed mb-2.5">
+          ${escapeHtml(r.review_text)}
+        </div>
+
+        ${badgeHtml ? `<div class="mt-1">${badgeHtml}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function openWriteReviewModal(targetType = "basket", targetId = "balanced_6m") {
+  const modal = document.getElementById("writeReviewModal");
+  if (!modal) return;
+
+  const tTypeEl = document.getElementById("reviewTargetType");
+  const tIdEl = document.getElementById("reviewTargetId");
+  if (tTypeEl) tTypeEl.value = targetType;
+  if (tIdEl) tIdEl.value = targetId;
+
+  const feedback = document.getElementById("reviewFeedbackMsg");
+  if (feedback) {
+    feedback.className = "text-xs p-3 rounded-lg hidden mb-3";
+    feedback.textContent = "";
+  }
+
+  setReviewRating(5);
+  modal.classList.remove("hidden");
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeWriteReviewModal() {
+  const modal = document.getElementById("writeReviewModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function setReviewRating(rating) {
+  ReviewState.selectedRating = rating;
+  const input = document.getElementById("reviewRatingInput");
+  if (input) input.value = rating;
+
+  const label = document.getElementById("reviewRatingLabel");
+  if (label) label.textContent = `${rating} Star${rating > 1 ? "s" : ""}`;
+
+  const container = document.getElementById("reviewRatingStars");
+  if (!container) return;
+
+  const stars = container.querySelectorAll(".interactive-star");
+  stars.forEach((star, idx) => {
+    if (idx < rating) {
+      star.style.fill = "#fbbf24";
+      star.style.color = "#fbbf24";
+    } else {
+      star.style.fill = "transparent";
+      star.style.color = "#475569";
+    }
+  });
+}
+
+async function submitUserReview() {
+  const author = document.getElementById("reviewAuthorName")?.value.trim();
+  const text = document.getElementById("reviewTextInput")?.value.trim();
+  const targetType = document.getElementById("reviewTargetType")?.value || "basket";
+  const targetId = document.getElementById("reviewTargetId")?.value || "balanced_6m";
+  const rating = parseInt(document.getElementById("reviewRatingInput")?.value || "5", 10);
+  const claimedReturnRaw = document.getElementById("reviewClaimedReturn")?.value;
+  const claimedDuration = document.getElementById("reviewClaimedDuration")?.value;
+
+  const feedback = document.getElementById("reviewFeedbackMsg");
+  const submitBtn = document.getElementById("submitReviewBtn");
+
+  if (!author || !text) {
+    if (feedback) {
+      feedback.className = "text-xs p-3 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 mb-3 block";
+      feedback.textContent = "Please provide your name and review feedback.";
+    }
+    return;
+  }
+
+  const payload = {
+    target_type: targetType,
+    target_id: targetId,
+    user_name: author,
+    rating: rating,
+    review_text: text,
+    claimed_return_pct: claimedReturnRaw ? parseFloat(claimedReturnRaw) : null,
+    claimed_duration: claimedDuration || null,
+  };
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-1 animate-spin"></i> Fact-Checking...`;
+    if (window.lucide) lucide.createIcons();
+  }
+
+  try {
+    const resp = await fetch("/api/v1/reviews/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await resp.json();
+
+    if (result.is_approved) {
+      if (feedback) {
+        feedback.className = "text-xs p-3 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 mb-3 block";
+        feedback.textContent = `Review Approved! Awarded badge: ${result.verification_badge}`;
+      }
+
+      setTimeout(() => {
+        closeWriteReviewModal();
+        loadBasketReviews(targetType, targetId);
+      }, 1200);
+    } else {
+      if (feedback) {
+        feedback.className = "text-xs p-3 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 mb-3 block";
+        feedback.textContent = `Fact-Check Failed: ${result.rejection_reason || "Review rejected by compliance filter."}`;
+      }
+    }
+  } catch (err) {
+    if (feedback) {
+      feedback.className = "text-xs p-3 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 mb-3 block";
+      feedback.textContent = "Network error connecting to verification agent.";
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 mr-1"></i> Submit for Fact-Check`;
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+}
+
