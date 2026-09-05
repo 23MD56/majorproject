@@ -395,8 +395,8 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1787583877.2349315,
-    "ast_hash": "10e494b9751855b406af5450a1e022bd",
+    "mtime": 1788454595.6802542,
+    "ast_hash": "a7cef805e726686d2e7df6f3d4eb19ca",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1788452493.917201,
-    "ast_hash": "6d72123014ce6d74ff1e837aeea25771",
+    "mtime": 1788454763.5654795,
+    "ast_hash": "e5f8c88b118e6cd4c226e4d15d47f3df",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "src/app/api/routes/portfolio.py": {
-    "mtime": 1788452605.9408808,
-    "ast_hash": "7c4c1865ffc12c95e02b3078ef49614c",
+    "mtime": 1788454882.7565317,
+    "ast_hash": "5a0ce503359c14220e85ed15c3adbd7f",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/__init__.py": {
@@ -2845,8 +2845,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/simulation/portfolio.py": {
-    "mtime": 1787566195.4799087,
-    "ast_hash": "4c6b37bb20285a4d4ca2489431e02f2c",
+    "mtime": 1788454798.9951742,
+    "ast_hash": "3d321d72c74e5c1fb173b144beaeb6fb",
     "semantic_hash": ""
   },
   "src/app/ml/simulation/rebalance.py": {
@@ -2855,8 +2855,8 @@
     "semantic_hash": ""
   },
   "src/app/ml/simulation/service.py": {
-    "mtime": 1787508276.9141843,
-    "ast_hash": "12a37b11fdeeb6751b7d51e990a47768",
+    "mtime": 1788454871.3056135,
+    "ast_hash": "7276aad510524b17567def80878253d6",
     "semantic_hash": ""
   },
   "tests/integration/test_portfolio_api.py": {
@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788452855.79842,
-    "ast_hash": "6d187a608a7322bad9c52aa1403e80b8",
+    "mtime": 1788455097.6832967,
+    "ast_hash": "65237cb9e349118eab6d6481b14984cd",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788452758.9268224,
-    "ast_hash": "777540923a84912ca9ade8a9fe5b6e5f",
+    "mtime": 1788455026.9546466,
+    "ast_hash": "8f51fa2086184b50506104bbc4e72b6d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -3095,8 +3095,8 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/18-compounding-visualizer-wealth-engine.md": {
-    "mtime": 1788366420.0784132,
-    "ast_hash": "d893ae1e40d25c1d8f1d167f16b4c32d",
+    "mtime": 1788453245.3188233,
+    "ast_hash": "cc5725b352b7e9e1512a1841fd7ae0c3",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/19-multi-portfolio-storage-and-mtm.md": {
@@ -3135,8 +3135,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_groww_ui_navigation.py": {
-    "mtime": 1788452901.052699,
-    "ast_hash": "5e55b81243757394c79d2ea6bbdfe556",
+    "mtime": 1788455109.669242,
+    "ast_hash": "1cd881fb6a5c75ee3ffe35f54a01fcfb",
     "semantic_hash": ""
   },
   "src/app/api/routes/literacy.py": {
@@ -3202,6 +3202,26 @@
   "tests/unit/test_compounding_engine.py": {
     "mtime": 1788452536.1044545,
     "ast_hash": "fa2c34d2551e26f66eced5ceb0d49437",
+    "semantic_hash": ""
+  },
+  "src/app/data/storage.py": {
+    "mtime": 1788454781.5883214,
+    "ast_hash": "4ef1feb8fe65a4474b1756bd6c187df7",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_multi_portfolio_api.py": {
+    "mtime": 1788454846.4057975,
+    "ast_hash": "216f8e9418f1ecbcc0d2705658bf1fca",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_day_over_day_mtm.py": {
+    "mtime": 1788454742.6736696,
+    "ast_hash": "50c7bb743109287d46bc9ed3748e2f0e",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_portfolio_storage.py": {
+    "mtime": 1788454732.0287697,
+    "ast_hash": "8ecf6cbba2b34a7ece778a53c54d5147",
     "semantic_hash": ""
   }
 }

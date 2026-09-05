@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1788452635.2270606,
-    "ast_hash": "b997ac1b66ca10b5625b48b2ae545ba8",
+    "mtime": 1788457281.1351686,
+    "ast_hash": "6a0b414a1eab54ab691f9bfa26e89f6d",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/app/core/models.py": {
-    "mtime": 1788454763.5654795,
-    "ast_hash": "e5f8c88b118e6cd4c226e4d15d47f3df",
+    "mtime": 1788457187.916366,
+    "ast_hash": "bfd85445ece283001c7d8cb369b22a52",
     "semantic_hash": ""
   },
   "src/app/data/__init__.py": {
@@ -2880,8 +2880,8 @@
     "semantic_hash": ""
   },
   "src/app/static/app.js": {
-    "mtime": 1788455097.6832967,
-    "ast_hash": "65237cb9e349118eab6d6481b14984cd",
+    "mtime": 1788457409.5468953,
+    "ast_hash": "a60f969e97b6258fc916f3dc72fac4a4",
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
@@ -2900,8 +2900,8 @@
     "semantic_hash": ""
   },
   "src/app/static/index.html": {
-    "mtime": 1788455026.9546466,
-    "ast_hash": "8f51fa2086184b50506104bbc4e72b6d",
+    "mtime": 1788457355.4475427,
+    "ast_hash": "2a942ec5fdc98f67596e2e5854d5fa2d",
     "semantic_hash": ""
   },
   "src/app/ml/portfolio/allocation.py": {
@@ -2950,8 +2950,8 @@
     "semantic_hash": ""
   },
   "src/app/static/sw.js": {
-    "mtime": 1787581385.374792,
-    "ast_hash": "8f32d7f6abad172b76f47d41ade4f806",
+    "mtime": 1788457332.053271,
+    "ast_hash": "096d096e1551b07ab18955cd2245860d",
     "semantic_hash": ""
   },
   "tests/integration/test_pwa_integration.py": {
@@ -3100,13 +3100,13 @@
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/19-multi-portfolio-storage-and-mtm.md": {
-    "mtime": 1788366425.6063747,
-    "ast_hash": "91cc83fc6c7cb00538cb2e86ca2c98be",
+    "mtime": 1788455598.925835,
+    "ast_hash": "3b205de1b73a407e4333cfbbe7f01e84",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/20-realtime-sse-and-smart-alerts.md": {
-    "mtime": 1788366429.6883588,
-    "ast_hash": "11ff483d2a7509d247dfddf1f9b036cd",
+    "mtime": 1788457452.4926565,
+    "ast_hash": "36be2d54b0bd590aff063ab93f4703c3",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/21-ai-review-fact-checking-agent.md": {
@@ -3222,6 +3222,61 @@
   "tests/unit/test_portfolio_storage.py": {
     "mtime": 1788454732.0287697,
     "ast_hash": "8ecf6cbba2b34a7ece778a53c54d5147",
+    "semantic_hash": ""
+  },
+  "src/app/api/routes/alerts.py": {
+    "mtime": 1788457242.1227818,
+    "ast_hash": "6ef2a0e384218b661f6b4aaa5004b3ea",
+    "semantic_hash": ""
+  },
+  "src/app/api/routes/stream.py": {
+    "mtime": 1788457059.9379537,
+    "ast_hash": "53b1cfb4998c90209e6a94ed04b91151",
+    "semantic_hash": ""
+  },
+  "src/app/data/streaming.py": {
+    "mtime": 1788457049.6969137,
+    "ast_hash": "116f1394b0548c450e8a73be98a8d783",
+    "semantic_hash": ""
+  },
+  "src/app/ml/alerts/__init__.py": {
+    "mtime": 1788457115.087365,
+    "ast_hash": "30acbd5b3fce6bc7d1244649ffc66ee0",
+    "semantic_hash": ""
+  },
+  "src/app/ml/alerts/evaluator.py": {
+    "mtime": 1788457196.5463023,
+    "ast_hash": "932f5da6d4ef29064ca000bb173d9ac6",
+    "semantic_hash": ""
+  },
+  "src/app/ml/alerts/service.py": {
+    "mtime": 1788457135.770661,
+    "ast_hash": "7e4450a0100798883360477eeb80a606",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_alerts_api.py": {
+    "mtime": 1788457222.7503598,
+    "ast_hash": "39c198875ab1a7d5466297cc7d4a5d01",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_smart_alerts_client.py": {
+    "mtime": 1788457298.1394682,
+    "ast_hash": "10d82c2382985d6e4c6b77087e7fdf44",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_stream_api.py": {
+    "mtime": 1788457087.467963,
+    "ast_hash": "fcbf9a528cf77fe0fd91f7e070415629",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_smart_alert_evaluator.py": {
+    "mtime": 1788457209.3268545,
+    "ast_hash": "7cf03feeb74e8998e365a3aafc588b8b",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_tick_generator.py": {
+    "mtime": 1788456696.3281126,
+    "ast_hash": "410384f7b8d3b61410460eac7fb5c818",
     "semantic_hash": ""
   }
 }

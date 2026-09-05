@@ -85,6 +85,12 @@
           <span class="hidden md:inline text-xs font-semibold ml-1">Install</span>
         </button>
 
+        <!-- Smart Alerts Notification Bell Trigger -->
+        <button id="headerNotificationBtn" class="btn-ghost !p-2 !rounded-lg relative text-slate-300 hover:text-white" title="Smart Alerts & Notifications" onclick="toggleNotificationDrawer()">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span id="notificationBadge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 hidden"></span>
+        </button>
+
         <!-- Viewport Mode Toggle (Mobile / Expanded) -->
         <button id="viewToggleBtn" class="btn-ghost !p-2 !rounded-lg text-slate-400 hover:text-white" title="Toggle Responsive View" onclick="toggleViewportMode()">
           <i data-lucide="maximize-2" class="w-4 h-4"></i>
@@ -1666,6 +1672,67 @@
         </div>
       </div>
     </div>
+
+    <!-- Floating Smart Alert Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Notification Center Drawer Backdrop -->
+    <div id="notificationDrawerBackdrop" class="notification-drawer-backdrop" onclick="toggleNotificationDrawer(false)"></div>
+
+    <!-- Notification Center Sliding Drawer -->
+    <aside id="notificationCenterDrawer" class="notification-drawer">
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between p-4 border-b border-subtle">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h2 class="text-sm font-bold text-white">Smart Alerts</h2>
+              <span id="drawerUnreadCountBadge" class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full hidden">0 new</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Objective Quantitative Risk Signals</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="btn-ghost !p-1.5 text-xs text-emerald-400 hover:text-emerald-300" onclick="markAllNotificationsRead()" title="Mark all as read">
+            <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+          </button>
+          <button class="btn-ghost !p-1.5 text-xs text-slate-400 hover:text-rose-400" onclick="clearAllNotifications()" title="Clear all">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+          <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="toggleNotificationDrawer(false)" title="Close">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Pills -->
+      <div class="flex items-center gap-1.5 p-3 border-b border-subtle overflow-x-auto no-scrollbar text-xs">
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 notif-pill active" data-filter="ALL" onclick="filterNotifications('ALL')">All</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="REGIME_TRANSITION" onclick="filterNotifications('REGIME_TRANSITION')">Regime</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="PORTFOLIO_DRIFT" onclick="filterNotifications('PORTFOLIO_DRIFT')">Drift</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="TECHNICAL" onclick="filterNotifications('TECHNICAL')">Technicals</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="DRAWDOWN_BREACH" onclick="filterNotifications('DRAWDOWN_BREACH')">Risk</button>
+      </div>
+
+      <!-- Notification List Container -->
+      <div id="notificationList" class="flex-1 overflow-y-auto p-3 space-y-2.5">
+        <!-- Dynamic alert items -->
+      </div>
+
+      <!-- Push Notification Permission Footer -->
+      <div id="notificationPushPrompt" class="p-3 border-t border-subtle bg-slate-900/50 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span class="text-[11px] text-slate-300">Live Web Push Alerts</span>
+        </div>
+        <button id="enablePushBtn" class="btn-primary !text-[10px] !py-1 !px-2.5" onclick="enablePushNotifications()">
+          Enable Push
+        </button>
+      </div>
+    </aside>
 
   </div>
 

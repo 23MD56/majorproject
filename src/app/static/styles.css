@@ -1288,4 +1288,136 @@ input[type="range"]::-moz-range-thumb {
   transition: all 0.3s ease;
 }
 
+/* ===================================================================
+   Ticket #20: Real-Time SSE Ticks, Smart Alerts & Notification Center
+   =================================================================== */
 
+/* Visual DOM Flash Animations for SSE Ticks */
+@keyframes tickFlashEmerald {
+  0% {
+    background-color: rgba(16, 185, 129, 0.35);
+    color: #34d399;
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: rgba(16, 185, 129, 0.15);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes tickFlashRose {
+  0% {
+    background-color: rgba(244, 63, 94, 0.35);
+    color: #fb7185;
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: rgba(244, 63, 94, 0.15);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+.tick-up {
+  animation: tickFlashEmerald 0.8s ease-out forwards !important;
+  border-radius: 0.375rem;
+}
+
+.tick-down {
+  animation: tickFlashRose 0.8s ease-out forwards !important;
+  border-radius: 0.375rem;
+}
+
+/* Notification Drawer & Backdrop */
+.notification-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notification-drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notification-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 440px;
+  background: #09090b;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+}
+
+.notification-drawer.active {
+  transform: translateX(0);
+}
+
+/* Floating Toast Container */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 380px;
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  animation: toastEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.25s ease;
+}
+
+.toast-item.toast-exit {
+  animation: toastExit 0.25s ease-in forwards;
+}
+
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}

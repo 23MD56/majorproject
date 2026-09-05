@@ -155,6 +155,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Pre-generate a default basket for instant preview
   await generateBasket();
   renderHomeTab();
+  initMarketStream();
+  initNotificationCenter();
 });
 
 // PWA & SERVICE WORKER LIFECYCLE CONTROLLER
@@ -2460,4 +2462,435 @@ function escapeHtml(text) {
     "'": '&#039;',
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
+// =====================================================================
+// Ticket #20: MarketStreamClient (Real-Time SSE Ticker Streaming)
+// =====================================================================
+
+class MarketStreamClient {
+  constructor(endpoint = "/api/v1/stream/ticks") {
+    this.endpoint = endpoint;
+    this.eventSource = null;
+    this.reconnectAttempts = 0;
+    this.maxReconnectDelay = 30000;
+    this.previousPrices = new Map();
+    this.isConnected = false;
+  }
+
+  connect() {
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+
+    try {
+      this.eventSource = new EventSource(this.endpoint);
+
+      this.eventSource.onopen = () => {
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
+        console.log("[MarketStream] SSE Connected to live quotes");
+      };
+
+      this.eventSource.addEventListener("tick", (e) => {
+        try {
+          const tick = JSON.parse(e.data);
+          this.handleTick(tick);
+        } catch (err) {
+          console.error("[MarketStream] Failed to parse tick", err);
+        }
+      });
+
+      this.eventSource.addEventListener("ping", (e) => {
+        // Heartbeat keep-alive received
+      });
+
+      this.eventSource.onerror = (err) => {
+        this.isConnected = false;
+        if (this.eventSource) {
+          this.eventSource.close();
+          this.eventSource = null;
+        }
+        const delay = Math.min(1000 * Math.pow(1.5, this.reconnectAttempts), this.maxReconnectDelay);
+        this.reconnectAttempts++;
+        console.warn(`[MarketStream] Connection dropped. Reconnecting in ${Math.round(delay)}ms...`);
+        setTimeout(() => this.connect(), delay);
+      };
+    } catch (e) {
+      console.warn("[MarketStream] EventSource connection error:", e);
+    }
+  }
+
+  handleTick(tick) {
+    if (!tick || !tick.symbol) return;
+    const sym = tick.symbol;
+    const prevPrice = this.previousPrices.get(sym);
+    this.previousPrices.set(sym, tick.price);
+
+    const priceDelta = prevPrice !== undefined ? tick.price - prevPrice : 0;
+    const flashClass = priceDelta > 0.0001 ? "tick-up" : priceDelta < -0.0001 ? "tick-down" : null;
+
+    // 1. Update Benchmark (NIFTY 50) on Home Tab
+    if (sym === "^NSEI") {
+      const priceEl = document.getElementById("homeNiftyPrice");
+      const changeEl = document.getElementById("homeNiftyChange");
+      if (priceEl) {
+        priceEl.textContent = `₹${tick.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (flashClass) this.applyFlash(priceEl, flashClass);
+      }
+      if (changeEl) {
+        const sign = tick.change >= 0 ? "+" : "";
+        changeEl.textContent = `${sign}${tick.change.toFixed(2)} (${sign}${tick.change_pct.toFixed(2)}%)`;
+        changeEl.className = tick.change >= 0 
+          ? "text-sm font-bold text-emerald-400 tabular-nums"
+          : "text-sm font-bold text-rose-400 tabular-nums";
+        if (flashClass) this.applyFlash(changeEl, flashClass);
+      }
+    }
+
+    // 2. Update elements matching data-ticker-symbol
+    const matchingElements = document.querySelectorAll(`[data-ticker-symbol="${sym}"]`);
+    matchingElements.forEach((el) => {
+      const priceSpan = el.querySelector(".stock-price-val") || el;
+      if (priceSpan) {
+        priceSpan.textContent = `₹${tick.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (flashClass) this.applyFlash(priceSpan, flashClass);
+      }
+    });
+
+    // 3. Update active portfolio holding rows matching data-portfolio-symbol
+    const portHoldings = document.querySelectorAll(`[data-portfolio-symbol="${sym}"]`);
+    portHoldings.forEach((row) => {
+      const priceCol = row.querySelector(".holding-price-val");
+      if (priceCol) {
+        priceCol.textContent = `₹${tick.price.toFixed(2)}`;
+        if (flashClass) this.applyFlash(priceCol, flashClass);
+      }
+    });
+  }
+
+  applyFlash(element, className) {
+    element.classList.remove("tick-up", "tick-down");
+    void element.offsetWidth; // Trigger reflow
+    element.classList.add(className);
+    setTimeout(() => {
+      element.classList.remove(className);
+    }, 850);
+  }
+
+  disconnect() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
+    this.isConnected = false;
+  }
+}
+
+let marketStream = null;
+
+function initMarketStream() {
+  if (marketStream) return;
+  marketStream = new MarketStreamClient("/api/v1/stream/ticks");
+  marketStream.connect();
+}
+
+// =====================================================================
+// Ticket #20: Smart Alerts Notification Center & Toast Dispatcher
+// =====================================================================
+
+let NotificationState = {
+  alerts: [],
+  activeFilter: "ALL",
+  isDrawerOpen: false,
+};
+
+function toggleNotificationDrawer(forceOpen) {
+  const drawer = document.getElementById("notificationCenterDrawer");
+  const backdrop = document.getElementById("notificationDrawerBackdrop");
+  if (!drawer || !backdrop) return;
+
+  const shouldOpen = forceOpen !== undefined ? forceOpen : !NotificationState.isDrawerOpen;
+  NotificationState.isDrawerOpen = shouldOpen;
+
+  if (shouldOpen) {
+    drawer.classList.add("active");
+    backdrop.classList.add("active");
+    loadNotifications();
+  } else {
+    drawer.classList.remove("active");
+    backdrop.classList.remove("active");
+  }
+}
+
+async function loadNotifications() {
+  try {
+    const resp = await fetch("/api/v1/alerts");
+    if (!resp.ok) return;
+    const data = await resp.json();
+    NotificationState.alerts = data.alerts || [];
+    updateNotificationBadges(data.unread_count || 0);
+    renderNotificationList();
+  } catch (err) {
+    console.warn("Error fetching alerts:", err);
+  }
+}
+
+function updateNotificationBadges(unreadCount) {
+  const bellBadge = document.getElementById("notificationBadge");
+  const drawerBadge = document.getElementById("drawerUnreadCountBadge");
+
+  if (bellBadge) {
+    if (unreadCount > 0) {
+      bellBadge.classList.remove("hidden");
+    } else {
+      bellBadge.classList.add("hidden");
+    }
+  }
+
+  if (drawerBadge) {
+    if (unreadCount > 0) {
+      drawerBadge.textContent = `${unreadCount} new`;
+      drawerBadge.classList.remove("hidden");
+    } else {
+      drawerBadge.classList.add("hidden");
+    }
+  }
+}
+
+function filterNotifications(filterType) {
+  NotificationState.activeFilter = filterType;
+  document.querySelectorAll(".notif-pill").forEach((pill) => {
+    if (pill.getAttribute("data-filter") === filterType) {
+      pill.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 notif-pill active";
+    } else {
+      pill.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill";
+    }
+  });
+  renderNotificationList();
+}
+
+function renderNotificationList() {
+  const container = document.getElementById("notificationList");
+  if (!container) return;
+
+  let filtered = NotificationState.alerts;
+  if (NotificationState.activeFilter === "TECHNICAL") {
+    filtered = filtered.filter(a => a.type === "RSI_EXTREME" || a.type === "WEEK_52_HIGH" || a.type === "FACTOR_ANOMALY");
+  } else if (NotificationState.activeFilter !== "ALL") {
+    filtered = filtered.filter(a => a.type === NotificationState.activeFilter);
+  }
+
+  if (!filtered || filtered.length === 0) {
+    container.innerHTML = `
+      <div class="p-8 text-center flex flex-col items-center justify-center text-slate-400">
+        <div class="w-12 h-12 rounded-full bg-slate-800/80 flex items-center justify-center mb-3">
+          <i data-lucide="bell-off" class="w-6 h-6 text-slate-500"></i>
+        </div>
+        <div class="text-sm font-semibold text-white">No active alerts</div>
+        <div class="text-xs text-slate-400 mt-1">Quantitative risk guardrails are continuously monitoring your portfolio.</div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = filtered.map((alert) => {
+    const isUnread = !alert.read;
+    const severityColor = alert.severity === "CRITICAL"
+      ? "text-rose-400 bg-rose-500/10 border-rose-500/20"
+      : alert.severity === "HIGH"
+      ? "text-amber-400 bg-amber-500/10 border-amber-500/20"
+      : alert.severity === "MEDIUM"
+      ? "text-blue-400 bg-blue-500/10 border-blue-500/20"
+      : "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+
+    const typeLabel = alert.type.replace(/_/g, " ");
+
+    return `
+      <div class="p-3.5 rounded-xl border ${isUnread ? 'bg-slate-800/60 border-emerald-500/30' : 'bg-slate-900/40 border-slate-800/80'} relative cursor-pointer hover:border-slate-700 transition" onclick="markAlertRead('${alert.id}')">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${severityColor}">${typeLabel}</span>
+          <span class="text-[10px] text-slate-400">${formatAlertTime(alert.timestamp)}</span>
+        </div>
+        <div class="text-xs font-bold text-white mb-1">${escapeHtml(alert.title)}</div>
+        <div class="text-[11px] text-slate-300 leading-relaxed mb-2">${escapeHtml(alert.message)}</div>
+        ${alert.trust_card_context ? `
+          <div class="text-[10px] text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800 flex items-start gap-1.5">
+            <i data-lucide="shield" class="w-3 h-3 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+            <span>${escapeHtml(alert.trust_card_context)}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function formatAlertTime(isoStr) {
+  if (!isoStr) return "";
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return isoStr;
+  }
+}
+
+async function markAlertRead(alertId) {
+  try {
+    await fetch(`/api/v1/alerts/${alertId}/read`, { method: "PATCH" });
+    const item = NotificationState.alerts.find(a => a.id === alertId);
+    if (item) item.read = true;
+    const unread = NotificationState.alerts.filter(a => !a.read).length;
+    updateNotificationBadges(unread);
+    renderNotificationList();
+  } catch (e) {
+    console.warn("Failed to mark alert read:", e);
+  }
+}
+
+async function markAllNotificationsRead() {
+  try {
+    await fetch("/api/v1/alerts/mark-all-read", { method: "POST" });
+    NotificationState.alerts.forEach(a => a.read = true);
+    updateNotificationBadges(0);
+    renderNotificationList();
+  } catch (e) {
+    console.warn("Failed to mark all alerts read:", e);
+  }
+}
+
+async function clearAllNotifications() {
+  try {
+    await fetch("/api/v1/alerts", { method: "DELETE" });
+    NotificationState.alerts = [];
+    updateNotificationBadges(0);
+    renderNotificationList();
+  } catch (e) {
+    console.warn("Failed to clear alerts:", e);
+  }
+}
+
+// In-App Toast Notification System
+function showNotificationToast(alert) {
+  const container = document.getElementById("toastContainer");
+  if (!container || !alert) return;
+
+  const toast = document.createElement("div");
+  toast.className = "toast-item";
+
+  const severityColor = alert.severity === "CRITICAL"
+    ? "text-rose-400"
+    : alert.severity === "HIGH"
+    ? "text-amber-400"
+    : "text-emerald-400";
+
+  toast.innerHTML = `
+    <div class="flex items-start gap-2.5">
+      <div class="mt-0.5 ${severityColor}">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-bold text-white truncate">${escapeHtml(alert.title)}</div>
+        <div class="text-[11px] text-slate-300 mt-0.5 line-clamp-2 leading-relaxed">${escapeHtml(alert.message)}</div>
+      </div>
+      <button class="text-slate-400 hover:text-white p-0.5" onclick="this.closest('.toast-item').remove()">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  `;
+
+  toast.onclick = (e) => {
+    if (e.target.closest("button")) return;
+    toggleNotificationDrawer(true);
+    toast.remove();
+  };
+
+  container.appendChild(toast);
+  if (window.lucide) lucide.createIcons();
+
+  setTimeout(() => {
+    toast.classList.add("toast-exit");
+    setTimeout(() => toast.remove(), 250);
+  }, 5500);
+}
+
+// Web Push Registration Helper
+async function enablePushNotifications() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    alert("Web Push notifications are not supported in this browser.");
+    return;
+  }
+
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const keyResp = await fetch("/api/v1/notifications/vapid-public-key");
+    const keyData = await keyResp.json();
+    const vapidKey = keyData.public_key;
+
+    const convertedKey = urlBase64ToUint8Array(vapidKey);
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedKey,
+    });
+
+    const subJson = subscription.toJSON();
+    await fetch("/api/v1/notifications/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: subJson.keys.p256dh,
+          auth: subJson.keys.auth,
+        },
+        user_id: "default_user",
+      }),
+    });
+
+    const prompt = document.getElementById("notificationPushPrompt");
+    if (prompt) {
+      prompt.innerHTML = `
+        <div class="flex items-center gap-2 text-emerald-400 text-xs">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>Push notifications enabled</span>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+  } catch (err) {
+    console.warn("Failed to subscribe to Web Push:", err);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+function initNotificationCenter() {
+  loadNotifications();
+  // Micro-batch evaluator polling check every 60s
+  setInterval(async () => {
+    try {
+      const resp = await fetch("/api/v1/alerts/evaluate", { method: "POST" });
+      if (resp.ok) {
+        const evalData = await resp.json();
+        if (evalData.new_alerts_count > 0 && evalData.alerts) {
+          evalData.alerts.forEach((alert) => showNotificationToast(alert));
+          loadNotifications();
+        }
+      }
+    } catch (e) {
+      // Background scan
+    }
+  }, 60000);
 }

@@ -144,3 +144,66 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
+// =====================================================================
+// Ticket #20: Web Push Notifications & Notification Interaction
+// =====================================================================
+
+self.addEventListener("push", (event) => {
+  let data = {
+    title: "QuantNiti Smart Alert",
+    message: "A new quantitative market signal was detected.",
+  };
+
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.message = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.message,
+    icon: "/static/icons/icon-192.png",
+    badge: "/static/icons/icon.svg",
+    vibrate: [100, 50, 100],
+    data: {
+      url: "/app",
+      alertId: data.alert_id,
+      type: data.type,
+    },
+    actions: [
+      { action: "explore", title: "View Alert" },
+      { action: "dismiss", title: "Dismiss" },
+    ],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "QuantNiti Smart Alert", options)
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  if (event.action === "dismiss") {
+    return;
+  }
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      // If a tab is already open, focus it
+      for (const client of windowClients) {
+        if (client.url.includes("/app") || client.url.includes("/")) {
+          return client.focus();
+        }
+      }
+      // Otherwise open new window
+      if (clients.openWindow) {
+        return clients.openWindow("/app");
+      }
+    })
+  );
+});
+

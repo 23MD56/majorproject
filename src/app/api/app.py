@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api.routes.alerts import router as alerts_router
 from app.api.routes.backtest import router as backtest_router
 from app.api.routes.chat import router as chat_router
 from app.api.routes.explore import router as explore_router
@@ -17,8 +18,10 @@ from app.api.routes.literacy import router as literacy_router
 from app.api.routes.market import router as market_router
 from app.api.routes.portfolio import router as portfolio_router
 from app.api.routes.regime import router as regime_router
+from app.api.routes.stream import router as stream_router
 from app.core.config import settings
 from app.data.service import MarketDataService
+from app.ml.alerts.service import AlertService
 from app.ml.assistant.service import NitiBotService
 from app.ml.backtest.service import BacktestService
 from app.ml.forecasting.service import ExploreService
@@ -35,6 +38,7 @@ def create_app(
     backtest_service: Optional[BacktestService] = None,
     portfolio_service: Optional[PortfolioService] = None,
     nitibot_service: Optional[NitiBotService] = None,
+    alert_service: Optional[AlertService] = None,
 ) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     app = FastAPI(
@@ -75,6 +79,8 @@ def create_app(
         grow_service=grow_svc,
     )
 
+    alert_svc = alert_service or AlertService()
+
     app.state.market_service = market_svc
     app.state.regime_service = regime_svc
     app.state.explore_service = explore_svc
@@ -82,6 +88,7 @@ def create_app(
     app.state.backtest_service = backtest_svc
     app.state.portfolio_service = portfolio_svc
     app.state.nitibot_service = nitibot_svc
+    app.state.alert_service = alert_svc
 
     # Static assets directory
     static_dir = Path(__file__).resolve().parent.parent / "static"
@@ -136,6 +143,10 @@ def create_app(
     app.include_router(chat_router, prefix="/api/v1")
     app.include_router(literacy_router, prefix=settings.api_v1_prefix)
     app.include_router(literacy_router, prefix="/api/v1")
+    app.include_router(stream_router, prefix=settings.api_v1_prefix)
+    app.include_router(stream_router, prefix="/api/v1")
+    app.include_router(alerts_router, prefix=settings.api_v1_prefix)
+    app.include_router(alerts_router, prefix="/api/v1")
 
     return app
 

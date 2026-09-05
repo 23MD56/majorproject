@@ -470,6 +470,7 @@ class PortfolioHolding(BaseModel):
     unrealized_pnl: float
     unrealized_pnl_pct: float
     weight: float
+    target_weight: Optional[float] = None
     prev_close_price: Optional[float] = None
     pnl_1d: float = 0.0
     pnl_1d_pct: float = 0.0
@@ -494,6 +495,7 @@ class PortfolioState(BaseModel):
     total_pnl_pct: float
     pnl_1d: float = 0.0
     pnl_1d_pct: float = 0.0
+    max_drawdown_pct: float = 0.0
     holdings: List[PortfolioHolding]
     benchmark_comparison: Optional[BenchmarkComparisonLive] = None
     initial_regime: MarketRegimeType
@@ -706,7 +708,72 @@ class CompoundingResponse(BaseModel):
     alpha_vs_bank_fd: float
 
 
+# =====================================================================
+# Ticket #20: Real-Time SSE Ticker Streaming & Live Smart Alerts Models
+# =====================================================================
+
+class MarketTick(BaseModel):
+    symbol: str
+    price: float
+    change: float
+    change_pct: float
+    high: float
+    low: float
+    volume: float
+    timestamp: str
+    previous_close: Optional[float] = None
 
 
+class SmartAlertType(str, Enum):
+    REGIME_TRANSITION = "REGIME_TRANSITION"
+    PORTFOLIO_DRIFT = "PORTFOLIO_DRIFT"
+    RSI_EXTREME = "RSI_EXTREME"
+    DRAWDOWN_BREACH = "DRAWDOWN_BREACH"
+    WEEK_52_HIGH = "WEEK_52_HIGH"
+    FACTOR_ANOMALY = "FACTOR_ANOMALY"
 
 
+class AlertSeverity(str, Enum):
+    INFO = "INFO"
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
+class SmartAlert(BaseModel):
+    id: str
+    type: SmartAlertType
+    severity: AlertSeverity
+    title: str
+    message: str
+    timestamp: str
+    symbol: Optional[str] = None
+    portfolio_id: Optional[str] = None
+    metric_value: Optional[float] = None
+    threshold_value: Optional[float] = None
+    trust_card_context: Optional[str] = None
+    read: bool = False
+
+
+class SmartAlertsResponse(BaseModel):
+    alerts: List[SmartAlert]
+    total: int
+    unread_count: int
+
+
+class EvaluateAlertsResponse(BaseModel):
+    evaluated_at: str
+    new_alerts_count: int
+    alerts: List[SmartAlert]
+
+
+class PushSubscriptionKeys(BaseModel):
+    p256dh: str
+    auth: str
+
+
+class PushSubscriptionRequest(BaseModel):
+    endpoint: str
+    keys: PushSubscriptionKeys
+    user_id: Optional[str] = "default_user"
