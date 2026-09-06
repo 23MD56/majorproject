@@ -3385,8 +3385,8 @@
     "semantic_hash": ""
   },
   "src/frontend/store/useAppStore.ts": {
-    "mtime": 1788691117.2257721,
-    "ast_hash": "c718920e2443d923aabbf43d78eb39a8",
+    "mtime": 1788692854.784285,
+    "ast_hash": "02ebe2ea797e1fc862d4852c9b6fc397",
     "semantic_hash": ""
   },
   "tailwind.config.js": {
@@ -3395,7 +3395,7 @@
     "semantic_hash": ""
   },
   "tests/frontend/setup.ts": {
-    "mtime": 1788691590.2411397,
+    "mtime": 1788692248.827753,
     "ast_hash": "420b73ca7936c40e19638867bfef22d0",
     "semantic_hash": ""
   },
@@ -3470,13 +3470,13 @@
     "semantic_hash": ""
   },
   ".scratch/ui-redesign/issues/08-grow-tab.md": {
-    "mtime": 1788691324.46604,
-    "ast_hash": "3fed022aeadc7135ae1356d2cf95942d",
+    "mtime": 1788692248.8086598,
+    "ast_hash": "1d70d86df639c9371ac4e1e157e160c8",
     "semantic_hash": ""
   },
   ".scratch/ui-redesign/issues/09-portfolio-tab.md": {
-    "mtime": 1788675330.1005528,
-    "ast_hash": "29b8f231d7248c3b94fe9e4d48cf22c6",
+    "mtime": 1788692407.1741273,
+    "ast_hash": "760bd0f4b821d782e118c78bb5a5aee8",
     "semantic_hash": ""
   },
   ".scratch/ui-redesign/issues/10-modals-overlays.md": {
@@ -3500,8 +3500,8 @@
     "semantic_hash": ""
   },
   "src/frontend/components/layout/AppShell.tsx": {
-    "mtime": 1788691480.3263297,
-    "ast_hash": "f0fa4ee071176e3232932d6811a15371",
+    "mtime": 1788692690.9380834,
+    "ast_hash": "d5bcd370993150ccf29ba9a8fc5d488b",
     "semantic_hash": ""
   },
   "src/frontend/components/layout/BottomNav.tsx": {
@@ -3540,8 +3540,8 @@
     "semantic_hash": ""
   },
   "src/frontend/components/ui/GhostButton.tsx": {
-    "mtime": 1788686977.9539375,
-    "ast_hash": "d5579ae83f602562209a32e0be855483",
+    "mtime": 1788692772.9256885,
+    "ast_hash": "80eb3b83a815717ac776c2be17b39085",
     "semantic_hash": ""
   },
   "src/frontend/components/ui/GlassCard.tsx": {
@@ -3675,68 +3675,143 @@
     "semantic_hash": ""
   },
   "src/frontend/components/grow/AllocationDonut.tsx": {
-    "mtime": 1788691670.3859587,
+    "mtime": 1788692248.8264697,
     "ast_hash": "2eef16d695bcb84c25e5b0073d1fe878",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/GrowPage.tsx": {
-    "mtime": 1788691676.7353363,
+    "mtime": 1788692248.826897,
     "ast_hash": "1598812c118101a9de804fae5df8d5f2",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/GrowSkeleton.tsx": {
-    "mtime": 1788691435.269447,
+    "mtime": 1788692248.827021,
     "ast_hash": "1bd1407ecf9c14bfbc212f6e4876d089",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/Step1Capital.tsx": {
-    "mtime": 1788691371.1642249,
+    "mtime": 1788692248.8270977,
     "ast_hash": "28e542f3bdb5efa69081c80e12a35eb2",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/Step2Horizon.tsx": {
-    "mtime": 1788691684.3157866,
+    "mtime": 1788692248.8271742,
     "ast_hash": "bc230f22401964780108cfde63eb867b",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/Step3Persona.tsx": {
-    "mtime": 1788691386.340239,
+    "mtime": 1788692248.8272514,
     "ast_hash": "d1acd9a860783edf22e76154defd2875",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/Step4ResultsOverview.tsx": {
-    "mtime": 1788691695.5784543,
+    "mtime": 1788692248.8273299,
     "ast_hash": "66e896dd50dd7e9980b79e831e610a96",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/Step5DeepDive.tsx": {
-    "mtime": 1788691704.9990115,
+    "mtime": 1788692248.827426,
     "ast_hash": "d60b0bfb07de11ba61e7b425dd385724",
     "semantic_hash": ""
   },
   "src/frontend/components/grow/SummaryPills.tsx": {
-    "mtime": 1788691362.1516182,
+    "mtime": 1788692248.827504,
     "ast_hash": "08fffcd6083692914bbc8f5953664608",
     "semantic_hash": ""
   },
   "src/frontend/utils/formatters.ts": {
-    "mtime": 1788691340.6471553,
+    "mtime": 1788692248.827753,
     "ast_hash": "a4e7fe83115ea1b96efee8ee8aab26f1",
     "semantic_hash": ""
   },
   "tests/frontend/unit/grow/GrowResults.test.tsx": {
-    "mtime": 1788691523.7150512,
+    "mtime": 1788692248.827753,
     "ast_hash": "3393b7a645d462eb3ef6fed6f0f47aaa",
     "semantic_hash": ""
   },
   "tests/frontend/unit/grow/GrowWizard.test.tsx": {
-    "mtime": 1788691397.8900044,
+    "mtime": 1788692248.828062,
     "ast_hash": "afeab4ac5df365ae9341d3ccd1d84590",
     "semantic_hash": ""
   },
   "tests/frontend/unit/utils/formatters.test.ts": {
-    "mtime": 1788691334.5007331,
+    "mtime": 1788692248.828062,
     "ast_hash": "e9451a56d323e8da673f586e87451ce2",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/CompoundingTrajectoryChart.tsx": {
+    "mtime": 1788692835.121181,
+    "ast_hash": "5744a70998000b5c4e4622616a967f39",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/CreatePortfolioModal.tsx": {
+    "mtime": 1788692758.1158566,
+    "ast_hash": "70253c6fb87633404b52f041da2a58e3",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/DemoPortfolio.tsx": {
+    "mtime": 1788692666.3617027,
+    "ast_hash": "36b008982fe6f13ad21dc201576bd9f1",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/HoldingsTable.tsx": {
+    "mtime": 1788692593.868629,
+    "ast_hash": "65dd0766b2694b756d9c3e30a40068c4",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/PortfolioHeroCard.tsx": {
+    "mtime": 1788692838.48937,
+    "ast_hash": "fddc6b88920a18f6df44c7c1a1884358",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/PortfolioPage.tsx": {
+    "mtime": 1788692845.5687678,
+    "ast_hash": "f34d5c0774f89f45ad5c32f9c4ab67e8",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/RebalanceBanner.tsx": {
+    "mtime": 1788692848.63794,
+    "ast_hash": "f70c7bb48486c3d71092cb3cc0135738",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/portfolio/demoPortfolioData.ts": {
+    "mtime": 1788692507.022746,
+    "ast_hash": "1eedf5ce80999504d04db571cdfa7d7a",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/CompoundingTrajectoryChart.test.tsx": {
+    "mtime": 1788692638.9151604,
+    "ast_hash": "4d43546dcaa412e241c07365a5630688",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/DemoPortfolio.test.tsx": {
+    "mtime": 1788692670.0479097,
+    "ast_hash": "86d04f2ac664c11cf542afdddce5d5c8",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/HoldingsTable.test.tsx": {
+    "mtime": 1788692602.872135,
+    "ast_hash": "d750fe500fc6989a34acb6634f1d0a7e",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/PortfolioHeroCard.test.tsx": {
+    "mtime": 1788692549.826153,
+    "ast_hash": "0cfccc85b04ba406a47543eec26b30fb",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/PortfolioPage.test.tsx": {
+    "mtime": 1788692697.4904513,
+    "ast_hash": "a5d1951986c7e49431f661601dbdcb3e",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/RebalanceBanner.test.tsx": {
+    "mtime": 1788692617.733086,
+    "ast_hash": "90aabac6bc2c87a6b131fa07eecd166b",
+    "semantic_hash": ""
+  },
+  "tests/frontend/portfolio/demoPortfolioData.test.ts": {
+    "mtime": 1788692520.7825198,
+    "ast_hash": "e8b99ebfa9cef6449872071821d1ccaf",
     "semantic_hash": ""
   }
 }
