@@ -1,16 +1,16 @@
 /**
  * QuantNiti Service Worker
  * Progressive Web App Caching & Offline Resilience
+ * Auto-generated with Vite production asset bundle
  */
 
-const CACHE_VERSION = "quantniti-v1.0.0";
+const CACHE_VERSION = "quantniti-v1788711605620";
 const PRECACHE_ASSETS = [
   "/",
   "/app",
   "/client",
-  "/static/index.html",
-  "/static/styles.css",
-  "/static/app.js",
+  "/vite",
+  "/static/dist/index.html",
   "/static/manifest.json",
   "/static/offline.html",
   "/static/icons/icon-192.png",
@@ -18,9 +18,14 @@ const PRECACHE_ASSETS = [
   "/static/icons/icon-maskable-192.png",
   "/static/icons/icon-maskable-512.png",
   "/static/icons/icon.svg",
-  "https://cdn.tailwindcss.com",
-  "https://unpkg.com/lucide@latest",
-  "https://cdn.jsdelivr.net/npm/chart.js",
+  "/static/dist/assets/PortfolioReportCard-BshiXZeB.js",
+  "/static/dist/assets/ProToolsBacktester-C7YPFdlG.js",
+  "/static/dist/assets/index-BLAwuKsf.js",
+  "/static/dist/assets/index-CtVdaA0n.css",
+  "/static/dist/assets/vendor-charts-ufhugd8P.js",
+  "/static/dist/assets/vendor-icons-DwCyQDRG.js",
+  "/static/dist/assets/vendor-motion-DIP2Jlov.js",
+  "/static/dist/assets/vendor-react-DwJhjyed.js"
 ];
 
 // Install Event: Pre-cache App Shell & Assets
@@ -29,18 +34,15 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_VERSION)
       .then((cache) => {
-        return cache.addAll(PRECACHE_ASSETS.map((url) => new Request(url, { mode: "cors" }))).catch((err) => {
-          // In offline or restricted network environments, cache local assets individually
-          return Promise.allSettled(
-            PRECACHE_ASSETS.map((url) =>
-              fetch(url, { mode: "cors" })
-                .then((res) => {
-                  if (res.ok) return cache.put(url, res);
-                })
-                .catch(() => {})
-            )
-          );
-        });
+        return Promise.allSettled(
+          PRECACHE_ASSETS.map((url) =>
+            fetch(url, { mode: "cors" })
+              .then((res) => {
+                if (res.ok) return cache.put(url, res);
+              })
+              .catch(() => {})
+          )
+        );
       })
       .then(() => self.skipWaiting())
   );
@@ -64,7 +66,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch Event: Network-First for API, Cache-First / Stale-While-Revalidate for App Shell, Offline Fallback
+// Fetch Event: Network-First for API, Cache-First/Stale-While-Revalidate for Assets, Offline Fallback for Navigation
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -77,29 +79,24 @@ self.addEventListener("fetch", (event) => {
   // API Requests: Network-First strategy
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          return response;
-        })
-        .catch(() => {
-          // If offline and request is an API request, return a JSON error response or cached data
-          return new Response(
-            JSON.stringify({
-              error: "Network unavailable",
-              offline: true,
-              message: "QuantNiti is running in offline mode. Live updates will resume once connected.",
-            }),
-            {
-              headers: { "Content-Type": "application/json" },
-              status: 503,
-            }
-          );
-        })
+      fetch(request).catch(() => {
+        return new Response(
+          JSON.stringify({
+            error: "Network unavailable",
+            offline: true,
+            message: "QuantNiti is running in offline mode. Live updates will resume once connected.",
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+            status: 503,
+          }
+        );
+      })
     );
     return;
   }
 
-  // Navigation requests (HTML pages): Network first with cached index/offline fallback
+  // Navigation requests: Network-First with cached shell/offline fallback
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -113,7 +110,7 @@ self.addEventListener("fetch", (event) => {
         .catch(async () => {
           const cached = await caches.match(request);
           if (cached) return cached;
-          const cachedRoot = await caches.match("/");
+          const cachedRoot = (await caches.match("/static/dist/index.html")) || (await caches.match("/"));
           if (cachedRoot) return cachedRoot;
           const offlinePage = await caches.match("/static/offline.html");
           if (offlinePage) return offlinePage;
@@ -125,7 +122,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static Assets (CSS, JS, Fonts, Icons, Images): Stale-While-Revalidate
+  // Static Assets: Stale-While-Revalidate
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request)
@@ -145,10 +142,7 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// =====================================================================
-// Ticket #20: Web Push Notifications & Notification Interaction
-// =====================================================================
-
+// Web Push Notifications & Notification Click
 self.addEventListener("push", (event) => {
   let data = {
     title: "QuantNiti Smart Alert",
@@ -193,17 +187,14 @@ self.addEventListener("notificationclick", (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
-      // If a tab is already open, focus it
       for (const client of windowClients) {
-        if (client.url.includes("/app") || client.url.includes("/")) {
+        if (client.url.includes("/app") || client.url.includes("/") || client.url.includes("/vite")) {
           return client.focus();
         }
       }
-      // Otherwise open new window
       if (clients.openWindow) {
         return clients.openWindow("/app");
       }
     })
   );
 });
-

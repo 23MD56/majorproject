@@ -132,6 +132,7 @@ export const ProToolsBacktester: React.FC = () => {
       {/* Collapsible Header Toggle */}
       <button
         type="button"
+        data-testid="pro-tools-toggle"
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-violet-500/30 transition-all text-left group shadow-sm"
       >

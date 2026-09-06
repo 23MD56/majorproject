@@ -4,6 +4,7 @@ import { Sun, Moon, Bell, MoreVertical, Layers, Download, Maximize2 } from "luci
 import { useTheme } from "../../context/ThemeContext";
 import { useAppStore } from "../../store/useAppStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { promptPWAInstall } from "../../services/pwaService";
 
 interface HeaderProps {
   onCompareClick?: () => void;
@@ -150,11 +151,17 @@ export function Header({
                   </button>
 
                   <button
+                    data-testid="pwa-install-btn"
+                    id="pwaInstallBtn"
                     type="button"
                     role="menuitem"
                     onClick={() => {
                       setIsMenuOpen(false);
-                      onInstallClick?.();
+                      if (onInstallClick) {
+                        onInstallClick();
+                      } else {
+                        promptPWAInstall();
+                      }
                     }}
                     className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[var(--text-main)] hover:bg-accent/10 hover:text-accent transition-colors"
                   >

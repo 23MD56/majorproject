@@ -106,8 +106,11 @@ def create_app(
     # Static assets directory
     static_dir = Path(__file__).resolve().parent.parent / "static"
     dist_dir = static_dir / "dist"
+    legacy_dir = static_dir / "legacy"
     use_vite = os.getenv("QUANTNITI_USE_VITE", "0") == "1"
-    default_index = (dist_dir / "index.html") if (use_vite and (dist_dir / "index.html").exists()) else (static_dir / "index.html")
+    vite_index = dist_dir / "index.html"
+    legacy_index = (legacy_dir / "index.html") if (legacy_dir / "index.html").exists() else (static_dir / "index.html")
+    default_index = (vite_index) if (use_vite and vite_index.exists()) else legacy_index
 
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
@@ -126,8 +129,11 @@ def create_app(
 
         @app.get("/vite", response_class=FileResponse, include_in_schema=False)
         async def serve_vite_shell():
-            vite_index = dist_dir / "index.html" if (dist_dir / "index.html").exists() else static_dir / "index.html"
-            return FileResponse(vite_index)
+            return FileResponse(vite_index if vite_index.exists() else default_index)
+
+        @app.get("/legacy", response_class=FileResponse, include_in_schema=False)
+        async def serve_legacy_shell():
+            return FileResponse(legacy_index)
 
         @app.get("/manifest.json", response_class=FileResponse, include_in_schema=False)
         async def serve_manifest():

@@ -4,16 +4,21 @@ export interface PortfolioHoldingItem {
   sector: string;
   shares: number;
   buy_price: number;
+  avg_price?: number;
   current_price: number;
   invested_amount: number;
   current_value: number;
   unrealized_pnl: number;
   unrealized_pnl_pct: number;
+  pnl?: number;
+  pnl_pct?: number;
   weight: number;
   target_weight?: number;
   prev_close_price?: number;
   pnl_1d: number;
   pnl_1d_pct: number;
+  day_change_pct?: number;
+  regime_suitability?: string;
 }
 
 export interface BenchmarkComparison {
