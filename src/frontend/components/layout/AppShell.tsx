@@ -10,8 +10,8 @@ import { GrowPage } from "../grow/GrowPage";
 import {
   HomePage,
   ExplorePage,
-  PortfolioPage,
 } from "../../routes/PlaceholderPages";
+import { PortfolioPage } from "../portfolio/PortfolioPage";
 
 export function AppShell() {
   const location = useLocation();
