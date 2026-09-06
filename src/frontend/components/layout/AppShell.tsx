@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Header } from "./Header";
 import { BottomNav } from "./BottomNav";
 import { useAppStore, NavTab } from "../../store/useAppStore";
+import { abortRegistry } from "../../services/abortRegistry";
 import {
   HomePage,
   ExplorePage,
@@ -14,16 +15,20 @@ import {
 export function AppShell() {
   const location = useLocation();
   const shouldReduceMotion = useReducedMotion();
-  const { activeTab, setActiveTab } = useAppStore();
+  const { activeTab, setActiveTab, clearActiveAsyncKeys } = useAppStore();
 
-  // Keep route pathname in sync with activeTab in Zustand store
+  // Keep route pathname in sync with activeTab in Zustand store and abort in-flight requests from prior tab
   useEffect(() => {
+    // Abort all active controllers on tab switch
+    abortRegistry.abortAll("tab-switch");
+    clearActiveAsyncKeys?.();
+
     const rawPath = location.pathname.replace(/^\//, "").toLowerCase();
     const validTabs: NavTab[] = ["home", "explore", "grow", "portfolio"];
     if (validTabs.includes(rawPath as NavTab)) {
       setActiveTab(rawPath as NavTab);
     }
-  }, [location.pathname, setActiveTab]);
+  }, [location.pathname, setActiveTab, clearActiveAsyncKeys]);
 
   // Motion variants respecting reduced motion preferences
   const pageVariants = {

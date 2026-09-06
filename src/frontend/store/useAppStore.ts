@@ -24,6 +24,7 @@ export interface AppStoreState {
   learnedConcepts: Set<string>;
   selectedLiteracyCategory: string;
   activeConceptKey: string | null;
+  activeAsyncKeys: Set<string>;
 
   // Actions
   setActiveTab: (tab: NavTab) => void;
@@ -43,6 +44,9 @@ export interface AppStoreState {
   setSelectedLiteracyCategory: (category: string) => void;
   setActiveConceptKey: (key: string | null) => void;
   toggleLearnedConcept: (conceptKey: string) => void;
+  addActiveAsyncKey: (key: string) => void;
+  removeActiveAsyncKey: (key: string) => void;
+  clearActiveAsyncKeys: () => void;
 }
 
 const LEARNED_CONCEPTS_STORAGE_KEY = "quantniti_learned_concepts";
@@ -81,6 +85,7 @@ export const useAppStore = create<AppStoreState>((set) => ({
   learnedConcepts: loadLearnedConcepts(),
   selectedLiteracyCategory: "all",
   activeConceptKey: null,
+  activeAsyncKeys: new Set(),
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setTheme: (theme) => set({ theme }),
@@ -98,6 +103,26 @@ export const useAppStore = create<AppStoreState>((set) => ({
   setLiteracyCards: (literacyCards) => set({ literacyCards }),
   setSelectedLiteracyCategory: (selectedLiteracyCategory) => set({ selectedLiteracyCategory }),
   setActiveConceptKey: (activeConceptKey) => set({ activeConceptKey }),
+
+  addActiveAsyncKey: (key: string) => {
+    set((state) => {
+      const next = new Set(state.activeAsyncKeys);
+      next.add(key);
+      return { activeAsyncKeys: next };
+    });
+  },
+
+  removeActiveAsyncKey: (key: string) => {
+    set((state) => {
+      const next = new Set(state.activeAsyncKeys);
+      next.delete(key);
+      return { activeAsyncKeys: next };
+    });
+  },
+
+  clearActiveAsyncKeys: () => {
+    set({ activeAsyncKeys: new Set() });
+  },
 
   toggleLearnedConcept: (conceptKey: string) => {
     set((state) => {
