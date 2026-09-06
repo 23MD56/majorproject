@@ -6,10 +6,10 @@ import { BottomNav } from "./BottomNav";
 import { useAppStore, NavTab } from "../../store/useAppStore";
 import { abortRegistry } from "../../services/abortRegistry";
 import { OnboardingHero } from "../onboarding/OnboardingHero";
+import { GrowPage } from "../grow/GrowPage";
 import {
   HomePage,
   ExplorePage,
-  GrowPage,
   PortfolioPage,
 } from "../../routes/PlaceholderPages";
 
