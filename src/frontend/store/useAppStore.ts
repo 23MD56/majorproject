@@ -54,6 +54,33 @@ export interface AppStoreState {
 const LEARNED_CONCEPTS_STORAGE_KEY = "quantniti_learned_concepts";
 export const ONBOARDED_STORAGE_KEY = "quantniti_onboarded";
 export const RISK_PERSONA_STORAGE_KEY = "quantniti_risk_persona";
+export const PORTFOLIOS_STORAGE_KEY = "quantniti_portfolios";
+export const ACTIVE_PORTFOLIO_ID_STORAGE_KEY = "quantniti_active_portfolio_id";
+
+function loadPortfolios(): any[] {
+  if (typeof window !== "undefined" && window.localStorage) {
+    try {
+      const saved = window.localStorage.getItem(PORTFOLIOS_STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // Ignore JSON parse errors
+    }
+  }
+  return [];
+}
+
+function loadActivePortfolioId(): string | null {
+  if (typeof window !== "undefined" && window.localStorage) {
+    try {
+      return window.localStorage.getItem(ACTIVE_PORTFOLIO_ID_STORAGE_KEY);
+    } catch {
+      // Ignore storage errors
+    }
+  }
+  return null;
+}
 
 function loadLearnedConcepts(): Set<string> {
   if (typeof window !== "undefined" && window.localStorage) {
@@ -100,9 +127,9 @@ export const useAppStore = create<AppStoreState>((set) => ({
   isOnboarded: loadIsOnboarded(),
   activeRegime: null,
   currentBasket: null,
-  activePortfolioId: null,
+  activePortfolioId: loadActivePortfolioId(),
   activePortfolio: null,
-  portfolios: [],
+  portfolios: loadPortfolios(),
   allExploreStocks: [],
   selectedStockSymbol: null,
   activeBacktest: null,
@@ -132,9 +159,38 @@ export const useAppStore = create<AppStoreState>((set) => ({
   },
   setActiveRegime: (activeRegime) => set({ activeRegime }),
   setCurrentBasket: (currentBasket) => set({ currentBasket }),
-  setActivePortfolioId: (activePortfolioId) => set({ activePortfolioId }),
+  setActivePortfolioId: (activePortfolioId) => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      if (activePortfolioId) {
+        window.localStorage.setItem(ACTIVE_PORTFOLIO_ID_STORAGE_KEY, activePortfolioId);
+      } else {
+        window.localStorage.removeItem(ACTIVE_PORTFOLIO_ID_STORAGE_KEY);
+      }
+    }
+    set({ activePortfolioId });
+  },
   setActivePortfolio: (activePortfolio) => set({ activePortfolio }),
-  setPortfolios: (portfolios) => set({ portfolios }),
+  setPortfolios: (portfolios) => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(PORTFOLIOS_STORAGE_KEY, JSON.stringify(portfolios));
+    }
+    set((state) => {
+      // If current activePortfolioId is not in the new list, adjust it
+      let nextActiveId = state.activePortfolioId;
+      if (portfolios.length === 0) {
+        nextActiveId = null;
+        if (typeof window !== "undefined" && window.localStorage) {
+          window.localStorage.removeItem(ACTIVE_PORTFOLIO_ID_STORAGE_KEY);
+        }
+      } else if (!portfolios.some((p) => p.portfolio_id === nextActiveId)) {
+        nextActiveId = portfolios[0].portfolio_id;
+        if (typeof window !== "undefined" && window.localStorage && nextActiveId) {
+          window.localStorage.setItem(ACTIVE_PORTFOLIO_ID_STORAGE_KEY, nextActiveId);
+        }
+      }
+      return { portfolios, activePortfolioId: nextActiveId };
+    });
+  },
   setAllExploreStocks: (allExploreStocks) => set({ allExploreStocks }),
   setSelectedStockSymbol: (selectedStockSymbol) => set({ selectedStockSymbol }),
   setActiveBacktest: (activeBacktest) => set({ activeBacktest }),
