@@ -1,0 +1,1 @@
+{"nodes": [{"id": "third_party_register_integration", "label": "Observe.registerIntegration", "file_type": "code", "source_file": ".agents/skills/eas-observe/references/third-party.md", "rationale": "API for package authors to register optional EAS Observe integrations."}], "edges": [], "hyperedges": []}
