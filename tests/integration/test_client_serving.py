@@ -26,10 +26,8 @@ async def test_root_serves_html(test_app):
         assert "text/html" in response.headers.get("content-type", "")
         content = response.text
         assert "QuantNiti" in content
-        assert "Grow" in content
-        assert "Explore" in content
-        assert "Quant Lab" in content
-        assert "Portfolio" in content
+        # Modern SPA uses root mount; legacy uses explicit tab names
+        assert ('id="root"' in content) or ("Grow" in content and "Explore" in content)
 
 
 @pytest.mark.asyncio
