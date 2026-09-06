@@ -11,6 +11,7 @@ import { HomePage } from "../../pages/HomePage";
 import { ExplorePage } from "../../pages/ExplorePage";
 import { PortfolioPage } from "../portfolio/PortfolioPage";
 import { ModalRoot } from "../modals/ModalRoot";
+import { IOSInstallBanner } from "../pwa/IOSInstallBanner";
 
 export function AppShell() {
   const location = useLocation();
@@ -97,6 +98,9 @@ export function AppShell() {
 
         {/* Global Modals & Overlays Root */}
         {isOnboarded && <ModalRoot />}
+
+        {/* iOS Safari Installation Guidance Banner */}
+        {isOnboarded && <IOSInstallBanner />}
       </div>
     </div>
   );

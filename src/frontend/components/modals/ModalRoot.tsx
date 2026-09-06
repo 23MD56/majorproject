@@ -7,8 +7,13 @@ import { WriteReviewModal } from "./WriteReviewModal";
 import { ConceptDetailModal } from "./ConceptDetailModal";
 import { CompetitorBenchmarkModal } from "./CompetitorBenchmarkModal";
 import { OrderSheetModal } from "./OrderSheetModal";
-import { PortfolioReportCard } from "./PortfolioReportCard";
 import { getDemoPortfolio } from "../portfolio/demoPortfolioData";
+
+const PortfolioReportCard = React.lazy(() =>
+  import("./PortfolioReportCard").then((mod) => ({
+    default: mod.PortfolioReportCard,
+  }))
+);
 
 export const ModalRoot: React.FC = () => {
   const {
@@ -80,11 +85,13 @@ export const ModalRoot: React.FC = () => {
       />
 
       {/* 7. Portfolio Audit Report Card */}
-      <PortfolioReportCard
-        isOpen={activeModal === "reportCard"}
-        onClose={closeModal}
-        portfolio={modalPayload?.portfolio || currentPortfolio}
-      />
+      <React.Suspense fallback={null}>
+        <PortfolioReportCard
+          isOpen={activeModal === "reportCard"}
+          onClose={closeModal}
+          portfolio={modalPayload?.portfolio || currentPortfolio}
+        />
+      </React.Suspense>
 
       {/* 8. Floating NitiBot FAB button (Persistent on desktop & mobile above bottom nav) */}
       <div className="fixed bottom-20 right-4 z-40">

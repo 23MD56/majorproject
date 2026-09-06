@@ -4,63 +4,221 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>QuantNiti — Offline</title>
-  <meta name="theme-color" content="#09090b">
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="theme-color" content="#7C3AED">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon.svg">
   <style>
-    body {
-      background-color: #09090b;
-      color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    :root {
+      --primary: #7C3AED;
+      --primary-hover: #6D28D9;
+      --bg: #0A0D14;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --border: rgba(124, 58, 237, 0.25);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --emerald: #10B981;
+      --amber: #F59E0B;
     }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-image: radial-gradient(circle at 50% 10%, rgba(124, 58, 237, 0.15) 0%, transparent 60%);
+    }
+
+    .offline-card {
+      max-width: 440px;
+      width: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(124, 58, 237, 0.2);
+    }
+
+    .icon-badge {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 1.25rem;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(79, 70, 229, 0.15));
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem auto;
+      box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3);
+      color: #C4B5FD;
+    }
+
+    .title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      color: #FFFFFF;
+    }
+
+    .desc {
+      font-size: 0.825rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .status-list {
+      background: rgba(10, 13, 20, 0.6);
+      border: 1px solid rgba(124, 58, 237, 0.15);
+      border-radius: 1rem;
+      padding: 0.875rem 1rem;
+      text-align: left;
+      margin-bottom: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-size: 0.775rem;
+      color: #CBD5E1;
+    }
+
+    .status-item svg {
+      flex-shrink: 0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 0.875rem;
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.15s ease-in-out;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #6D28D9 0%, #4F46E5 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 480px) {
+      .btn-group {
+        flex-direction: column;
+      }
+    }
+  <link rel="stylesheet" href="/static/styles.css" onerror="this.onerror=null;this.remove();">
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-  <div class="glass-card max-w-md w-full p-6 text-center shadow-2xl border border-slate-800">
-    <div class="w-16 h-16 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/20">
-      <i data-lucide="wifi-off" class="w-8 h-8 text-indigo-400"></i>
+<body class="bg-[#0A0D14]">
+  <main class="offline-card" role="main">
+    <div class="icon-badge">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
     </div>
-    
-    <h1 class="text-xl font-bold text-white mb-2">You're Currently Offline</h1>
-    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-      QuantNiti couldn't establish a live connection to the market data feed. Cached data and core app shell remain securely available.
+
+    <h1 class="title">You're Currently Offline</h1>
+    <p class="desc">
+      QuantNiti cannot connect to the live market data feeds right now. Your cached algorithmic portfolios and application shell remain securely available.
     </p>
 
-    <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800 text-left mb-6 space-y-2">
-      <div class="flex items-center gap-2 text-xs text-slate-300">
-        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-        <span>Offline App Shell Cached</span>
+    <div class="status-list">
+      <div class="status-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>Vite App Shell & Cache Active</span>
       </div>
-      <div class="flex items-center gap-2 text-xs text-slate-300">
-        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-        <span>PWA Local Storage Accessible</span>
+      <div class="status-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>Local Portfolio Data Accessible</span>
       </div>
-      <div class="flex items-center gap-2 text-xs text-slate-400">
-        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
-        <span>Live NIFTY 50 Tick Updates Paused</span>
+      <div class="status-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Live NIFTY 50 Stream Paused</span>
       </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3">
-      <button onclick="window.location.reload()" class="btn-primary flex-1">
-        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+    <div class="btn-group">
+      <button onclick="window.location.reload()" class="btn btn-primary" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
         Retry Connection
       </button>
-      <button onclick="window.history.back()" class="btn-ghost flex-1">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      <button onclick="window.history.back()" class="btn btn-ghost" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
         Go Back
       </button>
     </div>
-  </div>
+  </main>
 
   <script>
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-    window.addEventListener('online', () => {
+    window.addEventListener("online", () => {
       window.location.reload();
     });
   </script>

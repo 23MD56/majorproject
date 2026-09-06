@@ -16,7 +16,7 @@ export const PortfolioReportCard: React.FC<PortfolioReportCardProps> = ({
   onClose,
   portfolio,
 }) => {
-  if (!portfolio) return null;
+  if (!isOpen || !portfolio) return null;
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
@@ -74,7 +74,7 @@ export const PortfolioReportCard: React.FC<PortfolioReportCardProps> = ({
             <div className="p-2.5 rounded-xl bg-slate-900/80 border border-violet-500/20">
               <span className="text-[10px] text-slate-400 block">Total Return</span>
               <span className="text-sm font-bold text-emerald-400">
-                +{portfolio.total_pnl_pct.toFixed(2)}%
+                +{(portfolio.total_pnl_pct ?? 0).toFixed(2)}%
               </span>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-900/80 border border-violet-500/20">
@@ -86,7 +86,7 @@ export const PortfolioReportCard: React.FC<PortfolioReportCardProps> = ({
             <div className="p-2.5 rounded-xl bg-slate-900/80 border border-violet-500/20">
               <span className="text-[10px] text-slate-400 block">Max Drawdown</span>
               <span className="text-sm font-bold text-slate-200">
-                {portfolio.max_drawdown_pct.toFixed(1)}%
+                {(portfolio.max_drawdown_pct ?? 0).toFixed(1)}%
               </span>
             </div>
           </div>

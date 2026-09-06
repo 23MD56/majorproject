@@ -75,13 +75,13 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
             )}
             <span>
               {is1DPositive ? "+" : ""}₹
-              {Math.abs(portfolio.pnl_1d).toLocaleString("en-IN", {
+              {Math.abs(portfolio.pnl_1d ?? 0).toLocaleString("en-IN", {
                 maximumFractionDigits: 2,
               })}
             </span>
             <span className="text-xs font-semibold opacity-90">
               ({is1DPositive ? "+" : ""}
-              {portfolio.pnl_1d_pct.toFixed(2)}%)
+              {(portfolio.pnl_1d_pct ?? 0).toFixed(2)}%)
             </span>
           </div>
         </div>
@@ -103,13 +103,13 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
             )}
             <span>
               {isTotalPositive ? "+" : ""}₹
-              {Math.abs(portfolio.total_pnl).toLocaleString("en-IN", {
+              {Math.abs(portfolio.total_pnl ?? 0).toLocaleString("en-IN", {
                 maximumFractionDigits: 2,
               })}
             </span>
             <span className="text-xs font-semibold opacity-90">
               ({isTotalPositive ? "+" : ""}
-              {portfolio.total_pnl_pct.toFixed(2)}%)
+              {(portfolio.total_pnl_pct ?? 0).toFixed(2)}%)
             </span>
           </div>
         </div>

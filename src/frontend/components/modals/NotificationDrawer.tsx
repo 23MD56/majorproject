@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Bell, ShieldAlert, AlertTriangle, Info, CheckCheck } from "lucide-react";
 import { ModalSheet } from "../ui/ModalSheet";
 import { useAbortableRequest } from "../../hooks/useAbortableRequest";
+import { subscribeUserToPush } from "../../services/pwaService";
 
 interface NotificationItem {
   id: string;
@@ -100,8 +101,13 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  const handleSubscribePush = () => {
+  const handleSubscribePush = async () => {
     setPushSubscribed(true);
+    try {
+      await subscribeUserToPush();
+    } catch {
+      // Handled gracefully
+    }
   };
 
   return (

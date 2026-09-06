@@ -93,14 +93,14 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                         {holding.shares} shares
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        @ ₹{holding.buy_price.toLocaleString("en-IN")}
+                        @ ₹{(holding.buy_price ?? holding.avg_price ?? 0).toLocaleString("en-IN")}
                       </div>
                     </td>
 
                     {/* LTP and 1D Change */}
                     <td className="py-3.5 px-3 text-right">
                       <div className="font-bold text-white">
-                        ₹{holding.current_price.toLocaleString("en-IN")}
+                        ₹{(holding.current_price ?? 0).toLocaleString("en-IN")}
                       </div>
                       <div
                         className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${
@@ -114,7 +114,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                         )}
                         <span>
                           {is1DUp ? "+" : ""}
-                          {holding.pnl_1d_pct.toFixed(2)}%
+                          {(holding.pnl_1d_pct ?? holding.day_change_pct ?? 0).toFixed(2)}%
                         </span>
                       </div>
                     </td>
@@ -122,7 +122,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                     {/* Total Unrealized P&L */}
                     <td className="py-3.5 px-4 text-right">
                       <div className="font-bold text-white">
-                        ₹{holding.current_value.toLocaleString("en-IN")}
+                        ₹{(holding.current_value ?? (holding.shares * (holding.current_price ?? 0))).toLocaleString("en-IN")}
                       </div>
                       <div
                         className={`text-[11px] font-semibold ${
@@ -130,11 +130,11 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                         }`}
                       >
                         {isTotalUp ? "+" : ""}₹
-                        {Math.abs(holding.unrealized_pnl).toLocaleString("en-IN", {
+                        {Math.abs(holding.unrealized_pnl ?? holding.pnl ?? 0).toLocaleString("en-IN", {
                           maximumFractionDigits: 0,
                         })}{" "}
                         ({isTotalUp ? "+" : ""}
-                        {holding.unrealized_pnl_pct.toFixed(1)}%)
+                        {(holding.unrealized_pnl_pct ?? holding.pnl_pct ?? 0).toFixed(1)}%)
                       </div>
                     </td>
                   </tr>

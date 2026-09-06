@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>QuantNiti — AI-Driven Regime-Adaptive Portfolio & Quant Intelligence</title>
+  
+  <!-- PWA Manifest & App Identity -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#09090b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QuantNiti">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/icon.svg">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2canvas & jsPDF CDN (Ticket #15: Client-Side PDF/Image Report Card) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Custom Design Tokens & Styles -->
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Main Shell Container -->
+  <div class="app-container" id="appContainer">
+    
+    <!-- iOS Standalone Install Guide Banner (Dismissible) -->
+    <div id="iosInstallBanner" class="ios-install-banner hidden">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Install QuantNiti on iPhone / iPad</div>
+            <div class="text-[11px] text-slate-300 mt-0.5">
+              Tap <i data-lucide="share" class="inline w-3.5 h-3.5 text-emerald-400"></i> <strong>Share</strong> then tap <i data-lucide="plus-square" class="inline w-3.5 h-3.5 text-emerald-400"></i> <strong>Add to Home Screen</strong>
+            </div>
+          </div>
+        </div>
+        <button onclick="dismissIOSInstallBanner()" class="btn-ghost !p-1 text-slate-400 hover:text-white" title="Dismiss">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top Sticky Header -->
+    <header class="app-header">
+      <div class="brand-badge cursor-pointer" onclick="switchTab('home')">
+        <div class="brand-logo-icon">
+          <i data-lucide="trending-up" class="w-5 h-5 text-slate-900"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">QuantNiti</h1>
+          <div class="text-[10px] text-slate-400 font-medium">NIFTY 50 AI Intelligence</div>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Live Market Regime Pill -->
+        <div id="headerRegimeBadge" class="regime-pill-badge regime-bull cursor-pointer" onclick="switchTab('home')" title="Click to view Regime Radar">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="headerRegimeText">Bull Market</span>
+        </div>
+
+        <!-- Light / Dark Theme Toggle -->
+        <button id="themeToggleBtn" class="btn-ghost !p-2 !rounded-lg" title="Toggle Light / Dark Mode" onclick="toggleTheme()">
+          <i id="themeToggleIcon" data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+        </button>
+        
+        <!-- Competitor Comparison Trigger -->
+        <button id="openCompareHeaderBtn" class="btn-ghost !p-2 !rounded-lg" title="Compare QuantNiti vs Existing Platforms" onclick="openCompetitorBenchmarkModal()">
+          <i data-lucide="scale" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden md:inline text-xs font-semibold ml-1">Compare</span>
+        </button>
+
+        <!-- PWA Desktop / Android Install Trigger -->
+        <button id="pwaInstallBtn" class="btn-ghost !p-2 !rounded-lg text-emerald-400 hidden" title="Install QuantNiti PWA App" onclick="promptPWAInstall()">
+          <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden md:inline text-xs font-semibold ml-1">Install</span>
+        </button>
+
+        <!-- Smart Alerts Notification Bell Trigger -->
+        <button id="headerNotificationBtn" class="btn-ghost !p-2 !rounded-lg relative text-slate-300 hover:text-white" title="Smart Alerts & Notifications" onclick="toggleNotificationDrawer()">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span id="notificationBadge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 hidden"></span>
+        </button>
+
+        <!-- Viewport Mode Toggle (Mobile / Expanded) -->
+        <button id="viewToggleBtn" class="btn-ghost !p-2 !rounded-lg text-slate-400 hover:text-white" title="Toggle Responsive View" onclick="toggleViewportMode()">
+          <i data-lucide="maximize-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-content">
+      
+      <!-- ======================================================== -->
+      <!-- TAB 1: HOME (Market Pulse, Adaptive Card, Recommendations, Learning Hub) -->
+      <!-- ======================================================== -->
+      <section id="tab-home" class="tab-panel active">
+        
+        <!-- Market Pulse & NIFTY 50 Live Snapshot -->
+        <div class="glass-card p-4 sm:p-5 mb-4">
+          <div class="flex items-center justify-between mb-3 border-b border-subtle pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Market Pulse</span>
+            </div>
+            <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">Live Market Tracking</span>
+          </div>
+
+          <div class="flex items-baseline justify-between mb-2">
+            <div>
+              <div class="text-xs text-slate-400 font-medium">NIFTY 50 Benchmark</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5 tracking-tight tabular-nums text-white" id="homeNiftyPrice">₹24,850.30</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-bold text-emerald-400 tabular-nums" id="homeNiftyChange">+142.60 (+0.58%)</div>
+              <div class="text-[10px] text-slate-400">NSE India</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Market Regime Radar (Relocated to Home Tab) -->
+        <div class="glass-card p-4 sm:p-5 mb-4" id="homeRegimeRadarCard">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4 text-emerald-400"></i>
+                Market Regime Radar
+              </h2>
+              <p class="text-xs text-slate-400">Unsupervised GMM & Rolling Volatility</p>
+            </div>
+            <span id="radarRegimeBadge" class="regime-pill-badge regime-bull">
+              Low-Vol Bull (84%)
+            </span>
+          </div>
+
+          <!-- Probability Bars -->
+          <div class="space-y-2 mb-3">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-emerald-400 font-medium">Low-Volatility Bull</span>
+                <span id="radarBullProb" class="font-bold text-slate-300">72%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarBullBar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 72%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-amber-400 font-medium">Sideways Consolidation</span>
+                <span id="radarSidewaysProb" class="font-bold text-slate-300">18%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarSidewaysBar" class="bg-amber-500 h-1.5 rounded-full" style="width: 18%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-rose-400 font-medium">High-Volatility Bear</span>
+                <span id="radarBearProb" class="font-bold text-slate-300">10%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="radarBearBar" class="bg-rose-500 h-1.5 rounded-full" style="width: 10%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="radarDescription" class="text-xs text-slate-300 bg-slate-800/40 p-2.5 rounded-lg border border-slate-700/50">
+            Market exhibits steady upward drift with subdued realized volatility. Favorable for momentum & quality factor allocations.
+          </div>
+        </div>
+
+        <!-- Adaptive Card: Onboarding (First-Time Users) -->
+        <div id="onboardingCard" class="glass-card p-5 mb-4">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">Start Your Investment Journey</h3>
+              <p class="text-xs text-slate-400">Regime-aware quantitative AI for Indian retail investors</p>
+            </div>
+          </div>
+          
+          <p class="text-xs text-slate-300 my-3 leading-relaxed">
+            QuantNiti eliminates guesswork by analyzing macro volatility, predicting probabilistic growth cones, and assembling optimal risk parity portfolios with 0% commissions.
+          </p>
+
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <button class="btn-ghost !text-xs !py-2.5" onclick="switchTab('explore')">
+              <i data-lucide="compass" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Explore Stocks
+            </button>
+            <button class="btn-primary !text-xs !py-2.5" onclick="switchTab('grow')">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+              Build AI Basket
+            </button>
+          </div>
+        </div>
+
+        <!-- Adaptive Card: Dual-Metric Portfolio Summary (Returning Users) -->
+        <div id="homePortfolioSnapshotCard" class="glass-card p-5 mb-4 hidden">
+          <div class="flex items-center justify-between mb-3 border-b border-subtle pb-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
+              <span class="text-xs font-bold uppercase tracking-wider text-white">My Portfolio Snapshot</span>
+            </div>
+            <button class="btn-ghost !text-xs !py-1 !px-2 text-emerald-400" onclick="switchTab('portfolio')">
+              View Portfolio →
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">1D P&L</div>
+              <div id="homePort1DPnl" class="text-base font-bold text-emerald-400 mt-0.5 tabular-nums">+₹1,240.50 (+1.2%)</div>
+            </div>
+            <div class="glass-card-sm">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Overall P&L</div>
+              <div id="homePortOverallPnl" class="text-base font-bold text-emerald-400 mt-0.5 tabular-nums">+₹5,820.00 (+5.8%)</div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-300 pt-1">
+            <span>Total Value: <strong id="homePortTotalVal" class="text-white tabular-nums">₹1,05,820</strong></span>
+            <span>Alpha vs NIFTY: <strong id="homePortAlpha" class="text-emerald-400 tabular-nums">+3.4%</strong></span>
+          </div>
+        </div>
+
+        <!-- Curated Recommendations Preview -->
+        <div class="glass-card p-4 sm:p-5 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
+                Top Regime Recommendations
+              </h3>
+              <div class="text-[11px] text-slate-400">Algorithmic quality & momentum leaders</div>
+            </div>
+            <button class="btn-ghost !text-[11px] !py-1 !px-2 text-emerald-400" onclick="switchTab('explore')">
+              View All 50 →
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-2" id="homeTopPicksList">
+            <!-- Injected top picks -->
+          </div>
+        </div>
+
+        <!-- Learning Hub Carousel (Financial Literacy Microlearning) -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+              <h3 class="text-sm font-bold text-white">Learning Hub — Microlearning</h3>
+            </div>
+            <span class="text-[10px] text-slate-400">← Swipe cards →</span>
+          </div>
+
+          <!-- Concept Mastery Progress Tracker -->
+          <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 mb-3" id="learningProgressTracker">
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+                Financial Literacy Mastery
+              </span>
+              <span class="text-xs font-bold text-emerald-400 tabular-nums" id="learningProgressText">0 of 30 concepts learned</span>
+            </div>
+            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+              <div id="learningProgressBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Quick-Filter Category Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2.5" id="learningCategoryPills">
+            <button type="button" class="category-pill active" data-category="all" onclick="filterLearningCategory('all')">All (30)</button>
+            <button type="button" class="category-pill" data-category="basics" onclick="filterLearningCategory('basics')">Basics</button>
+            <button type="button" class="category-pill" data-category="regimes" onclick="filterLearningCategory('regimes')">Regimes</button>
+            <button type="button" class="category-pill" data-category="risk" onclick="filterLearningCategory('risk')">Risk</button>
+            <button type="button" class="category-pill" data-category="quant" onclick="filterLearningCategory('quant')">Quant</button>
+          </div>
+
+          <!-- Dynamic Microlearning Cards Carousel -->
+          <div class="learning-hub-carousel" id="learningHubCarousel">
+            <div class="text-xs text-slate-500 py-6 text-center w-full">Loading curated financial lessons...</div>
+          </div>
+
+          <!-- Interactive Compounding Visualizer Card (Ticket #18) -->
+          <div class="glass-card p-4 sm:p-5 mt-4 mb-4 border border-emerald-500/30" id="compoundingVisualizerCard">
+            <div class="flex items-center justify-between mb-3 border-b border-subtle pb-2.5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+                <h4 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Compounding & Wealth Visualizer</h4>
+                <span class="text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Interactive</span>
+              </div>
+              <button type="button" class="learn-chip !py-0.5" onclick="openConceptModal('compounding_sip')">
+                <i data-lucide="help-circle" class="w-3 h-3"></i><span>Formula</span>
+              </button>
+            </div>
+
+            <!-- Controls Grid: Monthly SIP, Tenure, Expected Return, Step-Up Toggle -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-4">
+              <!-- Slider 1: Monthly SIP -->
+              <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <span class="text-slate-400 font-medium">Monthly SIP</span>
+                  <span id="sipAmountLabel" class="text-emerald-400 font-bold tabular-nums">₹5,000</span>
+                </div>
+                <input 
+                  type="range" 
+                  id="sipAmountSlider" 
+                  min="1000" 
+                  max="100000" 
+                  step="500" 
+                  value="5000" 
+                  class="w-full accent-emerald-400 cursor-pointer" 
+                  oninput="handleCompoundingInputChange()"
+                />
+                <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                  <span>₹1,000</span>
+                  <span>₹50,000</span>
+                  <span>₹1,00,000</span>
+                </div>
+              </div>
+
+              <!-- Slider 2: Tenure -->
+              <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <span class="text-slate-400 font-medium">Tenure (Years)</span>
+                  <span id="sipTenureLabel" class="text-emerald-400 font-bold tabular-nums">5 Years</span>
+                </div>
+                <input 
+                  type="range" 
+                  id="sipTenureSlider" 
+                  min="1" 
+                  max="10" 
+                  step="1" 
+                  value="5" 
+                  class="w-full accent-emerald-400 cursor-pointer" 
+                  oninput="handleCompoundingInputChange()"
+                />
+                <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                  <span>1Y</span>
+                  <span>5Y</span>
+                  <span>10Y</span>
+                </div>
+              </div>
+
+              <!-- Controls 3: Return & Step-Up Toggle -->
+              <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="text-slate-400 font-medium">Expected Return</span>
+                    <span id="sipReturnLabel" class="text-emerald-400 font-bold tabular-nums">12.0% p.a.</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    id="sipReturnSlider" 
+                    min="8" 
+                    max="20" 
+                    step="0.5" 
+                    value="12" 
+                    class="w-full accent-emerald-400 cursor-pointer" 
+                    oninput="handleCompoundingInputChange()"
+                  />
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 mt-2">
+                  <span class="text-xs text-slate-300 font-medium flex items-center gap-1">
+                    Annual Step-Up (10%)
+                  </span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="sipStepUpToggle" class="sr-only peer" onchange="handleCompoundingInputChange()">
+                    <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Result Summary Metrics -->
+            <div class="grid grid-cols-3 gap-2.5 mb-3.5">
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Total Invested</div>
+                <div id="compoundingTotalInvested" class="text-xs sm:text-sm font-bold text-slate-300 mt-0.5 tabular-nums">₹3,00,000</div>
+              </div>
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Wealth Gain</div>
+                <div id="compoundingWealthGain" class="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5 tabular-nums">+₹1,12,491</div>
+              </div>
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Future Value</div>
+                <div id="compoundingFutureValue" class="text-xs sm:text-sm font-bold text-white mt-0.5 tabular-nums">₹4,12,491</div>
+              </div>
+            </div>
+
+            <!-- Compounding Tipping Point Indicator Card -->
+            <div id="tippingPointCard" class="bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 rounded-xl p-3 mb-3 flex items-start gap-2.5">
+              <div class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>Compounding Tipping Point</span>
+                  <span id="tippingPointBadge" class="text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-semibold border border-emerald-500/30">Calculating...</span>
+                </div>
+                <p id="tippingPointDescription" class="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
+                  Loading compounding tipping point milestones...
+                </p>
+              </div>
+            </div>
+
+            <!-- Chart.js Filled Area Fan Chart -->
+            <div class="relative w-full h-52 sm:h-60 bg-slate-950/50 rounded-xl p-2 border border-slate-800">
+              <canvas id="compoundingFanChart"></canvas>
+            </div>
+            <div class="flex items-center justify-center gap-4 text-[10px] text-slate-400 mt-2">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span> Principal Deposited</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Wealth Trajectory</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500/30"></span> Compound Gains Zone</span>
+            </div>
+          </div>
+
+          <!-- Lightweight Video Explainer Facades Section -->
+          <div class="mt-4 pt-3 border-t border-slate-800/80" id="videoFacadesSection">
+            <div class="flex items-center justify-between mb-2.5">
+              <div class="flex items-center gap-1.5">
+                <i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">Video Explainer Facades</h4>
+              </div>
+              <span class="text-[10px] text-slate-400">Lazy-loaded • Preserves mobile battery</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="videoFacadesContainer">
+              <!-- Video Facade cards injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 2: EXPLORE (360° Profiles & Collapsible Quant Lab Backtester) -->
+      <!-- ======================================================== -->
+      <section id="tab-explore" class="tab-panel">
+        
+        <!-- Search & Filter Header -->
+        <div class="glass-card p-4 mb-3">
+          <div class="relative mb-3">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            <input 
+              type="text" 
+              id="stockSearchInput" 
+              placeholder="Search Indian assets (e.g. RELIANCE, GOLDBEES, HAL)..." 
+              class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              oninput="filterStocks()"
+            >
+          </div>
+
+          <!-- Sector Filter Pills -->
+          <div class="chip-group" id="sectorFilterChips">
+            <button class="chip-btn active" data-sector="" onclick="filterBySector('')">All Sectors</button>
+            <button class="chip-btn" data-sector="Commodities" onclick="filterBySector('Commodities')">Commodities</button>
+            <button class="chip-btn" data-sector="Defense" onclick="filterBySector('Defense')">Defense</button>
+            <button class="chip-btn" data-sector="Metals" onclick="filterBySector('Metals')">Metals</button>
+            <button class="chip-btn" data-sector="Information Technology" onclick="filterBySector('Information Technology')">IT</button>
+            <button class="chip-btn" data-sector="Financial Services" onclick="filterBySector('Financial Services')">Banking & Fin</button>
+            <button class="chip-btn" data-sector="Energy" onclick="filterBySector('Energy')">Energy</button>
+            <button class="chip-btn" data-sector="Automobile" onclick="filterBySector('Automobile')">Auto</button>
+            <button class="chip-btn" data-sector="Consumer Goods" onclick="filterBySector('Consumer Goods')">FMCG</button>
+            <button class="chip-btn" data-sector="Healthcare" onclick="filterBySector('Healthcare')">Pharma</button>
+          </div>
+        </div>
+
+        <!-- Stock Cards List Grid -->
+        <div id="exploreStockGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <!-- Injected Stock Cards -->
+        </div>
+
+        <!-- Collapsible Advanced Analysis Drawer (Houses Quant Lab Backtester) -->
+        <div class="advanced-analysis-drawer" id="advancedAnalysisDrawer">
+          <button class="drawer-header-toggle" onclick="toggleAdvancedAnalysisDrawer()" type="button">
+            <div class="flex items-center gap-2">
+              <i data-lucide="flask-conical" class="w-4 h-4 text-emerald-400"></i>
+              <span>Advanced Analysis — Quant Lab Strategy Backtester</span>
+              <button type="button" class="learn-chip ml-1.5" data-concept="sharpe_ratio" onclick="event.stopPropagation(); openConceptModal('sharpe_ratio')" title="Learn about Sharpe Ratio">
+                <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn Sharpe</span>
+              </button>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 drawer-chevron text-slate-400" id="drawerChevron"></i>
+          </button>
+
+          <div class="drawer-content">
+            <p class="text-xs text-slate-400 mb-3">
+              Vectorized historical simulation engine for technical strategies against the NIFTY 50 benchmark.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Asset Symbol</label>
+                <select id="backtestSymbolSelect" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <option value="^NSEI">NIFTY 50 Benchmark (^NSEI)</option>
+                  <option value="RELIANCE">RELIANCE</option>
+                  <option value="TCS">TCS</option>
+                  <option value="INFY">INFY</option>
+                  <option value="HDFCBANK">HDFCBANK</option>
+                  <option value="ICICIBANK">ICICIBANK</option>
+                  <option value="ITC">ITC</option>
+                  <option value="LT">L&T</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Strategy Rule</label>
+                <select id="backtestStrategySelect" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <option value="Buy & Hold">Buy & Hold</option>
+                  <option value="Moving Average Crossover">Moving Average Crossover (20/50)</option>
+                  <option value="RSI Mean Reversion">RSI Mean Reversion (30/70)</option>
+                  <option value="Bollinger Band Breakout">Bollinger Band Breakout (20, 2.0)</option>
+                  <option value="Dual Momentum">Dual Momentum (Absolute + Relative)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mb-4">
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Capital (₹)</label>
+                <input type="number" id="backtestCapitalInput" value="100000" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Cost (bps)</label>
+                <input type="number" id="backtestCostInput" value="5" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Slippage (bps)</label>
+                <input type="number" id="backtestSlippageInput" value="5" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white">
+              </div>
+            </div>
+
+            <button id="runBacktestBtn" class="btn-primary" onclick="runBacktest()">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              Run Vectorized Strategy Simulation
+            </button>
+
+            <!-- Backtest Results Section -->
+            <div id="backtestResultCard" class="mt-4 pt-4 border-t border-slate-800 hidden">
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <h4 id="btResultTitle" class="text-sm font-bold text-white">Backtest Performance</h4>
+                  <div id="btResultSubtitle" class="text-[11px] text-slate-400">Strategy vs NIFTY 50 Benchmark</div>
+                </div>
+              </div>
+
+              <!-- Key Metrics Grid -->
+              <div id="btMetricsGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+                <!-- Injected Metrics -->
+              </div>
+
+              <!-- Equity Curve Chart -->
+              <div class="mb-4">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Equity Growth Curve</div>
+                <div class="h-48 w-full">
+                  <canvas id="backtestEquityChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Drawdown Chart -->
+              <div class="mb-4">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Underwater Drawdown (%)</div>
+                <div class="h-28 w-full">
+                  <canvas id="backtestDrawdownChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Regime Attribution Table -->
+              <div>
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Performance by Market Regime</div>
+                <div class="overflow-x-auto">
+                  <table class="custom-table" id="btRegimeTable">
+                    <thead>
+                      <tr>
+                        <th>Regime</th>
+                        <th>Days</th>
+                        <th>Strategy Ret</th>
+                        <th>Benchmark</th>
+                        <th>Sharpe</th>
+                        <th>Max DD</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Injected Rows -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 3: GROW (AI Portfolio Baskets & 3-Step Wizard)      -->
+      <!-- ======================================================== -->
+      <section id="tab-grow" class="tab-panel">
+        
+        <!-- 3-Step Wizard Card -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="sprout" class="w-4 h-4 text-emerald-400"></i>
+                AI Portfolio Basket
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">Regime-aware NIFTY 50 allocation wizard</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                HRP Optimization
+              </span>
+              <button type="button" class="learn-chip" data-concept="hrp_diversification" onclick="openConceptModal('hrp_diversification')" title="Learn about Hierarchical Risk Parity">
+                <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn HRP</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 1: Capital Amount -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-medium">1. Investment Capital</span>
+              <span id="capitalDisplay" class="font-bold text-emerald-400 text-sm tabular-nums">₹50,000</span>
+            </div>
+            <input 
+              type="range" 
+              id="capitalSlider" 
+              min="10000" 
+              max="500000" 
+              step="5000" 
+              value="50000" 
+              class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              oninput="updateCapitalDisplay(this.value)"
+            >
+            <div class="flex justify-between text-[10px] text-slate-500 mt-1 tabular-nums">
+              <span>₹10,000</span>
+              <span>₹2,50,000</span>
+              <span>₹5,00,000</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Time Horizon -->
+          <div class="mb-4">
+            <span class="text-xs text-slate-300 font-medium block mb-1.5">2. Investment Horizon</span>
+            <div class="flex gap-2">
+              <button class="chip-btn" data-horizon="1M" onclick="selectHorizon('1M')">1 Month</button>
+              <button class="chip-btn" data-horizon="3M" onclick="selectHorizon('3M')">3 Months</button>
+              <button class="chip-btn active" data-horizon="6M" onclick="selectHorizon('6M')">6 Months</button>
+              <button class="chip-btn" data-horizon="12M" onclick="selectHorizon('12M')">1 Year</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Risk Persona -->
+          <div class="mb-5">
+            <span class="text-xs text-slate-300 font-medium block mb-1.5">3. Risk Persona</span>
+            <div class="segmented-control">
+              <button class="segment-btn" data-persona="Conservative" onclick="selectRiskPersona('Conservative')">
+                Conservative
+              </button>
+              <button class="segment-btn active" data-persona="Balanced" onclick="selectRiskPersona('Balanced')">
+                Balanced
+              </button>
+              <button class="segment-btn" data-persona="Aggressive" onclick="selectRiskPersona('Aggressive')">
+                Aggressive
+              </button>
+              <button class="segment-btn" data-persona="ESG-Conscious" onclick="selectRiskPersona('ESG-Conscious')">
+                🌱 ESG
+              </button>
+            </div>
+          </div>
+
+          <!-- Generate Action Button -->
+          <button id="generateBasketBtn" class="btn-primary" onclick="generateBasket()">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            Generate AI Recommended Basket
+          </button>
+        </div>
+
+        <!-- Basket Results Container -->
+        <div id="basketResultSection" class="mt-4 flex flex-col gap-4">
+          <!-- Loading Skeleton -->
+          <div id="basketLoading" class="glass-card p-6 hidden text-center">
+            <div class="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <div class="text-sm font-medium text-slate-300">Optimizing Regime-Aware Risk Parity...</div>
+            <div class="text-xs text-slate-500 mt-1">Simulating 10,000 Monte Carlo paths</div>
+          </div>
+
+          <!-- Generated Basket View -->
+          <div id="basketCard" class="glass-card p-5 hidden">
+            <!-- Header & Allocation Donut -->
+            <div class="flex items-center justify-between mb-3 border-b border-subtle pb-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Recommended Allocation</h3>
+                <div id="basketRegimeContext" class="text-xs text-emerald-400 font-medium mt-0.5">Optimized for Bull Regime</div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="basketDownloadReportBtn" class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="downloadPortfolioReportPDF('basket')" title="Download Basket Intelligence Report PDF">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="hidden sm:inline">Report</span>
+                </button>
+                <button id="basketShareReportBtn" class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="sharePortfolioReport('basket')" title="Share Basket Intelligence Card">
+                  <i data-lucide="share-2" class="w-3.5 h-3.5 text-teal-400"></i>
+                  <span class="hidden sm:inline">Share</span>
+                </button>
+                <button class="btn-ghost !text-xs !py-1 !px-2.5 flex items-center gap-1" onclick="openOrderSheetModal()">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="hidden sm:inline">Order Sheet</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chart & Legend -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center mb-4">
+              <div class="relative w-44 h-44 mx-auto">
+                <canvas id="basketAllocationChart"></canvas>
+              </div>
+              <div id="basketStockList" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Injected Stock Pills -->
+              </div>
+            </div>
+
+            <!-- Discrete Allocation & Cash Buffer Summary -->
+            <div id="discreteBufferSummary" class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-2.5 mb-4 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-300">Equities: <strong id="basketEquitiesSpent" class="text-white tabular-nums">₹0</strong></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-300">Cash Buffer: <strong id="basketCashBuffer" class="text-emerald-400 tabular-nums">₹0</strong></span>
+              </div>
+            </div>
+
+            <!-- 3-Tier Rupee Growth Scenarios -->
+            <div class="mb-4">
+              <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Probabilistic Rupee Growth</div>
+              <div class="flex flex-col gap-2" id="rupeeTierContainer">
+                <!-- Injected Tiers -->
+              </div>
+            </div>
+
+            <!-- Portfolio ESG Conscience Score Dimension (Ticket 13) -->
+            <div id="portfolioEsgCard" class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-3.5 mb-4">
+              <div class="flex items-center justify-between mb-2.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm">🌱</span>
+                  <span class="text-xs font-bold text-white">Portfolio ESG Conscience</span>
+                  <button type="button" class="learn-chip ml-1.5" data-concept="esg_conscience_score" onclick="openConceptModal('esg_conscience_score')" title="Learn about ESG Conscience Score">
+                    <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn</span>
+                  </button>
+                </div>
+                <span id="portfolioEsgBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                  🟢 High ESG
+                </span>
+              </div>
+              <div class="flex items-center justify-between mb-2.5 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-medium block">Weighted ESG Score</span>
+                  <span id="portfolioEsgScore" class="text-sm font-bold text-emerald-400 tabular-nums">0.0 / 100</span>
+                </div>
+                <div class="text-right text-[10px] text-slate-400">
+                  SEBI BRSR & CRISIL Disclosures
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="p-2 rounded-lg bg-slate-900/40 border border-slate-800/80" title="Environmental: Clean energy, emissions, sustainability">
+                  <div class="text-[10px] text-slate-400 mb-0.5">Environment</div>
+                  <div id="portfolioEsgEnv" class="font-bold text-white tabular-nums text-xs">0.0</div>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/40 border border-slate-800/80" title="Social: Labor welfare, human rights, diversity">
+                  <div class="text-[10px] text-slate-400 mb-0.5">Social</div>
+                  <div id="portfolioEsgSoc" class="font-bold text-white tabular-nums text-xs">0.0</div>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/40 border border-slate-800/80" title="Governance: Board independence, audit ethics, oversight">
+                  <div class="text-[10px] text-slate-400 mb-0.5">Governance</div>
+                  <div id="portfolioEsgGov" class="font-bold text-white tabular-nums text-xs">0.0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4-Pillar Explainable AI Trust Card -->
+            <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-3.5 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                  <span class="text-xs font-bold text-white">Explainable AI Trust Card</span>
+                  <button type="button" class="learn-chip ml-1.5" data-concept="trust_card_transparency" onclick="openConceptModal('trust_card_transparency')" title="Learn about Explainable AI Trust Card">
+                    <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn</span>
+                  </button>
+                </div>
+                <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  0% Commissions
+                </span>
+              </div>
+              <div id="trustPillarsContainer" class="trust-pillar-grid">
+                <!-- Injected 4 Pillars -->
+              </div>
+              <!-- Competitor Compare Trigger in Trust Card -->
+              <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Why QuantNiti vs Competitors?</span>
+                <button id="openCompareTrustBtn" class="btn-ghost !text-[11px] !py-1 !px-2.5 text-emerald-400 border-emerald-500/30 bg-emerald-950/20" onclick="openCompetitorBenchmarkModal()">
+                  <i data-lucide="scale" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  Compare vs Existing Platforms
+                </button>
+              </div>
+            </div>
+
+            <!-- Bank FD & NIFTY Comparison -->
+            <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl p-3.5 mb-4">
+              <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Outperformance vs Alternatives</div>
+              <div id="benchmarkComparisonList" class="flex flex-col gap-2">
+                <!-- Injected Alternatives -->
+              </div>
+            </div>
+
+            <!-- 1-Click Action: Activate into Virtual Portfolio -->
+            <div class="flex gap-2">
+              <button id="activatePortfolioBtn" class="btn-primary flex-1" onclick="activateBasketToPortfolio()">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                Track in Virtual Paper Portfolio
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Community Reviews & AI Verified Testimonials (Ticket #21) -->
+        <div id="basketReviewsSection" class="glass-card p-5 mt-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 border-b border-subtle pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="message-square-check" class="w-4 h-4 text-emerald-400"></i>
+                <h3 class="text-sm sm:text-base font-bold text-white">Community Reviews & Verified Testimonials</h3>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Audited in real-time by automated AI Ground-Truth Fact-Checking Agent</p>
+            </div>
+            <button id="openWriteReviewBtn" class="btn-primary !text-xs !py-1.5 !px-3 self-start sm:self-auto" onclick="openWriteReviewModal('basket')">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 mr-1"></i>
+              Write a Review
+            </button>
+          </div>
+
+          <!-- Rating Summary Bar -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 bg-slate-900/50 rounded-xl border border-slate-800/80 mb-4">
+            <div class="flex flex-col items-center justify-center text-center p-2 border-b md:border-b-0 md:border-r border-slate-800">
+              <div id="reviewAvgRatingVal" class="text-3xl font-extrabold text-white">4.8</div>
+              <div class="star-rating my-1">
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+                <i data-lucide="star" class="star-icon"></i>
+              </div>
+              <div id="reviewTotalCountLabel" class="text-[10px] text-slate-400">Based on 3 reviews</div>
+            </div>
+
+            <div class="col-span-2 flex flex-col justify-center gap-1.5 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">5 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar5" class="bg-emerald-400 h-full rounded-full" style="width: 67%"></div>
+                </div>
+                <span id="starCount5" class="text-[10px] text-slate-400 w-6 text-right">2</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">4 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar4" class="bg-emerald-400 h-full rounded-full" style="width: 33%"></div>
+                </div>
+                <span id="starCount4" class="text-[10px] text-slate-400 w-6 text-right">1</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">3 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar3" class="bg-emerald-400 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <span id="starCount3" class="text-[10px] text-slate-400 w-6 text-right">0</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-12 text-[11px] text-slate-400">1-2 star</span>
+                <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="starBar12" class="bg-emerald-400 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <span id="starCount12" class="text-[10px] text-slate-400 w-6 text-right">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Filter Tabs -->
+          <div class="flex items-center gap-2 mb-3 overflow-x-auto no-scrollbar">
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 review-filter-pill active" onclick="filterReviewsList('ALL')">All Reviews</button>
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white review-filter-pill" onclick="filterReviewsList('VERIFIED')">✅ Verified Only</button>
+            <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white review-filter-pill" onclick="filterReviewsList('QUALITATIVE')">ℹ️ Qualitative</button>
+          </div>
+
+          <!-- Reviews List -->
+          <div id="reviewsListContainer" class="space-y-3">
+            <!-- Dynamic review cards injected here -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TAB 4: PORTFOLIO (Multi-Portfolio MTM Tracker & Rebalance) -->
+      <!-- ======================================================== -->
+      <section id="tab-portfolio" class="tab-panel">
+        
+        <!-- Active Virtual Portfolio Overview Card -->
+        <div class="glass-card p-5 mb-4">
+          
+          <!-- Portfolio Selector & Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-subtle pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i>
+                <h2 class="text-base font-bold text-white">Virtual Paper Portfolio</h2>
+              </div>
+              <div id="portfolioNameSubtitle" class="text-xs text-slate-400 mt-0.5">My Simulated Tracker</div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <!-- Multi-portfolio switcher dropdown -->
+              <select id="portfolioSelector" class="bg-slate-800 border border-slate-700/80 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-emerald-500" onchange="handlePortfolioSwitch(this.value)">
+                <option value="">Default AI Portfolio</option>
+              </select>
+
+              <button class="btn-primary !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="openCreatePortfolioModal()" title="Create New Goal Portfolio">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">New Goal</span>
+              </button>
+
+              <button id="portfolioDownloadReportBtn" class="btn-ghost !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="downloadPortfolioReportPDF('portfolio')" title="Download Portfolio Report Card PDF">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span class="hidden sm:inline">Report</span>
+              </button>
+
+              <button id="portfolioShareReportBtn" class="btn-ghost !text-xs !py-1.5 !px-2.5 flex items-center gap-1" onclick="sharePortfolioReport('portfolio')" title="Share Portfolio Report Card Image">
+                <i data-lucide="share-2" class="w-3.5 h-3.5 text-teal-400"></i>
+                <span class="hidden sm:inline">Share</span>
+              </button>
+
+              <button class="btn-ghost !text-xs !py-1.5 !px-2.5" onclick="openOrderSheetModal()">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
+                Order Sheet
+              </button>
+            </div>
+          </div>
+
+          <!-- Groww-Style Dual-Metric Hero Card (Ticket #19) -->
+          <div id="portfolioHeroCard" class="bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-emerald-950/30 border border-emerald-500/25 rounded-2xl p-4 sm:p-5 mb-4 shadow-lg shadow-black/20">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Current Portfolio Value</span>
+              </span>
+              <div class="flex items-center gap-1.5">
+                <span id="portfolioPersonaTag" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">Balanced</span>
+                <span id="portfolioHorizonTag" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">6M</span>
+                <button id="deletePortfolioBtn" class="text-slate-500 hover:text-rose-400 transition-colors p-1" onclick="deleteActivePortfolio()" title="Delete this goal portfolio">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Primary Large Valuation in Indian Number Format -->
+            <div id="portValuationTotal" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight tabular-nums mb-3">
+              ₹0.00
+            </div>
+
+            <!-- Dual Metric Badges: 1-Day Return vs Overall Return -->
+            <div class="flex flex-wrap items-center gap-2.5 mb-3.5">
+              <div id="port1DMetricBadge" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                <span class="text-slate-400 font-normal">1-Day:</span>
+                <span id="portValuation1D" class="tabular-nums">+₹0.00 (+0.00%)</span>
+              </div>
+
+              <div id="portTotalMetricBadge" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                <span class="text-slate-400 font-normal">Overall:</span>
+                <span id="portValuationPnl" class="tabular-nums">+₹0.00 (+0.00%)</span>
+              </div>
+            </div>
+
+            <!-- Secondary Metrics Strip -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800/80 text-center text-xs">
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Invested</div>
+                <div id="portValuationInvested" class="font-bold text-white mt-0.5 tabular-nums text-xs sm:text-sm">₹0.00</div>
+              </div>
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Cash Buffer</div>
+                <div id="portValuationCash" class="font-bold text-emerald-400 mt-0.5 tabular-nums text-xs sm:text-sm">₹0.00</div>
+              </div>
+              <div class="glass-card-sm !p-2">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Alpha vs NIFTY</div>
+                <div id="portValuationAlpha" class="font-bold text-emerald-400 mt-0.5 tabular-nums text-xs sm:text-sm">+0.0%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Regime-Shift Rebalance Alert Banner -->
+          <div id="rebalanceAlertCard" class="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3.5 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400"></i>
+                <span class="text-xs font-bold text-white">Regime-Shift Rebalance Status</span>
+                <button type="button" class="learn-chip" data-concept="regime_shift_rebalance" onclick="openConceptModal('regime_shift_rebalance')" title="Learn about Regime-Shift Rebalancing">
+                  <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn</span>
+                </button>
+                <button type="button" class="learn-chip" data-concept="compounding_sip" onclick="openConceptModal('compounding_sip')" title="Learn about SIP Compounding">
+                  <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn SIP</span>
+                </button>
+              </div>
+              <span id="rebalanceBadge" class="text-[10px] font-semibold bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                In Sync
+              </span>
+            </div>
+            <p id="rebalanceReason" class="text-xs text-slate-300 mb-3">
+              Portfolio allocations are fully aligned with current Low-Volatility Bull market conditions.
+            </p>
+            <div id="rebalanceActions" class="hidden">
+              <button class="btn-primary !text-xs !py-1.5 !w-full" onclick="applyRebalance()">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                Apply Regime-Shift Rebalance
+              </button>
+            </div>
+          </div>
+
+          <!-- Holdings Table -->
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Active Holdings Breakdown</div>
+            <div class="overflow-x-auto">
+              <table class="custom-table" id="portHoldingsTable">
+                <thead>
+                  <tr>
+                    <th>Stock</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Value</th>
+                    <th>1D Return</th>
+                    <th>Overall P&L</th>
+                  </tr>
+                </thead>
+                <tbody id="portHoldingsBody">
+                  <!-- Injected Holdings -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Long-Horizon Wealth Projection & 7% Bank FD Hurdle (Ticket #18) -->
+          <div class="glass-card p-5 mt-4 border border-emerald-500/20" id="portfolioCompoundingSection">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 border-b border-subtle pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
+                  <h3 class="text-sm font-bold text-white uppercase tracking-wider">10-Year Long-Horizon Wealth Trajectory</h3>
+                </div>
+                <div class="text-xs text-slate-400 mt-0.5">Geometric Brownian Motion (GBM) quantile cones vs. 7% Bank Fixed Deposit hurdle</div>
+              </div>
+              <div id="portfolioHurdleBadge" class="text-[11px] font-semibold bg-emerald-900/60 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 self-start sm:self-auto">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                <span id="portfolioAlphaText">Beats 7% Bank FD by +₹0</span>
+              </div>
+            </div>
+
+            <!-- Trajectory Stats summary -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3.5">
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">10Y Pessimistic (Q10)</div>
+                <div id="port10YPessimistic" class="text-xs sm:text-sm font-bold text-rose-400 mt-0.5 tabular-nums">₹0</div>
+              </div>
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">10Y Base Case (Q50)</div>
+                <div id="port10YBase" class="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5 tabular-nums">₹0</div>
+              </div>
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">10Y Optimistic (Q90)</div>
+                <div id="port10YOptimistic" class="text-xs sm:text-sm font-bold text-teal-300 mt-0.5 tabular-nums">₹0</div>
+              </div>
+              <div class="glass-card-sm text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">7% Bank FD Hurdle</div>
+                <div id="port10YBankFd" class="text-xs sm:text-sm font-bold text-amber-400 mt-0.5 tabular-nums">₹0</div>
+              </div>
+            </div>
+
+            <!-- Canvas for Portfolio Compounding vs Hurdle -->
+            <div class="relative w-full h-56 sm:h-64 bg-slate-950/50 rounded-xl p-2 border border-slate-800">
+              <canvas id="portfolioCompoundingChart"></canvas>
+            </div>
+            <div class="flex items-center justify-center flex-wrap gap-4 text-[10px] text-slate-400 mt-2">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Base Case (Q50)</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span> Optimistic (Q90)</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Pessimistic (Q10)</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> 7% Bank FD Hurdle</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Mobile Tab Bar Navigation (4 Tabs) -->
+    <nav class="bottom-nav-bar" id="bottomNavBar">
+      <button class="nav-tab-btn active" data-tab="home" onclick="switchTab('home')">
+        <span class="nav-icon-wrap"><i data-lucide="home" class="w-5 h-5"></i></span>
+        <span>Home</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="explore" onclick="switchTab('explore')">
+        <span class="nav-icon-wrap"><i data-lucide="compass" class="w-5 h-5"></i></span>
+        <span>Explore</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="grow" onclick="switchTab('grow')">
+        <span class="nav-icon-wrap"><i data-lucide="sprout" class="w-5 h-5"></i></span>
+        <span>Grow</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="portfolio" onclick="switchTab('portfolio')">
+        <span class="nav-icon-wrap"><i data-lucide="wallet" class="w-5 h-5"></i></span>
+        <span>Portfolio</span>
+      </button>
+    </nav>
+
+    <!-- Modal 1: 360° Stock Intelligence Profile Sheet -->
+    <div id="stockProfileModal" class="modal-overlay" onclick="closeStockProfileModal(event)">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeStockProfileModal()"></div>
+        <div class="flex justify-between items-center border-b border-subtle pb-3">
+          <div>
+            <h3 id="modalStockSymbol" class="text-lg font-bold text-white">RELIANCE</h3>
+            <div id="modalStockName" class="text-xs text-slate-400">Reliance Industries Ltd. • Energy</div>
+          </div>
+          <div class="text-right">
+            <div id="modalStockPrice" class="text-base font-bold text-white tabular-nums">₹2,845.50</div>
+            <div id="modalStockChange" class="text-xs font-semibold text-emerald-400 tabular-nums">+1.45%</div>
+          </div>
+        </div>
+
+        <!-- Multi-Horizon Forecast Cones Chart -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Probabilistic Return Forecast Cones</span>
+            <button type="button" class="learn-chip" data-concept="probabilistic_forecasting" onclick="openConceptModal('probabilistic_forecasting')" title="Learn about Quantile Forecast Cones">
+              <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn Cones</span>
+            </button>
+          </div>
+          <div class="h-44 w-full">
+            <canvas id="stockForecastChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Technical Factors & Regime Suitability -->
+        <div class="grid grid-cols-2 gap-2" id="stockFactorsGrid">
+          <!-- Injected Factors -->
+        </div>
+
+        <!-- ESG Conscience Score Dimension (Ticket 13) -->
+        <div id="modalStockEsgSection" class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm">🌱</span>
+              <span class="text-xs font-bold text-white">ESG Conscience Score</span>
+              <button type="button" class="learn-chip ml-1" data-concept="esg_conscience_score" onclick="openConceptModal('esg_conscience_score')" title="Learn about ESG Conscience Score">
+                <i data-lucide="help-circle" class="w-3 h-3"></i><span>Learn</span>
+              </button>
+            </div>
+            <span id="modalStockEsgBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+              🟢 High ESG
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="text-slate-400">Composite Score:</span>
+            <span id="modalStockEsgComposite" class="font-bold text-emerald-400 tabular-nums">0.0 / 100</span>
+          </div>
+          <!-- 3-Pillar Breakdown with Tooltips -->
+          <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+            <div class="p-1.5 rounded-lg bg-slate-800/50 border border-slate-750" title="Environmental: Clean energy, emissions, carbon footprint">
+              <span class="text-[10px] text-slate-400 block">Env</span>
+              <span id="modalStockEsgEnv" class="font-bold text-white tabular-nums">0</span>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-800/50 border border-slate-750" title="Social: Human capital, diversity, community engagement">
+              <span class="text-[10px] text-slate-400 block">Soc</span>
+              <span id="modalStockEsgSoc" class="font-bold text-white tabular-nums">0</span>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-800/50 border border-slate-750" title="Governance: Board independence, ethics, compliance">
+              <span class="text-[10px] text-slate-400 block">Gov</span>
+              <span id="modalStockEsgGov" class="font-bold text-white tabular-nums">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action: Backtest in Quant Lab Studio -->
+        <button id="modalBacktestBtn" class="btn-primary" onclick="backtestCurrentStock()">
+          <i data-lucide="flask-conical" class="w-4 h-4"></i>
+          Simulate in Quant Lab Studio
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal 2: 1-Click Broker Order Sheet Modal -->
+    <div id="orderSheetModal" class="modal-overlay" onclick="closeOrderSheetModal(event)">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeOrderSheetModal()"></div>
+        <div class="flex justify-between items-center border-b border-subtle pb-3">
+          <div>
+            <h3 class="text-base font-bold text-white">1-Click Broker Order Sheet</h3>
+            <div class="text-xs text-slate-400">Execute trades easily on Zerodha or Groww</div>
+          </div>
+          <button class="btn-ghost !p-1.5" onclick="closeOrderSheetModal()">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Copyable Formats -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-xs font-semibold text-slate-300">Zerodha Basket CSV Format</span>
+            <button class="btn-ghost !text-[11px] !py-1 !px-2 text-emerald-400" onclick="copyZerodhaFormat()">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy CSV
+            </button>
+          </div>
+          <textarea id="zerodhaCsvText" readonly class="w-full h-24 bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300 font-mono focus:outline-none tabular-nums"></textarea>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-xs font-semibold text-slate-300">Groww Summary Text Format</span>
+            <button class="btn-ghost !text-[11px] !py-1 !px-2 text-emerald-400" onclick="copyGrowwFormat()">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy Summary
+            </button>
+          </div>
+          <textarea id="growwSummaryText" readonly class="w-full h-24 bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300 font-mono focus:outline-none tabular-nums"></textarea>
+        </div>
+
+        <div class="text-[10px] text-slate-500 leading-tight">
+          Disclaimer: Educational decision-support simulation tool. Not automated order execution or SEBI investment advice.
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: In-App Interactive Competitor Benchmark Drawer -->
+    <div id="competitorBenchmarkModal" class="modal-overlay" onclick="closeCompetitorBenchmarkModal(event)">
+      <div class="modal-sheet competitor-drawer-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeCompetitorBenchmarkModal()"></div>
+        
+        <!-- Drawer Header -->
+        <div class="flex justify-between items-start border-b border-subtle pb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                <i data-lucide="scale" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <h3 class="text-base sm:text-lg font-bold text-white">Why QuantNiti vs Existing Platforms</h3>
+            </div>
+            <div class="text-xs text-slate-400 mt-1">
+              Primary-Source Benchmark: MoneyControl, Zerodha, Groww, INDmoney & Smallcase vs QuantNiti
+            </div>
+          </div>
+          <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeCompetitorBenchmarkModal()" title="Close Benchmark Drawer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Academic & Defense Context Banner -->
+        <div class="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Defense Benchmark Matrix
+              </span>
+              <span class="text-xs font-semibold text-white">Institutional Quantitative Rigor for Retail</span>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+              Retail investors are trapped between passive past-trackers (Groww, INDmoney), single-ticker chart tools (Streak), and expensive tip/basket subscriptions (MoneyControl, Smallcase). QuantNiti provides zero-middleman predictive intelligence.
+            </p>
+          </div>
+        </div>
+
+        <!-- 10-Dimension Comparison Matrix (Horizontal Responsive Scroll) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="table-properties" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Verified 10-Dimension Platform Comparison
+            </div>
+            <span class="text-[10px] text-slate-400 hidden sm:inline">← Scroll horizontally to inspect all platforms →</span>
+          </div>
+
+          <div class="benchmark-table-wrapper">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th class="dimension-col">Feature / Dimension</th>
+                  <th>MoneyControl (Pro)</th>
+                  <th>Zerodha (Streak)</th>
+                  <th>Groww</th>
+                  <th>INDmoney</th>
+                  <th>Smallcase</th>
+                  <th class="quantniti-col">
+                    <div class="flex items-center gap-1 text-emerald-400 font-bold">
+                      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+                      QuantNiti (Ours)
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dimension 1 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">1. Forward Growth Forecasting</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Predictive ₹ return cones & percentile scenarios</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ Broker Targets</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ Past XIRR Only</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ 3-Tier Cones (Q10, Q50, Q90)</span></td>
+                </tr>
+
+                <!-- Dimension 2 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">2. Market Regime Classification</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Unsupervised macroeconomic volatility detection</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Unsupervised GMM Radar</span></td>
+                </tr>
+
+                <!-- Dimension 3 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">3. Portfolio-Level Optimization</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Mathematical asset weights & diversification</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ Single-Symbol Only</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-partial">⚠️ Curated Static</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Hierarchical Risk Parity (HRP)</span></td>
+                </tr>
+
+                <!-- Dimension 4 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">4. Discrete Integer Share Sizing</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Knapsack whole-share sizing + cash buffer</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-partial">⚠️ Static Min Cap</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Whole Shares + ₹ Buffer</span></td>
+                </tr>
+
+                <!-- Dimension 5 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">5. Explainable AI Trust Card</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Confidence intervals, drawdown caps & savings</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ Opaque Analysts</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ Opaque Score</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ 4-Pillar Transparent Metrics</span></td>
+                </tr>
+
+                <!-- Dimension 6 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">6. Technical Strategy Backtesting</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Vectorized historical simulation with regime splits</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-partial">✅ Rule Scanners</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Vectorized Quant Lab Studio</span></td>
+                </tr>
+
+                <!-- Dimension 7 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">7. Dynamic Regime Rebalance Alerts</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Before/After diff alerts triggered on macro regime shift</div>
+                  </td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-partial">⚠️ Monthly Calendar</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Real-Time Regime Shift Diff</span></td>
+                </tr>
+
+                <!-- Dimension 8 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">8. Virtual Paper Portfolio Simulator</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Live mark-to-market tracker with NIFTY alpha</div>
+                  </td>
+                  <td><span class="badge-feature-partial">⚠️ Basic Watchlist</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td><span class="badge-feature-no">❌ None</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Live MTM + Alpha Tracker</span></td>
+                </tr>
+
+                <!-- Dimension 9 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">9. Cost & Middleman Fees</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Subscription costs & manager advisory overhead</div>
+                  </td>
+                  <td><span class="text-[11px] text-amber-300">₹699–₹2,999/yr</span></td>
+                  <td><span class="text-[11px] text-slate-300">₹0 (Trades Only)</span></td>
+                  <td><span class="text-[11px] text-slate-300">₹0 (Trades Only)</span></td>
+                  <td><span class="text-[11px] text-slate-300">Free (Lead Gen)</span></td>
+                  <td><span class="text-[11px] text-rose-400">₹2k–₹10k/yr</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ 0% Commission Disintermediation</span></td>
+                </tr>
+
+                <!-- Dimension 10 -->
+                <tr>
+                  <td class="dimension-col font-medium text-white">
+                    <div class="font-semibold text-slate-200">10. Audience Accessibility & Dual Experience</div>
+                    <div class="text-[10px] text-slate-400 font-normal">Tailored for both retail simplicity & quant depth</div>
+                  </td>
+                  <td><span class="text-[11px] text-slate-400">News Readers</span></td>
+                  <td><span class="text-[11px] text-slate-400">Active Day Traders</span></td>
+                  <td><span class="text-[11px] text-slate-400">Beginner SIPs</span></td>
+                  <td><span class="text-[11px] text-slate-400">Wealth Tracking</span></td>
+                  <td><span class="text-[11px] text-slate-400">Thematic Buyers</span></td>
+                  <td class="quantniti-cell"><span class="badge-feature-yes">✅ Dual Experience (Retail + Quant)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Academic Defense Takeaways & Justifications Grid -->
+        <div>
+          <div class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-400"></i>
+            Key Defense Takeaways & Comparative Grounding
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="glass-card-sm p-3 border-slate-800">
+              <div class="text-xs font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                Why Not Groww or INDmoney?
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Groww & INDmoney excel at tracking past performance (Active & Lifetime XIRR). However, they are 100% backward-looking, lack forward probabilistic projections, and offer zero automated regime-adaptive crash protection. QuantNiti empowers retail investors with forward predictive allocation.
+              </p>
+            </div>
+
+            <div class="glass-card-sm p-3 border-slate-800">
+              <div class="text-xs font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                Why Not Zerodha Streak or TradingView?
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Streak and TradingView operate on single tickers in isolation with technical rules or Pine Script. They cannot construct, optimize, or backtest multi-stock portfolios. QuantNiti performs portfolio-level Hierarchical Risk Parity across the NIFTY 50 with zero coding required.
+              </p>
+            </div>
+
+            <div class="glass-card-sm p-3 border-slate-800">
+              <div class="text-xs font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                Why Not Smallcase?
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Smallcase charges recurring manager subscription fees (₹2,000–₹10,000/yr) that erode retail capital compounding, and rebalances on rigid calendar schedules. QuantNiti offers 0% middleman fees and dynamically alerts on market regime shifts.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-Click Action: Try AI Basket Generator -->
+        <div class="flex justify-end pt-2">
+          <button class="btn-primary !w-auto !py-2 !px-5" onclick="closeCompetitorBenchmarkModal(); switchTab('grow');">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            Experience QuantNiti AI Allocation
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Floating NitiBot Chat Bubble Trigger -->
+    <div id="nitibotTriggerContainer" class="floating-chat-bubble-container hidden">
+      <button id="nitibotBubbleBtn" class="floating-chat-bubble" onclick="toggleNitiBotChat()" title="Ask NitiBot AI Assistant">
+        <div class="chat-bubble-inner">
+          <i data-lucide="bot" class="w-5 h-5 text-emerald-400"></i>
+          <span class="chat-online-dot"></span>
+        </div>
+        <span class="chat-bubble-label hidden sm:inline">Ask NitiBot</span>
+      </button>
+    </div>
+
+    <!-- Modal 4: NitiBot Conversational Assistant Panel -->
+    <div id="nitibotModal" class="modal-overlay hidden" onclick="closeNitiBotModal(event)">
+      <div class="modal-sheet nitibot-chat-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeNitiBotChat()"></div>
+        
+        <!-- Chat Header -->
+        <div class="flex justify-between items-center border-b border-subtle pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+              <i data-lucide="bot" class="w-5 h-5 text-emerald-400"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-bold text-white">NitiBot</h3>
+                <span class="text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  RAG Grounded
+                </span>
+              </div>
+              <div class="text-xs text-slate-400">Context-Aware Quantitative Portfolio Assistant</div>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-1">
+            <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="clearNitiBotChat()" title="Reset Conversation">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeNitiBotChat()" title="Close NitiBot">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Message History Container -->
+        <div id="nitibotMessagesContainer" class="nitibot-messages-area">
+          <!-- Default Greeting -->
+          <div class="chat-msg chat-msg-bot">
+            <div class="chat-msg-avatar">
+              <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div class="chat-msg-bubble">
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Namaste! I'm <strong>NitiBot</strong>, your QuantNiti quantitative intelligence assistant. I can explain your AI portfolio allocation, analyze downside stress drawdowns, break down market regimes, or answer questions about your backtested strategies.
+              </p>
+              <div class="chat-source-tag mt-2">
+                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400 inline mr-1"></i>
+                <span>SEBI-Compliant Educational Intelligence</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="nitibotTypingIndicator" class="chat-typing-indicator hidden">
+          <div class="chat-msg-avatar">
+            <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="typing-bubble">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <!-- Suggested Quick-Action Prompt Chips -->
+        <div class="nitibot-prompt-chips flex gap-1.5 overflow-x-auto py-1">
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('Explain my portfolio')">
+            <i data-lucide="sparkles" class="w-3 h-3 text-emerald-400"></i>
+            <span>Explain my portfolio</span>
+          </button>
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('What if the market crashes?')">
+            <i data-lucide="alert-triangle" class="w-3 h-3 text-amber-400"></i>
+            <span>What if the market crashes?</span>
+          </button>
+          <button type="button" class="prompt-chip" onclick="sendNitiBotQuickPrompt('Why this stock?')">
+            <i data-lucide="help-circle" class="w-3 h-3 text-emerald-400"></i>
+            <span>Why this stock?</span>
+          </button>
+        </div>
+
+        <!-- Input Form -->
+        <form id="nitibotInputForm" class="nitibot-input-bar" onsubmit="handleNitiBotSubmit(event)">
+          <input 
+            type="text" 
+            id="nitibotInputField" 
+            class="nitibot-text-input" 
+            placeholder="Ask anything about your portfolio or market regime..." 
+            autocomplete="off"
+          >
+          <button type="submit" id="nitibotSendBtn" class="nitibot-send-btn" title="Send message">
+            <i data-lucide="send" class="w-4 h-4 text-slate-900"></i>
+          </button>
+        </form>
+
+        <!-- SEBI Compliance Disclaimer Footer -->
+        <div class="nitibot-disclaimer-footer">
+          <i data-lucide="info" class="w-3 h-3 inline text-slate-400 mr-1"></i>
+          <span>NitiBot is an educational tool, not a financial advisor.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Financial Literacy Concept Detail Modal Sheet -->
+    <div id="conceptDetailModal" class="modal-overlay" onclick="closeConceptModal(event)">
+      <div class="modal-sheet max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeConceptModal()"></div>
+        <div class="flex items-start justify-between mb-3 border-b border-subtle pb-3">
+          <div class="flex items-center gap-2">
+            <span id="conceptDetailCategory" class="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20">BASICS</span>
+            <h3 id="conceptDetailTitle" class="text-base font-bold text-white">Concept Title</h3>
+          </div>
+          <button type="button" onclick="closeConceptModal()" class="btn-ghost !p-1.5 text-slate-400 hover:text-white" title="Close">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Plain English Explanation -->
+          <div class="glass-card-sm p-3.5">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Plain-English Explanation
+            </div>
+            <p id="conceptDetailExplanation" class="text-xs text-slate-200 leading-relaxed"></p>
+          </div>
+
+          <!-- Relatable Everyday Analogy Box -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-emerald-950/40 to-slate-900 border border-emerald-500/30">
+            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-400"></i>
+              Relatable Real-World Analogy
+            </div>
+            <p id="conceptDetailAnalogy" class="text-xs text-emerald-100/90 leading-relaxed italic"></p>
+          </div>
+
+          <!-- Related Concepts Tags -->
+          <div id="conceptRelatedSection" class="hidden">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Related Concepts</div>
+            <div id="conceptRelatedChips" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <!-- Action Buttons (Mark as Learned & Ask NitiBot) -->
+          <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-subtle">
+            <button type="button" id="conceptLearnedToggleBtn" class="btn-secondary !py-2 flex-1 justify-center" onclick="toggleCurrentConceptLearned()">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span id="conceptLearnedToggleText">Mark as Learned</span>
+            </button>
+            <button type="button" id="conceptAskNitiBotBtn" class="btn-primary !py-2 flex-1 justify-center" onclick="askNitiBotAboutCurrentConcept()">
+              <i data-lucide="bot" class="w-4 h-4"></i>
+              <span>Ask NitiBot Deep Dive</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Goal Portfolio Modal Sheet (Ticket #19) -->
+    <div id="createGoalModal" class="modal-overlay hidden" onclick="closeCreatePortfolioModal(event)">
+      <div class="modal-sheet max-w-md max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sheet-handle" onclick="closeCreatePortfolioModal()"></div>
+        <div class="flex items-center justify-between pb-3 border-b border-subtle mb-4">
+          <div class="flex items-center gap-2">
+            <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <i data-lucide="target" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">Create Goal Portfolio</h3>
+              <p class="text-xs text-slate-400">Set up a distinct virtual investment bucket</p>
+            </div>
+          </div>
+          <button type="button" class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeCreatePortfolioModal()">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Goal Name with Suggestions -->
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Portfolio / Goal Name</label>
+          <input type="text" id="goalPortfolioNameInput" placeholder="e.g. Retirement SIP, Emergency Buffer" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 mb-2">
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Retirement SIP')">Retirement SIP</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Emergency Buffer')">Emergency Buffer</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Defense Alpha')">Defense Alpha</button>
+            <button type="button" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700/50" onclick="setGoalNamePreset('Child Education')">Child Education</button>
+          </div>
+        </div>
+
+        <!-- Capital Input -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-semibold text-slate-300">Initial Capital</label>
+            <span id="goalCapitalDisplay" class="text-xs font-bold text-emerald-400 tabular-nums">₹50,000</span>
+          </div>
+          <input type="range" id="goalCapitalRange" min="5000" max="1000000" step="5000" value="50000" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('goalCapitalDisplay').innerText = '₹' + Number(this.value).toLocaleString('en-IN')">
+        </div>
+
+        <!-- Risk Persona -->
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Risk Persona</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Conservative" class="mr-1.5 text-emerald-500"> Conservative
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Balanced" checked class="mr-1.5 text-emerald-500"> Balanced
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalRiskPersona" value="Aggressive" class="mr-1.5 text-emerald-500"> Aggressive
+            </label>
+          </div>
+        </div>
+
+        <!-- Horizon -->
+        <div class="mb-5">
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Target Horizon</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="1M" class="mr-1 text-emerald-500"> 1M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="3M" class="mr-1 text-emerald-500"> 3M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="6M" checked class="mr-1 text-emerald-500"> 6M
+            </label>
+            <label class="flex items-center justify-center p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 cursor-pointer text-xs text-slate-300 hover:border-emerald-500/50">
+              <input type="radio" name="goalHorizon" value="12M" class="mr-1 text-emerald-500"> 12M
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button type="button" class="btn-ghost flex-1 !py-2 !text-xs" onclick="closeCreatePortfolioModal()">Cancel</button>
+          <button type="button" id="createGoalSubmitBtn" class="btn-primary flex-1 !py-2 !text-xs justify-center" onclick="submitCreateGoalPortfolio()">
+            <i data-lucide="plus-circle" class="w-4 h-4 mr-1"></i>
+            Create Portfolio
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Smart Alert Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Notification Center Drawer Backdrop -->
+    <div id="notificationDrawerBackdrop" class="notification-drawer-backdrop" onclick="toggleNotificationDrawer(false)"></div>
+
+    <!-- Notification Center Sliding Drawer -->
+    <aside id="notificationCenterDrawer" class="notification-drawer">
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between p-4 border-b border-subtle">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h2 class="text-sm font-bold text-white">Smart Alerts</h2>
+              <span id="drawerUnreadCountBadge" class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full hidden">0 new</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Objective Quantitative Risk Signals</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="btn-ghost !p-1.5 text-xs text-emerald-400 hover:text-emerald-300" onclick="markAllNotificationsRead()" title="Mark all as read">
+            <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+          </button>
+          <button class="btn-ghost !p-1.5 text-xs text-slate-400 hover:text-rose-400" onclick="clearAllNotifications()" title="Clear all">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+          <button class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="toggleNotificationDrawer(false)" title="Close">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Pills -->
+      <div class="flex items-center gap-1.5 p-3 border-b border-subtle overflow-x-auto no-scrollbar text-xs">
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 notif-pill active" data-filter="ALL" onclick="filterNotifications('ALL')">All</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="REGIME_TRANSITION" onclick="filterNotifications('REGIME_TRANSITION')">Regime</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="PORTFOLIO_DRIFT" onclick="filterNotifications('PORTFOLIO_DRIFT')">Drift</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="TECHNICAL" onclick="filterNotifications('TECHNICAL')">Technicals</button>
+        <button class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 hover:text-white notif-pill" data-filter="DRAWDOWN_BREACH" onclick="filterNotifications('DRAWDOWN_BREACH')">Risk</button>
+      </div>
+
+      <!-- Notification List Container -->
+      <div id="notificationList" class="flex-1 overflow-y-auto p-3 space-y-2.5">
+        <!-- Dynamic alert items -->
+      </div>
+
+      <!-- Push Notification Permission Footer -->
+      <div id="notificationPushPrompt" class="p-3 border-t border-subtle bg-slate-900/50 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span class="text-[11px] text-slate-300">Live Web Push Alerts</span>
+        </div>
+        <button id="enablePushBtn" class="btn-primary !text-[10px] !py-1 !px-2.5" onclick="enablePushNotifications()">
+          Enable Push
+        </button>
+      </div>
+    </aside>
+
+    <!-- Write Review Modal (Ticket #21) -->
+    <div id="writeReviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-subtle mb-4">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Write a Review</h3>
+              <p class="text-[10px] text-slate-400">Moderated by AI Ground-Truth Fact-Checking Agent</p>
+            </div>
+          </div>
+          <button type="button" class="btn-ghost !p-1.5 text-slate-400 hover:text-white" onclick="closeWriteReviewModal()">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form id="writeReviewForm" onsubmit="event.preventDefault(); submitUserReview();">
+          <input type="hidden" id="reviewTargetType" value="basket">
+          <input type="hidden" id="reviewTargetId" value="balanced_6m">
+          <input type="hidden" id="reviewRatingInput" value="5">
+
+          <!-- User Name -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Your Name</label>
+            <input type="text" id="reviewAuthorName" required placeholder="e.g. Priya Sharma" class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <!-- Star Rating -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Star Rating</label>
+            <div class="flex items-center gap-1.5" id="reviewRatingStars">
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(1)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(2)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(3)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(4)"></i>
+              <i data-lucide="star" class="w-5 h-5 star-icon interactive-star" onclick="setReviewRating(5)"></i>
+              <span id="reviewRatingLabel" class="text-xs font-bold text-emerald-400 ml-2">5 Stars</span>
+            </div>
+          </div>
+
+          <!-- Review Text -->
+          <div class="mb-3.5">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Your Review & Experience</label>
+            <textarea id="reviewTextInput" rows="3" required placeholder="Share your experience with the portfolio's allocation, drawdowns, and explainability..." class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500"></textarea>
+            <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+              <span>Notice: Phone numbers, URLs, Telegram links, and stock tips are blocked.</span>
+            </div>
+          </div>
+
+          <!-- Optional Claimed Return & Duration -->
+          <div class="grid grid-cols-2 gap-3 mb-4 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+            <div>
+              <label class="text-[11px] font-semibold text-slate-300 block mb-1">Claimed Return (Optional %)</label>
+              <input type="number" step="0.1" id="reviewClaimedReturn" placeholder="e.g. 13.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-slate-300 block mb-1">Holding Duration</label>
+              <select id="reviewClaimedDuration" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <option value="1M">1 Month (1M)</option>
+                <option value="3M">3 Months (3M)</option>
+                <option value="6M" selected>6 Months (6M)</option>
+                <option value="12M">1 Year (12M)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fact Check Info Card -->
+          <div class="text-[11px] text-slate-400 bg-slate-900 p-2.5 rounded-lg border border-slate-800 flex items-start gap-2 mb-4">
+            <i data-lucide="info" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+            <span>QuantNiti's Fact-Checking Agent will verify your claimed return against actual historical data. Reviews matching within ±3% receive a verified trust badge.</span>
+          </div>
+
+          <!-- Audit Feedback Message -->
+          <div id="reviewFeedbackMsg" class="text-xs p-3 rounded-lg hidden mb-3"></div>
+
+          <!-- Submit Buttons -->
+          <div class="flex gap-2">
+            <button type="button" class="btn-ghost flex-1 !py-2 !text-xs" onclick="closeWriteReviewModal()">Cancel</button>
+            <button type="submit" id="submitReviewBtn" class="btn-primary flex-1 !py-2 !text-xs justify-center">
+              <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+              Submit for Fact-Check
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  <!-- ===================================================================
+       Ticket #15: Fixed-Width Sharable Portfolio Report Card Template
+       Optimized for A4 portrait PDF (794px width) & High-Resolution Social PNG
+       =================================================================== -->
+  <div id="portfolioReportCardTemplate" class="report-card-template">
+    
+    <!-- Section 1: QuantNiti Branded Header -->
+    <div class="report-header">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-slate-950 font-black text-xl">
+            Q
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-xl font-extrabold text-white tracking-tight">QuantNiti</h1>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                Portfolio Intelligence Report
+              </span>
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5">
+              Regime-Adaptive Asset Allocation • Quantitative Risk Guardrails • HRP Optimization
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <div class="text-[10px] uppercase font-semibold text-slate-400">Generated On</div>
+          <div id="reportTimestamp" class="text-xs font-bold text-white tabular-nums">05 Sep 2026, 23:15 IST</div>
+          <div id="reportPersonaHorizonTag" class="text-[10px] text-emerald-400 font-medium mt-0.5">Balanced • 6M Horizon</div>
+        </div>
+      </div>
+
+      <!-- Portfolio Name & Market Regime Banner -->
+      <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800 mb-4">
+        <div>
+          <div class="text-[10px] uppercase font-semibold text-slate-400">Portfolio Identity</div>
+          <div id="reportPortfolioName" class="text-base font-bold text-white">AI Balanced Portfolio</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Market Regime:</span>
+          <span id="reportRegimeBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Low-Volatility Bull
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Key Metrics Overview Grid -->
+    <div class="grid grid-cols-4 gap-2.5 mb-5 text-center">
+      <div class="report-metric-box">
+        <div class="metric-label">Current Value</div>
+        <div id="reportTotalValue" class="metric-val text-white">₹1,24,560.00</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Invested Capital</div>
+        <div id="reportInvestedCapital" class="metric-val text-slate-200">₹1,00,000.00</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Total Return</div>
+        <div id="reportTotalReturn" class="metric-val text-emerald-400">+₹24,560.50 (+24.56%)</div>
+      </div>
+      <div class="report-metric-box">
+        <div class="metric-label">Alpha vs NIFTY 50</div>
+        <div id="reportBenchmarkAlpha" class="metric-val text-emerald-400">+6.36%</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2.5 mb-5 text-center text-xs">
+      <div class="report-metric-box !p-2 flex items-center justify-between px-4">
+        <span class="text-slate-400">1-Day Change:</span>
+        <span id="report1DReturn" class="font-bold text-emerald-400 tabular-nums">+₹1,250.00 (+1.02%)</span>
+      </div>
+      <div class="report-metric-box !p-2 flex items-center justify-between px-4">
+        <span class="text-slate-400">Unallocated Cash Buffer:</span>
+        <span id="reportCashBuffer" class="font-bold text-emerald-400 tabular-nums">₹0.00</span>
+      </div>
+    </div>
+
+    <!-- Section 2: Portfolio Asset Allocation Donut Chart & Holdings -->
+    <div class="report-section mb-5">
+      <div class="section-title">
+        <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
+        <span>Portfolio Asset Allocation & Discrete Holdings</span>
+      </div>
+      <div class="grid grid-cols-12 gap-4 items-center bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+        <div class="col-span-4 flex flex-col items-center justify-center">
+          <div class="w-40 h-40 relative">
+            <canvas id="reportAllocationChart" width="160" height="160"></canvas>
+          </div>
+          <div class="text-[10px] text-slate-400 text-center mt-1">Hierarchical Risk Parity Sizing</div>
+        </div>
+        <div class="col-span-8 overflow-hidden">
+          <table class="report-table w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 text-[10px] uppercase">
+                <th class="py-1">Asset</th>
+                <th class="py-1">Sector</th>
+                <th class="py-1 text-right">Shares</th>
+                <th class="py-1 text-right">Weight</th>
+                <th class="py-1 text-right">Value</th>
+                <th class="py-1 text-right">P&L</th>
+              </tr>
+            </thead>
+            <tbody id="reportHoldingsList">
+              <!-- Injected Holdings Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Probabilistic Growth Projection Chart -->
+    <div class="report-section mb-5">
+      <div class="section-title">
+        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+        <span>Probabilistic Capital Growth Trajectory (Uncertainty Cones)</span>
+      </div>
+      <div class="bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+        <div class="h-40 w-full mb-3">
+          <canvas id="reportGrowthChart" width="720" height="160"></canvas>
+        </div>
+        <!-- 3 Scenarios Tiers -->
+        <div id="reportGrowthTiers" class="grid grid-cols-3 gap-2 text-center text-xs">
+          <!-- Injected Scenario Cards (Pessimistic, Base, Optimistic) -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4 & 5: Trust Card 4 Pillars + ESG Conscience Score -->
+    <div class="grid grid-cols-12 gap-4 mb-5">
+      
+      <!-- Section 4: Explainable AI Trust Card -->
+      <div class="col-span-7 report-section">
+        <div class="section-title">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Explainable AI Trust Card</span>
+        </div>
+        <div id="reportTrustPillarsContainer" class="grid grid-cols-2 gap-2">
+          <!-- 4 Pillars Injected -->
+        </div>
+      </div>
+
+      <!-- Section 5: ESG Conscience Score -->
+      <div class="col-span-5 report-section" id="reportEsgCard">
+        <div class="section-title">
+          <span>🌱</span>
+          <span>ESG Conscience Score</span>
+        </div>
+        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/80 h-[calc(100%-28px)] flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase">Portfolio Rating</div>
+              <div id="reportEsgScore" class="text-lg font-extrabold text-emerald-400 tabular-nums">78.5 / 100</div>
+            </div>
+            <span id="reportEsgBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/30 text-emerald-300">
+              🟢 High ESG
+            </span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Env</div>
+              <div id="reportEsgEnv" class="font-bold text-white tabular-nums">82.0</div>
+            </div>
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Soc</div>
+              <div id="reportEsgSoc" class="font-bold text-white tabular-nums">76.0</div>
+            </div>
+            <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+              <div class="text-slate-400">Gov</div>
+              <div id="reportEsgGov" class="font-bold text-white tabular-nums">77.5</div>
+            </div>
+          </div>
+          <div class="text-[9px] text-slate-400 text-center mt-2">
+            Audited against SEBI BRSR Core Disclosures
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 8: Branded Watermark & SEBI Disclaimer Footer -->
+    <div class="report-footer pt-3 border-t border-slate-800 mt-auto">
+      <div id="reportWatermark" class="report-watermark mb-2">
+        QUANTNITI ALGORITHMIC INTELLIGENCE • ZERO MIDDLEMAN FEES • SEBI RESEARCH ANALYST SIMULATION
+      </div>
+      <div id="reportDisclaimer" class="text-[9px] text-slate-400 leading-relaxed text-justify">
+        <strong>SEBI Registered Research Analyst Disclaimer:</strong> QuantNiti is an algorithmic quantitative education, financial literacy, and portfolio research simulation platform. All portfolio baskets, growth trajectory cones, and regime classifications are probabilistic mathematical estimates derived from historical NSE/BSE market data and Hierarchical Risk Parity models. Past performance and backtested simulations do not guarantee future returns. Equity and ETF investments are subject to market risks. Read all scheme and offer documents carefully before investing. QuantNiti does not collect advisory commissions or execute broker trades directly.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Client Application Script -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
