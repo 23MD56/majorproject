@@ -10,6 +10,8 @@ describe("Async Lifecycle Integration Seam", () => {
   beforeEach(() => {
     abortRegistry.abortAll();
     localStorage.clear();
+    localStorage.setItem("quantniti_onboarded", "true");
+    useAppStore.setState({ isOnboarded: true, activeTab: "home" });
     window.location.hash = "";
     vi.restoreAllMocks();
   });

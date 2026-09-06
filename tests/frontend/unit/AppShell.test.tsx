@@ -3,10 +3,13 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../../../src/frontend/App";
+import { useAppStore } from "../../../src/frontend/store/useAppStore";
 
 describe("App Shell Integration Seam", () => {
   beforeEach(() => {
     localStorage.clear();
+    localStorage.setItem("quantniti_onboarded", "true");
+    useAppStore.setState({ isOnboarded: true, activeTab: "home" });
     document.documentElement.removeAttribute("data-theme");
     window.location.hash = "";
   });
