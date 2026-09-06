@@ -4,16 +4,16 @@
 
 **Blocked by:** 02-layout-shell, 03-shared-components, 04-async-lifecycle
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] `<HomePage>` component with Framer Motion staggered children entrance
-- [ ] `<MarketPulse>` card: NIFTY 50 price + change fetched from `/api/v1/stream/ticks` SSE, animated number ticker, green/red styling based on direction
-- [ ] `<RegimeRadar>` card: 3 probability bars (Bull/Sideways/Bear) with animated width transitions, regime badge, description card
-- [ ] `<OnboardingCard>` (new users): "Start Your Investment Journey" with CTAs to Explore and Grow — hidden when portfolio exists
-- [ ] `<PortfolioSnapshot>` (returning users): 1D P&L, Overall P&L, Total Value, Alpha vs NIFTY — visible when portfolio exists
-- [ ] `<TopRecommendations>` card: top 3-5 regime-scored stocks with staggered list entrance, "View All 50 →" link to Explore
-- [ ] `<LearningHub>` section: mastery progress bar, category filter pills, horizontally scrollable microlearning card carousel, concept modal trigger
-- [ ] `<CompoundingVisualizer>` card: 3 sliders (SIP amount, tenure, expected return) with step-up toggle, animated result metrics, Chart.js fan chart
-- [ ] `<VideoFacades>` section: lazy-loaded video thumbnail cards in a grid
-- [ ] All API calls use the `useAbortableRequest` hook from ticket 04
-- [ ] Test: Home renders market data, adaptive card switches based on portfolio existence
+- [x] `<HomePage>` component with Framer Motion staggered children entrance
+- [x] `<MarketPulse>` card: NIFTY 50 price + change fetched from `/api/v1/stream/ticks` SSE, animated number ticker, green/red styling based on direction
+- [x] `<RegimeRadar>` card: 3 probability bars (Bull/Sideways/Bear) with animated width transitions, regime badge, description card
+- [x] `<OnboardingCard>` (new users): "Start Your Investment Journey" with CTAs to Explore and Grow — hidden when portfolio exists
+- [x] `<PortfolioSnapshot>` (returning users): 1D P&L, Overall P&L, Total Value, Alpha vs NIFTY — visible when portfolio exists
+- [x] `<TopRecommendations>` card: top 3-5 regime-scored stocks with staggered list entrance, "View All 50 →" link to Explore
+- [x] `<LearningHub>` section: mastery progress bar, category filter pills, horizontally scrollable microlearning card carousel, concept modal trigger
+- [x] `<CompoundingVisualizer>` card: 3 sliders (SIP amount, tenure, expected return) with step-up toggle, animated result metrics, Chart.js fan chart
+- [x] `<VideoFacades>` section: lazy-loaded video thumbnail cards in a grid
+- [x] All API calls use the `useAbortableRequest` hook from ticket 04
+- [x] Test: Home renders market data, adaptive card switches based on portfolio existence

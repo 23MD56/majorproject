@@ -112,3 +112,5 @@ export class MarketStreamClient {
     this.isConnected = false;
   }
 }
+
+export const marketStream = new MarketStreamClient();
