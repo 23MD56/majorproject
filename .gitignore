@@ -21,3 +21,6 @@ data/cache/
 
 # Environment variables
 .env
+
+# Node / Frontend
+node_modules/

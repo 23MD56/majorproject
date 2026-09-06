@@ -58,6 +58,23 @@ async def test_static_assets_served(test_app):
 
 
 @pytest.mark.asyncio
+async def test_vite_build_assets_served(test_app):
+    """Verify that Vite build artifacts in /static/dist and /vite endpoint are served."""
+    transport = ASGITransport(app=test_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        vite_resp = await client.get("/vite")
+        assert vite_resp.status_code == 200
+        assert "text/html" in vite_resp.headers.get("content-type", "")
+        assert "QuantNiti" in vite_resp.text
+        assert 'id="root"' in vite_resp.text
+        assert "/static/dist/assets/" in vite_resp.text
+
+        dist_html_resp = await client.get("/static/dist/index.html")
+        assert dist_html_resp.status_code == 200
+        assert 'id="root"' in dist_html_resp.text
+
+
+@pytest.mark.asyncio
 async def test_competitor_benchmark_drawer_served(test_app):
     """Verify that the in-app competitor benchmark drawer, triggers, and 10 dimensions are rendered."""
     transport = ASGITransport(app=test_app)

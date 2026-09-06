@@ -4,15 +4,15 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Vite + React 18 project initialized inside the existing repo structure, configured to output to `src/app/static/`
-- [ ] Tailwind CSS v3 installed via Vite (not CDN) with a `tailwind.config.js` defining custom design tokens: violet accent (`#7C3AED`), indigo secondary (`#6366F1`), semantic green/red for profit/loss, light/dark theme CSS variables, corner radii scale (16px, 20px, 24px), and motion tokens
-- [ ] Lucide React installed (tree-shakeable, replaces CDN lucide)
-- [ ] Framer Motion v11+ installed
-- [ ] Chart.js + react-chartjs-2 installed
-- [ ] Zustand installed with an initial `useAppStore` matching the shape of the existing `AppState` object
-- [ ] A `<ThemeProvider>` component that reads/writes `data-theme` attribute and persists to localStorage, defaulting to light
-- [ ] The `manifest.json` updated with violet theme color
-- [ ] FastAPI's static file serving updated to serve the Vite build output
-- [ ] `npm run dev` renders a blank themed shell; `npm run build` produces production assets
+- [x] Vite + React 18 project initialized inside the existing repo structure, configured to output to `src/app/static/`
+- [x] Tailwind CSS v3 installed via Vite (not CDN) with a `tailwind.config.js` defining custom design tokens: violet accent (`#7C3AED`), indigo secondary (`#6366F1`), semantic green/red for profit/loss, light/dark theme CSS variables, corner radii scale (16px, 20px, 24px), and motion tokens
+- [x] Lucide React installed (tree-shakeable, replaces CDN lucide)
+- [x] Framer Motion v11+ installed
+- [x] Chart.js + react-chartjs-2 installed
+- [x] Zustand installed with an initial `useAppStore` matching the shape of the existing `AppState` object
+- [x] A `<ThemeProvider>` component that reads/writes `data-theme` attribute and persists to localStorage, defaulting to light
+- [x] The `manifest.json` updated with violet theme color
+- [x] FastAPI's static file serving updated to serve the Vite build output
+- [x] `npm run dev` renders a blank themed shell; `npm run build` produces production assets

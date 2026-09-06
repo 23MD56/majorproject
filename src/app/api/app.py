@@ -105,20 +105,29 @@ def create_app(
 
     # Static assets directory
     static_dir = Path(__file__).resolve().parent.parent / "static"
+    dist_dir = static_dir / "dist"
+    use_vite = os.getenv("QUANTNITI_USE_VITE", "0") == "1"
+    default_index = (dist_dir / "index.html") if (use_vite and (dist_dir / "index.html").exists()) else (static_dir / "index.html")
+
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
         @app.get("/", response_class=FileResponse, include_in_schema=False)
         async def serve_root():
-            return FileResponse(static_dir / "index.html")
+            return FileResponse(default_index)
 
         @app.get("/app", response_class=FileResponse, include_in_schema=False)
         async def serve_app_shell():
-            return FileResponse(static_dir / "index.html")
+            return FileResponse(default_index)
 
         @app.get("/client", response_class=FileResponse, include_in_schema=False)
         async def serve_client_alias():
-            return FileResponse(static_dir / "index.html")
+            return FileResponse(default_index)
+
+        @app.get("/vite", response_class=FileResponse, include_in_schema=False)
+        async def serve_vite_shell():
+            vite_index = dist_dir / "index.html" if (dist_dir / "index.html").exists() else static_dir / "index.html"
+            return FileResponse(vite_index)
 
         @app.get("/manifest.json", response_class=FileResponse, include_in_schema=False)
         async def serve_manifest():

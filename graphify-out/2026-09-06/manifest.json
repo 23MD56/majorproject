@@ -2420,8 +2420,8 @@
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1788674938.1355064,
-    "ast_hash": "0a2c161ee60303081cd81e78d211cab2",
+    "mtime": 1788364665.5689106,
+    "ast_hash": "0098ecdc01b4568c7dcca6ad83b0b4fa",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2575,8 +2575,8 @@
     "semantic_hash": ""
   },
   "src/app/api/app.py": {
-    "mtime": 1788679822.3173223,
-    "ast_hash": "60d3cfea2c99df45b4e94f107c4c61a0",
+    "mtime": 1788628831.3717177,
+    "ast_hash": "3926e1a3a23f5bb9cb342bdc95cb6de7",
     "semantic_hash": ""
   },
   "src/app/api/routes/__init__.py": {
@@ -2885,8 +2885,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_client_serving.py": {
-    "mtime": 1788679835.4196136,
-    "ast_hash": "013ea5a7d623d424122237e024d0c1d2",
+    "mtime": 1787578913.6721177,
+    "ast_hash": "44e53112dc04bd7e7f63478fd8b98dc3",
     "semantic_hash": ""
   },
   "tests/integration/test_end_to_end_integration.py": {
@@ -2945,8 +2945,8 @@
     "semantic_hash": ""
   },
   "src/app/static/manifest.json": {
-    "mtime": 1788679720.1160975,
-    "ast_hash": "fb02b9345ef6c6110e7d000177f78e16",
+    "mtime": 1787581368.1725113,
+    "ast_hash": "9eaa8d88dadca55f49447c0483feff7c",
     "semantic_hash": ""
   },
   "src/app/static/sw.js": {
@@ -2955,13 +2955,13 @@
     "semantic_hash": ""
   },
   "tests/integration/test_pwa_integration.py": {
-    "mtime": 1788679733.0233734,
-    "ast_hash": "2ab27b8fb3271d2fd8cb5a02e3ed3619",
+    "mtime": 1787581340.937071,
+    "ast_hash": "963e43b835bab2a164a386b40e111f45",
     "semantic_hash": ""
   },
   "tests/unit/test_pwa_unit.py": {
-    "mtime": 1788679729.731303,
-    "ast_hash": "c7f0e47764658afbd64550891ba872ee",
+    "mtime": 1787581329.0568807,
+    "ast_hash": "fa449b130eaa41ffef5d92a5f4a2d631",
     "semantic_hash": ""
   },
   ".scratch/quantniti-core/issues/11-pwa-cross-platform-installability.md": {
@@ -3357,146 +3357,6 @@
   "tests/unit/test_report_card.py": {
     "mtime": 1788631815.3689969,
     "ast_hash": "aa051d470c4bcc797a933a5a59e195f6",
-    "semantic_hash": ""
-  },
-  "package.json": {
-    "mtime": 1788679569.185225,
-    "ast_hash": "c4ff22d9965c08711d8b237bc9fef24e",
-    "semantic_hash": ""
-  },
-  "postcss.config.js": {
-    "mtime": 1788679607.2777584,
-    "ast_hash": "c735540bb63936a123bc867d950c9f69",
-    "semantic_hash": ""
-  },
-  "src/frontend/App.tsx": {
-    "mtime": 1788679702.7161942,
-    "ast_hash": "77d15ae6fec78f9e9025d8817e91c3bd",
-    "semantic_hash": ""
-  },
-  "src/frontend/context/ThemeContext.tsx": {
-    "mtime": 1788679631.2392435,
-    "ast_hash": "53afb35d1cc05e31ad22e06b2fec8afa",
-    "semantic_hash": ""
-  },
-  "src/frontend/main.tsx": {
-    "mtime": 1788679680.6933599,
-    "ast_hash": "1b05a06f59ddc9c91b5d78c2876befbe",
-    "semantic_hash": ""
-  },
-  "src/frontend/store/useAppStore.ts": {
-    "mtime": 1788679652.5376801,
-    "ast_hash": "bf66cc03a222ceb3a62206630fb52318",
-    "semantic_hash": ""
-  },
-  "tailwind.config.js": {
-    "mtime": 1788679607.2767584,
-    "ast_hash": "9bdde867a39a1cfdaf752c7c519bfdae",
-    "semantic_hash": ""
-  },
-  "tests/frontend/setup.ts": {
-    "mtime": 1788679618.948994,
-    "ast_hash": "d72e3679b8db0c966ab8a99d582a63cd",
-    "semantic_hash": ""
-  },
-  "tests/frontend/unit/AppShell.test.tsx": {
-    "mtime": 1788679661.346036,
-    "ast_hash": "21c311c0554b4174e43f623993e43a67",
-    "semantic_hash": ""
-  },
-  "tests/frontend/unit/ThemeContext.test.tsx": {
-    "mtime": 1788679622.6370685,
-    "ast_hash": "a3239cdb29b0db135504e7ec1596c3b1",
-    "semantic_hash": ""
-  },
-  "tests/frontend/unit/useAppStore.test.ts": {
-    "mtime": 1788679641.685457,
-    "ast_hash": "3b6b53daedcb3cc340e4a3c209f4e869",
-    "semantic_hash": ""
-  },
-  "tsconfig.json": {
-    "mtime": 1788679702.7149668,
-    "ast_hash": "0b3700152dbe05ff3057501c02721ed8",
-    "semantic_hash": ""
-  },
-  "tsconfig.node.json": {
-    "mtime": 1788679572.667156,
-    "ast_hash": "767b2e9abe6452170cdc399ca052cfbc",
-    "semantic_hash": ""
-  },
-  "vite.config.ts": {
-    "mtime": 1788679783.1554592,
-    "ast_hash": "bf67afef66e20dff351ac4dc3e0a4d41",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/COLLABORATION.md": {
-    "mtime": 1788677942.4436986,
-    "ast_hash": "b2eb11d8893babd18600a30b1b2a3450",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/01-react-vite-scaffold.md": {
-    "mtime": 1788679882.3306677,
-    "ast_hash": "0dccfee47db5c8d583f6b0e7e88a4b57",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/02-layout-shell.md": {
-    "mtime": 1788675077.0191045,
-    "ast_hash": "d8b581277df3332b76da3e814a4597e5",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/03-shared-components.md": {
-    "mtime": 1788675094.837386,
-    "ast_hash": "c9d3053756eb6fd3953a078acfae4580",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/04-async-lifecycle.md": {
-    "mtime": 1788675217.2086017,
-    "ast_hash": "2df6debb83ba503cf14ab8a87c313ba4",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/05-hero-onboarding.md": {
-    "mtime": 1788675236.6792724,
-    "ast_hash": "e3b6daaabb9d5b9688d4266bab3fb3d7",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/06-home-tab.md": {
-    "mtime": 1788675255.7334003,
-    "ast_hash": "43820ba810846c162b1111ba47e0d34f",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/07-explore-tab.md": {
-    "mtime": 1788675274.9929514,
-    "ast_hash": "efbb979e9d8ed8f44327d23f9c897e66",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/08-grow-tab.md": {
-    "mtime": 1788675303.265329,
-    "ast_hash": "b4308b198461bbe2b646f266b87c5bc0",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/09-portfolio-tab.md": {
-    "mtime": 1788675330.1005528,
-    "ast_hash": "29b8f231d7248c3b94fe9e4d48cf22c6",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/10-modals-overlays.md": {
-    "mtime": 1788675349.696885,
-    "ast_hash": "f59d2d8a5a6699dde5956488f5e2c8aa",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/issues/11-pwa-integration.md": {
-    "mtime": 1788675370.866199,
-    "ast_hash": "abc9a390feba7e3ba635f0e3aae2ccf2",
-    "semantic_hash": ""
-  },
-  ".scratch/ui-redesign/spec.md": {
-    "mtime": 1788675039.7250125,
-    "ast_hash": "d8cf3b23e6ed82f9a849f82d7b90b975",
-    "semantic_hash": ""
-  },
-  "index.html": {
-    "mtime": 1788679680.6942651,
-    "ast_hash": "6b915592b7c589d7f6b099392c95cab3",
     "semantic_hash": ""
   }
 }
