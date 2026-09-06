@@ -50,6 +50,10 @@ _Avoid_: Stock tip, Buy list, Hot pick
 A simulated investment tracker that calculates live mark-to-market performance, tracks benchmark alpha, surfaces regime-shift rebalance recommendations, and supports multiple named portfolios per user.
 _Avoid_: Demo wallet, Mock account
 
+**Demo Portfolio**:
+A read-only, pre-populated showcase portfolio demonstrating portfolio tracking features to first-time users who have not yet created their own Virtual Paper Portfolio. Contains synthetic holdings with realistic regime-tagged data. Not editable, not deletable, and displayed with a persistent "This is a demo — build your own!" banner. Replaced by the user's first real Virtual Paper Portfolio.
+_Avoid_: Sample account, Test portfolio, Sandbox
+
 **Regime-Shift Rebalance**:
 A proactive portfolio re-allocation alert triggered when the market transitions across regimes, offering an interactive before/after diff to protect capital.
 _Avoid_: Reset, Auto-trade
