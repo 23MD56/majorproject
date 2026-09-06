@@ -4,29 +4,64 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../../../src/frontend/App";
 
-describe("App Shell Scaffold Seam", () => {
+describe("App Shell Integration Seam", () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.removeAttribute("data-theme");
+    window.location.hash = "";
   });
 
-  it("renders the scaffold shell with branding, violet styling, and theme toggle", async () => {
+  it("renders mobile-first container constrained to max-w-[520px] on desktop with centered shadow", () => {
+    const { container } = render(<App />);
+    const shellContainer = container.querySelector(".max-w-\\[520px\\]");
+    expect(shellContainer).toBeInTheDocument();
+  });
+
+  it("routes to #home by default and renders Home Page placeholder", async () => {
+    render(<App />);
+
+    expect(await screen.findByText(/Home Page/i)).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /home/i })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("navigates smoothly across tabs (Explore, Grow, Portfolio) and updates routed views", async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    // Branding and shell title
-    expect(screen.getByText(/QuantNiti/i)).toBeInTheDocument();
-    expect(screen.getByTestId("theme-toggle-btn")).toBeInTheDocument();
+    // Click Explore tab
+    await user.click(screen.getByRole("tab", { name: /explore/i }));
+    expect(await screen.findByText(/Explore Page/i)).toBeInTheDocument();
+    expect(window.location.hash).toContain("explore");
 
-    // Default theme state is light
-    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+    // Click Grow tab
+    await user.click(screen.getByRole("tab", { name: /grow/i }));
+    expect(await screen.findByText(/Grow Page/i)).toBeInTheDocument();
+    expect(window.location.hash).toContain("grow");
 
-    // Click theme toggle
-    await user.click(screen.getByTestId("theme-toggle-btn"));
-    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+    // Click Portfolio tab
+    await user.click(screen.getByRole("tab", { name: /portfolio/i }));
+    expect(await screen.findByText(/Portfolio Page/i)).toBeInTheDocument();
+    expect(window.location.hash).toContain("portfolio");
 
-    // Click again to return to light
-    await user.click(screen.getByTestId("theme-toggle-btn"));
-    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+    // Click Home tab
+    await user.click(screen.getByRole("tab", { name: /home/i }));
+    expect(await screen.findByText(/Home Page/i)).toBeInTheDocument();
+    expect(window.location.hash).toContain("home");
+  });
+
+  it("navigates back to #home when clicking brand logo in header", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Navigate to Explore
+    await user.click(screen.getByRole("tab", { name: /explore/i }));
+    expect(await screen.findByText(/Explore Page/i)).toBeInTheDocument();
+
+    // Click brand logo
+    const brandLink = screen.getByRole("link", { name: /quantniti/i });
+    await user.click(brandLink);
+
+    expect(await screen.findByText(/Home Page/i)).toBeInTheDocument();
+    expect(window.location.hash).toContain("home");
   });
 });

@@ -3360,8 +3360,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1788679569.185225,
-    "ast_hash": "c4ff22d9965c08711d8b237bc9fef24e",
+    "mtime": 1788680454.8274374,
+    "ast_hash": "cd2079565e7c06d7136b93af7891b90f",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -3370,8 +3370,8 @@
     "semantic_hash": ""
   },
   "src/frontend/App.tsx": {
-    "mtime": 1788679702.7161942,
-    "ast_hash": "77d15ae6fec78f9e9025d8817e91c3bd",
+    "mtime": 1788680689.6423688,
+    "ast_hash": "cd607011d1bb93d3708628516fd2a0ac",
     "semantic_hash": ""
   },
   "src/frontend/context/ThemeContext.tsx": {
@@ -3400,8 +3400,8 @@
     "semantic_hash": ""
   },
   "tests/frontend/unit/AppShell.test.tsx": {
-    "mtime": 1788679661.346036,
-    "ast_hash": "21c311c0554b4174e43f623993e43a67",
+    "mtime": 1788680605.2292252,
+    "ast_hash": "a30e427bf38b68fe5927b740114399d7",
     "semantic_hash": ""
   },
   "tests/frontend/unit/ThemeContext.test.tsx": {
@@ -3440,8 +3440,8 @@
     "semantic_hash": ""
   },
   ".scratch/ui-redesign/issues/02-layout-shell.md": {
-    "mtime": 1788675077.0191045,
-    "ast_hash": "d8b581277df3332b76da3e814a4597e5",
+    "mtime": 1788680749.647899,
+    "ast_hash": "e44eb3e89b741a57be4f8ccd6b5dead3",
     "semantic_hash": ""
   },
   ".scratch/ui-redesign/issues/03-shared-components.md": {
@@ -3497,6 +3497,36 @@
   "index.html": {
     "mtime": 1788679680.6942651,
     "ast_hash": "6b915592b7c589d7f6b099392c95cab3",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/layout/AppShell.tsx": {
+    "mtime": 1788680692.9184523,
+    "ast_hash": "447812e2411bc103fa93614f29929841",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/layout/BottomNav.tsx": {
+    "mtime": 1788680713.7289824,
+    "ast_hash": "297242b24e9a0ca8729abfba36e8cf9a",
+    "semantic_hash": ""
+  },
+  "src/frontend/components/layout/Header.tsx": {
+    "mtime": 1788680696.6085463,
+    "ast_hash": "2422ffa3b3a67ecb66641dfdff8658b0",
+    "semantic_hash": ""
+  },
+  "src/frontend/routes/PlaceholderPages.tsx": {
+    "mtime": 1788680699.4766192,
+    "ast_hash": "0fca8fb6b66d4e52fb4bdf9a72b11ae7",
+    "semantic_hash": ""
+  },
+  "tests/frontend/unit/BottomNav.test.tsx": {
+    "mtime": 1788680600.554107,
+    "ast_hash": "94c3aa8130c9050121f42b8b54ab2dcb",
+    "semantic_hash": ""
+  },
+  "tests/frontend/unit/Header.test.tsx": {
+    "mtime": 1788680669.5318573,
+    "ast_hash": "8a28018f31eea51adbcf18fe61670871",
     "semantic_hash": ""
   }
 }
