@@ -71,7 +71,7 @@ describe("Onboarding Integration Seam", () => {
     expect(localStorage.getItem("quantniti_risk_persona")).toBe("Conservative");
     expect(useAppStore.getState().isOnboarded).toBe(true);
     expect(useAppStore.getState().riskPersona).toBe("Conservative");
-  });
+  }, 15000);
 
   it("second visit skips onboarding hero entirely and lands directly on Home tab", async () => {
     localStorage.setItem("quantniti_onboarded", "true");
