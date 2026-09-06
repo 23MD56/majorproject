@@ -24,6 +24,7 @@ describe("useAppStore Seam", () => {
       learnedConcepts: new Set<string>(),
       selectedLiteracyCategory: "all",
       activeConceptKey: null,
+      isOnboarded: false,
     });
   });
 
@@ -33,6 +34,7 @@ describe("useAppStore Seam", () => {
     expect(state.theme).toBe("light");
     expect(state.capital).toBe(50000);
     expect(state.horizon).toBe("6M");
+    expect(state.isOnboarded).toBe(false);
     expect(state.riskPersona).toBe("Balanced");
     expect(state.activeRegime).toBeNull();
     expect(state.currentBasket).toBeNull();
@@ -92,5 +94,23 @@ describe("useAppStore Seam", () => {
 
     stored = JSON.parse(localStorage.getItem("quantniti_learned_concepts") || "[]");
     expect(stored).not.toContain("hrp_diversification");
+  });
+
+  it("manages isOnboarded state and synchronizes with localStorage", () => {
+    const { setIsOnboarded, setRiskPersona } = useAppStore.getState();
+
+    expect(useAppStore.getState().isOnboarded).toBe(false);
+
+    setIsOnboarded(true);
+    expect(useAppStore.getState().isOnboarded).toBe(true);
+    expect(localStorage.getItem("quantniti_onboarded")).toBe("true");
+
+    setRiskPersona("Conservative");
+    expect(useAppStore.getState().riskPersona).toBe("Conservative");
+    expect(localStorage.getItem("quantniti_risk_persona")).toBe("Conservative");
+
+    setIsOnboarded(false);
+    expect(useAppStore.getState().isOnboarded).toBe(false);
+    expect(localStorage.getItem("quantniti_onboarded")).toBe("false");
   });
 });

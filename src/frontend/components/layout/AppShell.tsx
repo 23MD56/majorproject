@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { BottomNav } from "./BottomNav";
 import { useAppStore, NavTab } from "../../store/useAppStore";
 import { abortRegistry } from "../../services/abortRegistry";
+import { OnboardingHero } from "../onboarding/OnboardingHero";
 import {
   HomePage,
   ExplorePage,
@@ -15,7 +16,7 @@ import {
 export function AppShell() {
   const location = useLocation();
   const shouldReduceMotion = useReducedMotion();
-  const { activeTab, setActiveTab, clearActiveAsyncKeys } = useAppStore();
+  const { activeTab, setActiveTab, clearActiveAsyncKeys, isOnboarded } = useAppStore();
 
   // Keep route pathname in sync with activeTab in Zustand store and abort in-flight requests from prior tab
   useEffect(() => {
@@ -49,10 +50,25 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex justify-center transition-colors duration-200">
+      {/* Full-screen Onboarding Overlay */}
+      <AnimatePresence>
+        {!isOnboarded && (
+          <motion.div
+            key="onboarding-overlay"
+            initial={{ opacity: 1 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="fixed inset-0 z-50 overflow-hidden"
+          >
+            <OnboardingHero />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Container constrained to max-w-[520px] on desktop with centered shadow, full-width on mobile */}
       <div className="w-full max-w-[520px] min-h-screen flex flex-col bg-[var(--bg-primary)] shadow-2xl shadow-violet-950/5 relative border-x border-[var(--border-subtle)]">
-        {/* Sticky Header */}
-        <Header />
+        {/* Sticky Header - visible when onboarded */}
+        {isOnboarded && <Header />}
 
         {/* Scrollable Content Area with bottom nav clearance */}
         <main className="flex-1 overflow-y-auto pb-24 relative">
@@ -77,8 +93,8 @@ export function AppShell() {
           </AnimatePresence>
         </main>
 
-        {/* Fixed Bottom Navigation */}
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Fixed Bottom Navigation - visible when onboarded */}
+        {isOnboarded && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ export interface AppStoreState {
   selectedLiteracyCategory: string;
   activeConceptKey: string | null;
   activeAsyncKeys: Set<string>;
+  isOnboarded: boolean;
 
   // Actions
   setActiveTab: (tab: NavTab) => void;
@@ -32,6 +33,7 @@ export interface AppStoreState {
   setCapital: (capital: number) => void;
   setHorizon: (horizon: TimeHorizon) => void;
   setRiskPersona: (persona: RiskPersona) => void;
+  setIsOnboarded: (onboarded: boolean) => void;
   setActiveRegime: (regime: any) => void;
   setCurrentBasket: (basket: any) => void;
   setActivePortfolioId: (id: string | null) => void;
@@ -50,6 +52,8 @@ export interface AppStoreState {
 }
 
 const LEARNED_CONCEPTS_STORAGE_KEY = "quantniti_learned_concepts";
+export const ONBOARDED_STORAGE_KEY = "quantniti_onboarded";
+export const RISK_PERSONA_STORAGE_KEY = "quantniti_risk_persona";
 
 function loadLearnedConcepts(): Set<string> {
   if (typeof window !== "undefined" && window.localStorage) {
@@ -65,12 +69,35 @@ function loadLearnedConcepts(): Set<string> {
   return new Set();
 }
 
+function loadIsOnboarded(): boolean {
+  if (typeof window !== "undefined" && window.localStorage) {
+    return window.localStorage.getItem(ONBOARDED_STORAGE_KEY) === "true";
+  }
+  return false;
+}
+
+function loadRiskPersona(): RiskPersona {
+  if (typeof window !== "undefined" && window.localStorage) {
+    const saved = window.localStorage.getItem(RISK_PERSONA_STORAGE_KEY);
+    if (
+      saved === "Conservative" ||
+      saved === "Balanced" ||
+      saved === "Aggressive" ||
+      saved === "ESG-Conscious"
+    ) {
+      return saved as RiskPersona;
+    }
+  }
+  return "Balanced";
+}
+
 export const useAppStore = create<AppStoreState>((set) => ({
   activeTab: "home",
   theme: "light",
   capital: 50000,
   horizon: "6M",
-  riskPersona: "Balanced",
+  riskPersona: loadRiskPersona(),
+  isOnboarded: loadIsOnboarded(),
   activeRegime: null,
   currentBasket: null,
   activePortfolioId: null,
@@ -91,7 +118,18 @@ export const useAppStore = create<AppStoreState>((set) => ({
   setTheme: (theme) => set({ theme }),
   setCapital: (capital) => set({ capital }),
   setHorizon: (horizon) => set({ horizon }),
-  setRiskPersona: (riskPersona) => set({ riskPersona }),
+  setRiskPersona: (riskPersona) => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(RISK_PERSONA_STORAGE_KEY, riskPersona);
+    }
+    set({ riskPersona });
+  },
+  setIsOnboarded: (isOnboarded) => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(ONBOARDED_STORAGE_KEY, String(isOnboarded));
+    }
+    set({ isOnboarded });
+  },
   setActiveRegime: (activeRegime) => set({ activeRegime }),
   setCurrentBasket: (currentBasket) => set({ currentBasket }),
   setActivePortfolioId: (activePortfolioId) => set({ activePortfolioId }),
