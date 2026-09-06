@@ -7,10 +7,8 @@ import { useAppStore, NavTab } from "../../store/useAppStore";
 import { abortRegistry } from "../../services/abortRegistry";
 import { OnboardingHero } from "../onboarding/OnboardingHero";
 import { GrowPage } from "../grow/GrowPage";
-import {
-  HomePage,
-  ExplorePage,
-} from "../../routes/PlaceholderPages";
+import { HomePage } from "../../pages/HomePage";
+import { ExplorePage } from "../../pages/ExplorePage";
 import { PortfolioPage } from "../portfolio/PortfolioPage";
 import { ModalRoot } from "../modals/ModalRoot";
 
