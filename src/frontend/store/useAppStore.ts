@@ -26,6 +26,8 @@ export interface AppStoreState {
   activeConceptKey: string | null;
   activeAsyncKeys: Set<string>;
   isOnboarded: boolean;
+  activeModal: string | null;
+  modalPayload: any;
 
   // Actions
   setActiveTab: (tab: NavTab) => void;
@@ -46,6 +48,8 @@ export interface AppStoreState {
   setSelectedLiteracyCategory: (category: string) => void;
   setActiveConceptKey: (key: string | null) => void;
   toggleLearnedConcept: (conceptKey: string) => void;
+  openModal: (modal: string, payload?: any) => void;
+  closeModal: () => void;
   addActiveAsyncKey: (key: string) => void;
   removeActiveAsyncKey: (key: string) => void;
   clearActiveAsyncKeys: () => void;
@@ -140,6 +144,8 @@ export const useAppStore = create<AppStoreState>((set) => ({
   selectedLiteracyCategory: "all",
   activeConceptKey: null,
   activeAsyncKeys: new Set(),
+  activeModal: null,
+  modalPayload: null,
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setTheme: (theme) => set({ theme }),
@@ -234,5 +240,16 @@ export const useAppStore = create<AppStoreState>((set) => ({
       }
       return { learnedConcepts: next };
     });
+  },
+
+  openModal: (modal: string, payload?: any) => {
+    if (typeof window !== "undefined" && window.history) {
+      window.history.pushState({ modalOpen: true, modal }, "");
+    }
+    set({ activeModal: modal, modalPayload: payload ?? null });
+  },
+
+  closeModal: () => {
+    set({ activeModal: null, modalPayload: null });
   },
 }));

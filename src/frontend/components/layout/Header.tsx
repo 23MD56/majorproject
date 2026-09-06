@@ -17,7 +17,7 @@ export function Header({
   onViewportToggle,
 }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
-  const { activeRegime } = useAppStore();
+  const { activeRegime, openModal } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +84,7 @@ export function Header({
           <button
             data-testid="notification-bell-btn"
             type="button"
+            onClick={() => openModal("notifications")}
             className="relative p-2 rounded-squircle-sm text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors duration-150"
             aria-label="Notifications"
             title="Notifications"
@@ -139,7 +140,8 @@ export function Header({
                     role="menuitem"
                     onClick={() => {
                       setIsMenuOpen(false);
-                      onCompareClick?.();
+                      if (onCompareClick) onCompareClick();
+                      else openModal("competitors");
                     }}
                     className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[var(--text-main)] hover:bg-accent/10 hover:text-accent transition-colors"
                   >
