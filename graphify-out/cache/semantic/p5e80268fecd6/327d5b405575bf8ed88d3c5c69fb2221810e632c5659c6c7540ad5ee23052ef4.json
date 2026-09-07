@@ -1,1 +1,0 @@
-{"nodes": [{"id": "agents_skills_design_system_skill", "label": "Design System Skill", "file_type": "code", "source_file": ".agents/skills/design-system/SKILL.md", "rationale": "Handles token architecture and systematic design; used by slides and social photos."}], "edges": [], "hyperedges": []}
