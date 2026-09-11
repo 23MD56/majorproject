@@ -158,13 +158,17 @@ def create_app(
 
     # Register routers under prefix
     app.include_router(health_router, prefix=settings.api_v1_prefix)
+    app.include_router(health_router, prefix="/api/v1")
     app.include_router(market_router, prefix=settings.api_v1_prefix)
+    app.include_router(market_router, prefix="/api/v1")
     app.include_router(regime_router, prefix=settings.api_v1_prefix)
+    app.include_router(regime_router, prefix="/api/v1")
     app.include_router(explore_router, prefix=settings.api_v1_prefix)
     app.include_router(explore_router, prefix="/api/v1")
     app.include_router(grow_router, prefix=settings.api_v1_prefix)
     app.include_router(grow_router, prefix="/api/v1")
     app.include_router(backtest_router, prefix=settings.api_v1_prefix)
+    app.include_router(backtest_router, prefix="/api/v1")
     app.include_router(portfolio_router, prefix=settings.api_v1_prefix)
     app.include_router(portfolio_router, prefix="/api/v1")
     app.include_router(chat_router, prefix=settings.api_v1_prefix)
@@ -177,6 +181,16 @@ def create_app(
     app.include_router(alerts_router, prefix="/api/v1")
     app.include_router(reviews_router, prefix=settings.api_v1_prefix)
     app.include_router(reviews_router, prefix="/api/v1")
+
+    # Convenience aliases for frontend compatibility
+    @app.get("/api/v1/stocks/explore", include_in_schema=False)
+    @app.get("/api/stocks/explore", include_in_schema=False)
+    def stocks_explore_alias(
+        sector: Optional[str] = None,
+        search: Optional[str] = None,
+        asset_class: Optional[str] = None,
+    ):
+        return app.state.explore_service.list_explore_stocks(sector=sector, search=search, asset_class=asset_class)
 
     return app
 

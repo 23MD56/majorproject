@@ -36,7 +36,8 @@ class RAGContextBuilder:
         sections: List[str] = []
 
         # 1. Market Regime Pillar
-        regime_data: Optional[Dict[str, Any]] = user_ctx.get("regime")
+        raw_regime_ctx = user_ctx.get("regime")
+        regime_data: Optional[Dict[str, Any]] = raw_regime_ctx if isinstance(raw_regime_ctx, dict) else None
         if not regime_data and self.regime_service:
             try:
                 regime_obj: CurrentRegimeResponse = self.regime_service.get_current_regime()
@@ -65,7 +66,8 @@ class RAGContextBuilder:
             )
 
         # 2. Portfolio Basket & Allocations Pillar
-        basket_data: Optional[Dict[str, Any]] = user_ctx.get("basket")
+        raw_basket_ctx = user_ctx.get("basket")
+        basket_data: Optional[Dict[str, Any]] = raw_basket_ctx if isinstance(raw_basket_ctx, dict) else None
         if not basket_data and self.grow_service:
             try:
                 basket_obj: BasketRecommendationResponse = self.grow_service.recommend_basket()
@@ -176,7 +178,8 @@ class RAGContextBuilder:
                 )
 
         # 5. Backtest Summary Pillar (if available)
-        backtest_data: Optional[Dict[str, Any]] = user_ctx.get("backtest")
+        raw_backtest_ctx = user_ctx.get("backtest")
+        backtest_data: Optional[Dict[str, Any]] = raw_backtest_ctx if isinstance(raw_backtest_ctx, dict) else None
         if backtest_data:
             sources.append("Quant Lab Vectorized Backtesting Engine")
             symbol = backtest_data.get("symbol", "^NSEI")

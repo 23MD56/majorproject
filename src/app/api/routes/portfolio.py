@@ -40,6 +40,16 @@ def get_portfolio_service(request: Request) -> PortfolioService:
     summary="Activate basket into Virtual Paper Portfolio",
     description="Initializes a live mark-to-market virtual portfolio with initial capital and recommended/custom holdings.",
 )
+@router.post(
+    "/portfolios/activate",
+    response_model=PortfolioState,
+    summary="Activate basket into Virtual Paper Portfolio (alias)",
+)
+@router.post(
+    "/portfolio/activate",
+    response_model=PortfolioState,
+    summary="Activate basket into Virtual Paper Portfolio (alias)",
+)
 async def create_portfolio_endpoint(
     payload: CreatePortfolioRequest,
     request: Request,
