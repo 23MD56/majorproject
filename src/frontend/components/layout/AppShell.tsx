@@ -71,7 +71,7 @@ export function AppShell() {
         {isOnboarded && <Header />}
 
         {/* Scrollable Content Area with bottom nav clearance */}
-        <main className="flex-1 overflow-y-auto pb-24 relative">
+        <main className="flex-1 overflow-y-auto content-bottom-safe relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

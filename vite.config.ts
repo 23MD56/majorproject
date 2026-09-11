@@ -231,6 +231,22 @@ export default defineConfig({
     },
   },
   base: "/static/dist/",
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    cors: true,
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: 4173,
+    cors: true,
+  },
   build: {
     outDir: "src/app/static/dist",
     emptyOutDir: true,

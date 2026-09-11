@@ -7,9 +7,16 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "mobile:serve": "python scripts/serve_mobile.py",
+    "apk:build": "python scripts/build_apk.py",
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.0.1",
+    "@capacitor/cli": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
     "chart.js": "^4.4.8",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",

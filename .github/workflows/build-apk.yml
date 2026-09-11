@@ -1,0 +1,74 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'android/**'
+      - 'package.json'
+      - 'vite.config.ts'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Compile QuantNiti Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Node Dependencies
+        run: npm ci || npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Synchronize Web Bundle to Android Assets
+        run: python3 scripts/build_apk.py
+
+      - name: Grant Execute Permission for Gradlew
+        run: |
+          if [ -f android/gradlew ]; then
+            chmod +x android/gradlew
+          fi
+
+      - name: Compile Debug APK
+        working-directory: android
+        run: |
+          if [ -f gradlew ]; then
+            ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
+
+      - name: Locate & Package APK Output
+        run: |
+          mkdir -p build/apk
+          find android/app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} build/apk/QuantNiti-debug.apk \;
+
+      - name: Upload QuantNiti APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuantNiti-debug-apk
+          path: build/apk/QuantNiti-debug.apk
+          retention-days: 14
