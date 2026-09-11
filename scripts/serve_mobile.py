@@ -83,8 +83,12 @@ def main():
     env["QUANTNITI_USE_VITE"] = "1"
     env["PYTHONPATH"] = str(repo_root / "src")
 
-    # Command to run uvicorn
-    python_bin = sys.executable
+    # Prefer project virtualenv python if available
+    venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
+    if not venv_python.exists():
+        venv_python = repo_root / ".venv" / "bin" / "python"
+    
+    python_bin = str(venv_python) if venv_python.exists() else sys.executable
     cmd = [
         python_bin,
         "-m",
