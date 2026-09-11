@@ -83,6 +83,17 @@ def main():
     env["QUANTNITI_USE_VITE"] = "1"
     env["PYTHONPATH"] = str(repo_root / "src")
 
+    # Load .env variables if present
+    env_file = repo_root / ".env"
+    if env_file.exists():
+        with open(env_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    env[k.strip()] = v.strip().strip("\"'")
+
+
     # Prefer project virtualenv python if available
     venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
     if not venv_python.exists():
