@@ -120,15 +120,15 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             <Bell className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">Smart Notifications</h3>
-            <p className="text-[11px] text-slate-400">Quantitative Risk & Regime Monitor</p>
+            <h3 className="font-bold text-[var(--text-main)] text-base">Smart Notifications</h3>
+            <p className="text-[11px] text-[var(--text-muted)]">Quantitative Risk & Regime Monitor</p>
           </div>
         </div>
       }
     >
       <div className="space-y-4">
         {/* Category Filters & Mark All Read */}
-        <div className="flex items-center justify-between gap-2 border-b border-violet-500/20 pb-3">
+        <div className="flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
             {CATEGORIES.map((cat) => (
               <button
@@ -138,7 +138,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                 className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeCategory === cat
                     ? "bg-violet-600 text-white shadow-sm"
-                    : "bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-violet-500/10"
+                    : "bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]"
                 }`}
               >
                 {cat}
@@ -149,7 +149,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
           <button
             type="button"
             onClick={handleMarkAllRead}
-            className="text-[11px] text-violet-400 hover:text-violet-300 font-medium flex items-center gap-1 shrink-0 whitespace-nowrap"
+            className="text-[11px] text-accent hover:text-violet-500 font-medium flex items-center gap-1 shrink-0 whitespace-nowrap"
           >
             <CheckCheck className="w-3 h-3" />
             Mark read
@@ -158,10 +158,10 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
 
         {/* Web Push Prompt Card */}
         {!pushSubscribed && (
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-violet-950/40 via-purple-950/30 to-slate-900/50 border border-violet-500/30 flex items-center justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-violet-500/10 dark:bg-gradient-to-r dark:from-violet-950/40 dark:via-purple-950/30 dark:to-slate-900/50 border border-[var(--border-subtle)] flex items-center justify-between gap-3">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold text-white block">Enable Web Push Alerts</span>
-              <p className="text-[11px] text-slate-300">
+              <span className="text-xs font-bold text-[var(--text-main)] block">Enable Web Push Alerts</span>
+              <p className="text-[11px] text-[var(--text-muted)]">
                 Receive immediate push notifications on critical regime shifts.
               </p>
             </div>
@@ -178,7 +178,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         {/* Notification List */}
         <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
           {filtered.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
+            <div className="p-8 text-center text-xs text-[var(--text-muted)]">
               No notifications in this category.
             </div>
           ) : (
@@ -191,8 +191,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                   key={item.id}
                   className={`p-3.5 rounded-2xl border transition-all ${
                     !item.read
-                      ? "bg-slate-900/90 border-violet-500/40 shadow-sm"
-                      : "bg-slate-900/40 border-slate-800/80 text-slate-400"
+                      ? "bg-[var(--bg-card)] dark:bg-slate-900/90 border-violet-500/40 shadow-sm"
+                      : "bg-[var(--bg-card-subtle)] dark:bg-slate-900/40 border-[var(--border-subtle)] text-[var(--text-muted)]"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -200,10 +200,10 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                       <span
                         className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
                           isCrit
-                            ? "bg-rose-500/20 text-rose-400"
+                            ? "bg-rose-500/20 text-rose-600 dark:text-rose-400"
                             : isWarn
-                            ? "bg-amber-500/20 text-amber-400"
-                            : "bg-emerald-500/20 text-emerald-400"
+                            ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                            : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                         }`}
                       >
                         {isCrit ? (
@@ -217,19 +217,19 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
 
                       <h4
                         className={`text-xs font-bold ${
-                          !item.read ? "text-white" : "text-slate-300"
+                          !item.read ? "text-[var(--text-main)]" : "text-[var(--text-muted)]"
                         }`}
                       >
                         {item.title}
                       </h4>
                     </div>
 
-                    <span className="text-[10px] text-slate-400 shrink-0">
+                    <span className="text-[10px] text-[var(--text-muted)] shrink-0">
                       {item.timestamp}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300/85 mt-2 pl-8 leading-relaxed">
+                  <p className="text-xs text-[var(--text-muted)] mt-2 pl-8 leading-relaxed">
                     {item.message}
                   </p>
                 </div>

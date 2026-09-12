@@ -77,16 +77,16 @@ export const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">Write a Verified Review</h3>
-            <p className="text-[11px] text-slate-400">3-Tier AI Fact-Checking Audit</p>
+            <h3 className="font-bold text-[var(--text-main)] text-base">Write a Verified Review</h3>
+            <p className="text-[11px] text-[var(--text-muted)]">3-Tier AI Fact-Checking Audit</p>
           </div>
         </div>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4 pt-1">
         {/* Rating Stars */}
-        <div className="space-y-1.5 text-center p-3 rounded-2xl bg-slate-900/40 border border-violet-500/10">
-          <span className="text-xs text-slate-400 font-medium block">Overall Rating</span>
+        <div className="space-y-1.5 text-center p-3 rounded-2xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]">
+          <span className="text-xs text-[var(--text-muted)] font-medium block">Overall Rating</span>
           <div className="flex items-center justify-center gap-1.5 pt-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -96,13 +96,13 @@ export const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
-                className="p-1 text-slate-600 hover:scale-110 transition-transform"
+                className="p-1 text-slate-300 dark:text-slate-600 hover:scale-110 transition-transform"
               >
                 <Star
                   className={`w-6 h-6 ${
                     (hoverRating || rating) >= star
                       ? "fill-amber-400 text-amber-400"
-                      : "text-slate-600"
+                      : "text-slate-300 dark:text-slate-600"
                   }`}
                 />
               </button>
@@ -112,39 +112,39 @@ export const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
 
         {/* Author Name */}
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-slate-300">Your Name / Handle</label>
+          <label className="text-xs font-semibold text-[var(--text-main)]">Your Name / Handle</label>
           <input
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
             placeholder="e.g. Arun M., AlgoTrader"
             required
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-accent transition-colors shadow-sm"
           />
         </div>
 
         {/* Review Title & Claimed Return */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300">Headline</label>
+            <label className="text-xs font-semibold text-[var(--text-main)]">Headline</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Great transparency on drawdown"
               required
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-accent transition-colors shadow-sm"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300">Claimed Returns %</label>
+            <label className="text-xs font-semibold text-[var(--text-main)]">Claimed Returns %</label>
             <input
               type="text"
               value={claimedReturn}
               onChange={(e) => setClaimedReturn(e.target.value)}
               placeholder="e.g. +14.2%"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-accent transition-colors shadow-sm"
             />
           </div>
         </div>
@@ -152,8 +152,8 @@ export const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
         {/* Comment Text Area */}
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-300">Your Experience</label>
-            <span className="text-[10px] text-slate-500">{comment.length} / 500</span>
+            <label className="text-xs font-semibold text-[var(--text-main)]">Your Experience</label>
+            <span className="text-[10px] text-[var(--text-muted)]">{comment.length} / 500</span>
           </div>
           <textarea
             rows={3}
@@ -161,22 +161,22 @@ export const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
             onChange={(e) => setComment(e.target.value.slice(0, 500))}
             placeholder="Describe execution, transparency, volatility handling..."
             required
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500 transition-colors resize-none"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-accent transition-colors resize-none shadow-sm"
           />
         </div>
 
         {/* AI Fact-Checking Badge preview */}
-        <div className="p-3 rounded-xl bg-teal-950/20 border border-teal-500/30 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-          <div className="text-[11px] text-teal-200/90 leading-relaxed">
-            <span className="font-bold text-teal-300 block">3-Tier AI Fact-Checking Active</span>
+        <div className="p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-start gap-2.5">
+          <ShieldCheck className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
+          <div className="text-[11px] text-teal-800 dark:text-teal-200/90 leading-relaxed">
+            <span className="font-bold text-teal-700 dark:text-teal-300 block">3-Tier AI Fact-Checking Active</span>
             Reviews cross-reference historical backtest envelopes and Monte Carlo ranges before publication.
           </div>
         </div>
 
         {auditBadge && (
-          <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
-            <Check className="w-4 h-4 text-emerald-400" />
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2">
+            <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>{auditBadge}</span>
           </div>
         )}

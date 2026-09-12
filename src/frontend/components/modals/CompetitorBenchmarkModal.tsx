@@ -76,8 +76,8 @@ export const CompetitorBenchmarkModal: React.FC<CompetitorBenchmarkModalProps> =
             <Layers className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">QuantNiti vs Competitors</h3>
-            <p className="text-[11px] text-slate-400">Algorithmic Advantage & Fee Drag Calculator</p>
+            <h3 className="font-bold text-[var(--text-main)] text-base">QuantNiti vs Competitors</h3>
+            <p className="text-[11px] text-[var(--text-muted)]">Algorithmic Advantage & Fee Drag Calculator</p>
           </div>
         </div>
       }
@@ -85,12 +85,12 @@ export const CompetitorBenchmarkModal: React.FC<CompetitorBenchmarkModalProps> =
     >
       <div className="space-y-5 pt-1">
         {/* Comparison Matrix Table */}
-        <div className="overflow-x-auto rounded-2xl border border-violet-500/20 bg-slate-900/40">
+        <div className="overflow-x-auto rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card-subtle)]">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-violet-500/20 bg-slate-950/60 text-slate-400">
+              <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-primary)] text-[var(--text-muted)]">
                 <th className="py-2.5 px-3">Capability</th>
-                <th className="py-2.5 px-2 text-center text-violet-300 font-bold bg-violet-950/40">
+                <th className="py-2.5 px-2 text-center text-accent font-bold bg-violet-500/10">
                   QuantNiti
                 </th>
                 <th className="py-2.5 px-2 text-center">Smallcase</th>
@@ -98,45 +98,45 @@ export const CompetitorBenchmarkModal: React.FC<CompetitorBenchmarkModalProps> =
                 <th className="py-2.5 px-2 text-center">Active MFs</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-violet-500/10">
+            <tbody className="divide-y divide-[var(--border-subtle)]">
               {COMPARISON_ROWS.map((row, idx) => (
-                <tr key={idx} className="hover:bg-violet-950/20 transition-colors">
+                <tr key={idx} className="hover:bg-violet-500/10 transition-colors">
                   <td className="py-3 px-3">
-                    <span className="font-semibold text-white block">{row.feature}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5 line-clamp-1">
+                    <span className="font-semibold text-[var(--text-main)] block">{row.feature}</span>
+                    <span className="text-[10px] text-[var(--text-muted)] block mt-0.5 line-clamp-1">
                       {row.detail}
                     </span>
                   </td>
-                  <td className="py-3 px-2 text-center bg-violet-950/30">
+                  <td className="py-3 px-2 text-center bg-violet-500/10">
                     {row.quantniti ? (
-                      <span className="inline-flex w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 items-center justify-center">
+                      <span className="inline-flex w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 items-center justify-center">
                         <Check className="w-3.5 h-3.5" />
                       </span>
                     ) : (
-                      <span className="inline-flex w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 items-center justify-center">
+                      <span className="inline-flex w-5 h-5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-300 items-center justify-center">
                         <X className="w-3.5 h-3.5" />
                       </span>
                     )}
                   </td>
                   <td className="py-3 px-2 text-center">
                     {row.smallcase ? (
-                      <Check className="w-3.5 h-3.5 mx-auto text-slate-400" />
+                      <Check className="w-3.5 h-3.5 mx-auto text-[var(--text-muted)]" />
                     ) : (
-                      <X className="w-3.5 h-3.5 mx-auto text-slate-600" />
+                      <X className="w-3.5 h-3.5 mx-auto text-slate-300 dark:text-slate-600" />
                     )}
                   </td>
                   <td className="py-3 px-2 text-center">
                     {row.groww ? (
-                      <Check className="w-3.5 h-3.5 mx-auto text-slate-400" />
+                      <Check className="w-3.5 h-3.5 mx-auto text-[var(--text-muted)]" />
                     ) : (
-                      <X className="w-3.5 h-3.5 mx-auto text-slate-600" />
+                      <X className="w-3.5 h-3.5 mx-auto text-slate-300 dark:text-slate-600" />
                     )}
                   </td>
                   <td className="py-3 px-2 text-center">
                     {row.mutualFunds ? (
-                      <Check className="w-3.5 h-3.5 mx-auto text-slate-400" />
+                      <Check className="w-3.5 h-3.5 mx-auto text-[var(--text-muted)]" />
                     ) : (
-                      <X className="w-3.5 h-3.5 mx-auto text-slate-600" />
+                      <X className="w-3.5 h-3.5 mx-auto text-slate-300 dark:text-slate-600" />
                     )}
                   </td>
                 </tr>
@@ -146,27 +146,27 @@ export const CompetitorBenchmarkModal: React.FC<CompetitorBenchmarkModalProps> =
         </div>
 
         {/* Dynamic Fee Drag Calculator */}
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-950/40 to-slate-900/60 border border-violet-500/30 space-y-3">
+        <div className="p-4 rounded-2xl bg-violet-500/5 dark:bg-gradient-to-br dark:from-violet-950/40 dark:to-slate-900/60 border border-[var(--border-subtle)] space-y-3">
           <div className="flex items-center gap-2">
-            <Calculator className="w-4 h-4 text-violet-400" />
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <Calculator className="w-4 h-4 text-accent" />
+            <h4 className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
               10-Year Mutual Fund Fee Drag Calculator
             </h4>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-300 font-medium">Invested Capital (₹)</label>
+              <label className="text-[11px] text-[var(--text-muted)] font-medium">Invested Capital (₹)</label>
               <input
                 type="number"
                 value={capital}
                 onChange={(e) => setCapital(Number(e.target.value))}
                 step={10000}
-                className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-violet-500/20 text-white text-xs"
+                className="w-full px-3 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-xs focus:outline-none focus:border-accent shadow-sm"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] text-slate-300 font-medium">MF Expense Ratio (%)</label>
+              <label className="text-[11px] text-[var(--text-muted)] font-medium">MF Expense Ratio (%)</label>
               <input
                 type="number"
                 value={expenseRatioPct}
@@ -174,21 +174,21 @@ export const CompetitorBenchmarkModal: React.FC<CompetitorBenchmarkModalProps> =
                 step={0.1}
                 min={0.5}
                 max={3.0}
-                className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-violet-500/20 text-white text-xs"
+                className="w-full px-3 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-xs focus:outline-none focus:border-accent shadow-sm"
               />
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 flex items-center justify-between gap-2">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-2">
             <div>
-              <span className="text-[11px] text-rose-300 font-medium block">
+              <span className="text-[11px] text-rose-600 dark:text-rose-300 font-medium block">
                 Estimated Wealth Siphoned by Fund Fees
               </span>
-              <span className="text-lg font-black text-rose-400">
+              <span className="text-lg font-black text-rose-600 dark:text-rose-400">
                 ₹{totalFeeLost.toLocaleString("en-IN")}
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 text-right max-w-[140px]">
+            <span className="text-[10px] text-[var(--text-muted)] text-right max-w-[140px]">
               Direct stock baskets via QuantNiti charge zero ongoing AUM fee drag.
             </span>
           </div>

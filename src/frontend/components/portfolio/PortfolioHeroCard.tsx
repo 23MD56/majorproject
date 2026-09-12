@@ -23,31 +23,31 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <h2 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
               Current Value
             </h2>
             {isDemo && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
                 <Sparkles className="w-2.5 h-2.5" />
                 DEMO PREVIEW
               </span>
             )}
           </div>
-          <div className="text-3xl sm:text-4xl font-black tracking-tight text-white mt-1">
+          <div className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--text-main)] mt-1">
             ₹{portfolio.current_value.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
           </div>
         </div>
 
         {/* Alpha Badge */}
         <div className="text-right">
-          <span className="text-[11px] text-slate-400 block font-medium">
+          <span className="text-[11px] text-[var(--text-muted)] block font-medium">
             Alpha vs NIFTY
           </span>
           <span
             className={`inline-flex items-center gap-0.5 text-xs font-bold px-2 py-0.5 rounded-md mt-1 ${
               isAlphaPositive
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30"
+                : "bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30"
             }`}
           >
             {isAlphaPositive ? "+" : ""}
@@ -57,15 +57,15 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
       </div>
 
       {/* Dual Return Metrics & Capital Breakdown */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-violet-500/20">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[var(--border-subtle)]">
         {/* 1D Returns */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-slate-400 font-medium block">
+          <span className="text-[11px] text-[var(--text-muted)] font-medium block">
             1D Returns
           </span>
           <div
             className={`flex items-center gap-1 text-sm font-bold ${
-              is1DPositive ? "text-emerald-400" : "text-rose-400"
+              is1DPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
             }`}
           >
             {is1DPositive ? (
@@ -88,12 +88,12 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
 
         {/* Total Returns */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-slate-400 font-medium block">
+          <span className="text-[11px] text-[var(--text-muted)] font-medium block">
             Total Returns
           </span>
           <div
             className={`flex items-center gap-1 text-sm font-bold ${
-              isTotalPositive ? "text-emerald-400" : "text-rose-400"
+              isTotalPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
             }`}
           >
             {isTotalPositive ? (
@@ -116,20 +116,20 @@ export const PortfolioHeroCard: React.FC<PortfolioHeroCardProps> = ({
 
         {/* Invested Capital */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-slate-400 font-medium block">
+          <span className="text-[11px] text-[var(--text-muted)] font-medium block">
             Invested Capital
           </span>
-          <span className="text-sm font-bold text-slate-200">
+          <span className="text-sm font-bold text-[var(--text-main)]">
             ₹{portfolio.invested_capital.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
           </span>
         </div>
 
         {/* Cash Reserve */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-slate-400 font-medium block">
+          <span className="text-[11px] text-[var(--text-muted)] font-medium block">
             Cash Buffer
           </span>
-          <span className="text-sm font-bold text-violet-300">
+          <span className="text-sm font-bold text-accent">
             ₹{portfolio.cash.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
           </span>
         </div>

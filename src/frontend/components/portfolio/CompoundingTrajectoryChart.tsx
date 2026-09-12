@@ -15,6 +15,7 @@ import { TrendingUp } from "lucide-react";
 import { GlassCard } from "../ui/GlassCard";
 import { CompoundingTrajectoryData } from "./demoPortfolioData";
 import { formatRupees } from "../../utils/formatters";
+import { useTheme } from "../../context/ThemeContext";
 
 ChartJS.register(
   CategoryScale,
@@ -36,6 +37,8 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
   trajectory,
 }) => {
   const chartRef = useRef<any>(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     // Explicit cleanup on unmount
@@ -121,7 +124,7 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
           labels: {
             boxWidth: 10,
             boxHeight: 10,
-            color: "#94A3B8", // slate-400
+            color: isDark ? "#94A3B8" : "#475569",
             font: {
               size: 10,
               family: "Inter, sans-serif",
@@ -130,7 +133,9 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
           },
         },
         tooltip: {
-          backgroundColor: "rgba(15, 23, 42, 0.95)", // slate-900
+          backgroundColor: isDark ? "rgba(15, 23, 42, 0.95)" : "rgba(255, 255, 255, 0.95)",
+          titleColor: isDark ? "#F8FAFC" : "#0F172A",
+          bodyColor: isDark ? "#CBD5E1" : "#334155",
           borderColor: "rgba(139, 92, 246, 0.3)",
           borderWidth: 1,
           padding: 10,
@@ -147,19 +152,19 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
       scales: {
         x: {
           grid: {
-            color: "rgba(255, 255, 255, 0.05)",
+            color: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(124, 58, 237, 0.08)",
           },
           ticks: {
-            color: "#94A3B8",
+            color: isDark ? "#94A3B8" : "#64748B",
             font: { size: 10 },
           },
         },
         y: {
           grid: {
-            color: "rgba(255, 255, 255, 0.05)",
+            color: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(124, 58, 237, 0.08)",
           },
           ticks: {
-            color: "#94A3B8",
+            color: isDark ? "#94A3B8" : "#64748B",
             font: { size: 10 },
             callback: (val: any) => {
               if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
@@ -171,7 +176,7 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
         },
       },
     };
-  }, []);
+  }, [isDark]);
 
   const tenYearMedian =
     trajectory.yearly_trajectories[trajectory.yearly_trajectories.length - 1]
@@ -186,19 +191,19 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-violet-400" />
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+            <TrendingUp className="w-4 h-4 text-accent" />
+            <h3 className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
               10-Year Compounding Wealth Trajectory
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Geometric Brownian Motion (GBM) simulation vs 7% Bank FD Hurdle
           </p>
         </div>
 
         <div className="text-right">
-          <span className="text-[10px] text-slate-400 block">10Y Alpha vs FD</span>
-          <span className="text-xs font-bold text-emerald-400">
+          <span className="text-[10px] text-[var(--text-muted)] block">10Y Alpha vs FD</span>
+          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
             +{formatRupees(alphaVal)}
           </span>
         </div>
@@ -210,22 +215,22 @@ export const CompoundingTrajectoryChart: React.FC<CompoundingTrajectoryChartProp
       </div>
 
       {/* Milestone / Legend Footer */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-violet-500/20 text-xs">
-        <div className="p-2 rounded-xl bg-slate-900/40 border border-violet-500/10">
-          <span className="text-[10px] text-slate-400 block">10Y Base Case (Q50)</span>
-          <span className="font-bold text-violet-300">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-[var(--border-subtle)] text-xs">
+        <div className="p-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]">
+          <span className="text-[10px] text-[var(--text-muted)] block">10Y Base Case (Q50)</span>
+          <span className="font-bold text-accent">
             ₹{tenYearMedian.toLocaleString("en-IN")}
           </span>
         </div>
-        <div className="p-2 rounded-xl bg-slate-900/40 border border-violet-500/10">
-          <span className="text-[10px] text-slate-400 block">10Y 7% Bank FD</span>
-          <span className="font-bold text-amber-300">
+        <div className="p-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]">
+          <span className="text-[10px] text-[var(--text-muted)] block">10Y 7% Bank FD</span>
+          <span className="font-bold text-amber-600 dark:text-amber-300">
             ₹{tenYearFd.toLocaleString("en-IN")}
           </span>
         </div>
-        <div className="col-span-2 sm:col-span-1 p-2 rounded-xl bg-slate-900/40 border border-violet-500/10">
-          <span className="text-[10px] text-slate-400 block">Monte Carlo Cones</span>
-          <span className="font-bold text-emerald-300 text-[11px]">
+        <div className="col-span-2 sm:col-span-1 p-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]">
+          <span className="text-[10px] text-[var(--text-muted)] block">Monte Carlo Cones</span>
+          <span className="font-bold text-emerald-600 dark:text-emerald-300 text-[11px]">
             Q10 Pessimistic - Q90 Optimistic
           </span>
         </div>

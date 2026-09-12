@@ -56,8 +56,8 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4 pt-2">
         {/* Portfolio Name */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Target className="w-3.5 h-3.5 text-violet-400" />
+          <label className="text-xs font-semibold text-[var(--text-main)] flex items-center gap-1.5">
+            <Target className="w-3.5 h-3.5 text-accent" />
             Portfolio / Goal Name
           </label>
           <input
@@ -66,14 +66,14 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Dream House, Retirement 2040"
             required
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder:text-[var(--text-muted)] text-sm focus:outline-none focus:border-accent transition-colors shadow-sm"
           />
         </div>
 
         {/* Initial Capital */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Wallet className="w-3.5 h-3.5 text-violet-400" />
+          <label className="text-xs font-semibold text-[var(--text-main)] flex items-center gap-1.5">
+            <Wallet className="w-3.5 h-3.5 text-accent" />
             Initial Virtual Capital (₹)
           </label>
           <input
@@ -82,14 +82,14 @@ export const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             onChange={(e) => setCapital(Math.max(1000, Number(e.target.value)))}
             step={5000}
             min={1000}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-violet-500/20 text-white text-sm focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] text-sm focus:outline-none focus:border-accent transition-colors shadow-sm"
           />
         </div>
 
         {/* Risk Persona */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-violet-400" />
+          <label className="text-xs font-semibold text-[var(--text-main)] flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-accent" />
             Risk Persona
           </label>
           <SegmentedControl

@@ -23,17 +23,17 @@ export const DemoPortfolio: React.FC<DemoPortfolioProps> = ({
   return (
     <div className="space-y-5">
       {/* 1. Prominent persistent visual banner */}
-      <GlassCard className="p-4 bg-gradient-to-r from-violet-950/50 via-purple-950/40 to-slate-900/60 border-violet-500/40 shadow-lg shadow-violet-950/20">
+      <GlassCard className="p-4 bg-violet-500/10 dark:bg-gradient-to-r dark:from-violet-950/50 dark:via-purple-950/40 dark:to-slate-900/60 border border-violet-500/25 dark:border-violet-500/40 shadow-lg shadow-violet-950/10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 shrink-0">
-              <Sparkles className="w-5 h-5 text-violet-400" />
+            <div className="w-10 h-10 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-accent shrink-0">
+              <Sparkles className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+              <h3 className="text-sm font-bold text-[var(--text-main)] flex items-center gap-1.5">
                 This is a demo portfolio
               </h3>
-              <p className="text-xs text-slate-300/90">
+              <p className="text-xs text-[var(--text-muted)]">
                 See what automated MTM tracking and compounding trajectories look like.
               </p>
             </div>
@@ -59,15 +59,15 @@ export const DemoPortfolio: React.FC<DemoPortfolioProps> = ({
       <CompoundingTrajectoryChart trajectory={demoTrajectory} isDemo={true} />
 
       {/* 5. Bottom CTA card */}
-      <GlassCard className="p-6 text-center space-y-3 bg-violet-950/20 border-violet-500/20">
-        <div className="w-12 h-12 mx-auto rounded-2xl bg-violet-500/20 flex items-center justify-center text-violet-300">
+      <GlassCard className="p-6 text-center space-y-3 bg-violet-500/5 dark:bg-violet-950/20 border-violet-500/20">
+        <div className="w-12 h-12 mx-auto rounded-2xl bg-violet-500/20 flex items-center justify-center text-accent">
           <TrendingUp className="w-6 h-6" />
         </div>
         <div>
-          <h4 className="text-sm font-bold text-white">
+          <h4 className="text-sm font-bold text-[var(--text-main)]">
             Ready to track your own investments?
           </h4>
-          <p className="text-xs text-slate-300/80 mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-[var(--text-muted)] mt-1 max-w-sm mx-auto">
             Run the Grow tab wizard to discover an AI-tailored equity basket or create a custom virtual paper portfolio in 1-click.
           </p>
         </div>

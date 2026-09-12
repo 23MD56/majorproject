@@ -42,46 +42,46 @@ export const ConceptDetailModal: React.FC<ConceptDetailModalProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-base">{concept.title}</h3>
-              <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-bold">
+              <h3 className="font-bold text-[var(--text-main)] text-base">{concept.title}</h3>
+              <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-accent dark:text-violet-300 border border-violet-500/30 font-bold">
                 {concept.category}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">Financial Literacy Bite</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Financial Literacy Bite</p>
           </div>
         </div>
       }
     >
       <div className="space-y-4 pt-1">
         {/* Core Explanation */}
-        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-900/60 border border-violet-500/20">
-          <span className="text-[10px] uppercase font-bold text-violet-400 tracking-wider flex items-center gap-1.5">
+        <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]">
+          <span className="text-[10px] uppercase font-bold text-accent tracking-wider flex items-center gap-1.5">
             <Brain className="w-3.5 h-3.5" />
             Plain-English Definition
           </span>
-          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-[var(--text-main)] leading-relaxed font-normal">
             {concept.explanation}
           </p>
         </div>
 
         {/* Real-World Analogy */}
-        <div className="space-y-1.5 p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30">
-          <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+        <div className="space-y-1.5 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+          <span className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300 tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             Everyday Analogy
           </span>
-          <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed">
+          <p className="text-xs sm:text-sm text-amber-900 dark:text-amber-100/90 leading-relaxed">
             {concept.analogy}
           </p>
         </div>
 
         {/* Formula / Quant Rule */}
         {concept.formula && (
-          <div className="space-y-1.5 p-4 rounded-2xl bg-slate-950/70 border border-violet-500/20 font-mono">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block font-sans">
+          <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] font-mono">
+            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider block font-sans">
               Mathematical / Algorithmic Formulation
             </span>
-            <div className="p-2.5 rounded-xl bg-slate-900 text-xs text-violet-300 overflow-x-auto">
+            <div className="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-900 text-xs text-violet-700 dark:text-violet-300 overflow-x-auto border border-[var(--border-subtle)]">
               <code>{concept.formula}</code>
             </div>
           </div>

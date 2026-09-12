@@ -47,7 +47,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-violet-500/20 bg-slate-900/40 text-slate-400 font-semibold">
+              <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-card-subtle)] text-[var(--text-muted)] font-semibold">
                 <th className="py-3 px-4">Asset / Sector</th>
                 <th className="py-3 px-3 text-right">Allocation</th>
                 <th className="py-3 px-3 text-right">Qty & Avg</th>
@@ -55,7 +55,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                 <th className="py-3 px-4 text-right">Returns</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-violet-500/10">
+            <tbody className="divide-y divide-[var(--border-subtle)]">
               {holdings.map((holding) => {
                 const is1DUp = holding.pnl_1d >= 0;
                 const isTotalUp = holding.unrealized_pnl >= 0;
@@ -64,22 +64,22 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                 return (
                   <tr
                     key={holding.symbol}
-                    className="hover:bg-violet-950/20 transition-colors"
+                    className="hover:bg-violet-500/5 transition-colors"
                   >
                     {/* Symbol & Name/Sector */}
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-white text-sm">
+                      <div className="font-bold text-[var(--text-main)] text-sm">
                         {holding.symbol}
                       </div>
-                      <div className="text-[11px] text-slate-400 line-clamp-1">
+                      <div className="text-[11px] text-[var(--text-muted)] line-clamp-1">
                         {holding.name || holding.sector}
                       </div>
                     </td>
 
                     {/* Weight & Progress Bar */}
                     <td className="py-3.5 px-3 text-right">
-                      <span className="font-bold text-slate-200">{weightPct}%</span>
-                      <div className="w-16 h-1.5 bg-slate-800 rounded-full ml-auto mt-1 overflow-hidden">
+                      <span className="font-bold text-[var(--text-main)]">{weightPct}%</span>
+                      <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full ml-auto mt-1 overflow-hidden">
                         <div
                           className="h-full bg-violet-500 rounded-full"
                           style={{ width: `${Math.min(100, holding.weight * 100)}%` }}
@@ -89,22 +89,22 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
 
                     {/* Quantity & Buy Price */}
                     <td className="py-3.5 px-3 text-right">
-                      <div className="font-semibold text-slate-200">
+                      <div className="font-semibold text-[var(--text-main)]">
                         {holding.shares} shares
                       </div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px] text-[var(--text-muted)]">
                         @ ₹{(holding.buy_price ?? holding.avg_price ?? 0).toLocaleString("en-IN")}
                       </div>
                     </td>
 
                     {/* LTP and 1D Change */}
                     <td className="py-3.5 px-3 text-right">
-                      <div className="font-bold text-white">
+                      <div className="font-bold text-[var(--text-main)]">
                         ₹{(holding.current_price ?? 0).toLocaleString("en-IN")}
                       </div>
                       <div
                         className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${
-                          is1DUp ? "text-emerald-400" : "text-rose-400"
+                          is1DUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                         }`}
                       >
                         {is1DUp ? (
@@ -121,12 +121,12 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
 
                     {/* Total Unrealized P&L */}
                     <td className="py-3.5 px-4 text-right">
-                      <div className="font-bold text-white">
+                      <div className="font-bold text-[var(--text-main)]">
                         ₹{(holding.current_value ?? (holding.shares * (holding.current_price ?? 0))).toLocaleString("en-IN")}
                       </div>
                       <div
                         className={`text-[11px] font-semibold ${
-                          isTotalUp ? "text-emerald-400" : "text-rose-400"
+                          isTotalUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                         }`}
                       >
                         {isTotalUp ? "+" : ""}₹

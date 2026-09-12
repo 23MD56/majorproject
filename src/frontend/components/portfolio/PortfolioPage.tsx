@@ -238,7 +238,7 @@ export const PortfolioPage: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                   isSelected
                     ? "bg-violet-600 text-white shadow-md shadow-violet-950/30"
-                    : "bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-violet-500/10"
+                    : "bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]"
                 }`}
               >
                 {isSelected && <Check className="w-3 h-3 text-white" />}

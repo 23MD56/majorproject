@@ -5,11 +5,7 @@ import { StockCard, ExploreStockItem } from "../components/explore/StockCard";
 import { StockProfileModal } from "../components/explore/StockProfileModal";
 import { useAppStore } from "../store/useAppStore";
 
-const ProToolsBacktester = React.lazy(() =>
-  import("../components/explore/ProToolsBacktester").then((mod) => ({
-    default: mod.ProToolsBacktester,
-  }))
-);
+import { ProToolsBacktester } from "../components/explore/ProToolsBacktester";
 import { abortRegistry } from "../services/abortRegistry";
 import { ChipButton } from "../components/ui/ChipButton";
 
@@ -329,15 +325,7 @@ export const ExplorePage: React.FC = () => {
       )}
 
       {/* Pro Tools: Strategy Backtester Toggle */}
-      <React.Suspense
-        fallback={
-          <div className="h-14 rounded-2xl bg-[var(--bg-card)]/40 border border-[var(--border-subtle)] animate-pulse flex items-center px-4">
-            <span className="text-xs text-[var(--text-muted)]">Loading Pro Tools Backtester...</span>
-          </div>
-        }
-      >
-        <ProToolsBacktester />
-      </React.Suspense>
+      <ProToolsBacktester />
 
       {/* 360 Stock Intelligence Profile Modal */}
       <StockProfileModal

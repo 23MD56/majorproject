@@ -66,22 +66,22 @@ export const OrderSheetModal: React.FC<OrderSheetModalProps> = ({
             <FileText className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">1-Click Broker Order Sheet</h3>
-            <p className="text-[11px] text-slate-400">Execute in your own Zerodha or Groww account</p>
+            <h3 className="font-bold text-[var(--text-main)] text-base">1-Click Broker Order Sheet</h3>
+            <p className="text-[11px] text-[var(--text-muted)]">Execute in your own Zerodha or Groww account</p>
           </div>
         </div>
       }
     >
       <div className="space-y-4 pt-1">
         {/* Tab switcher: Groww text vs Zerodha CSV */}
-        <div className="flex p-1 rounded-xl bg-slate-900 border border-violet-500/20 text-xs">
+        <div className="flex p-1 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-xs">
           <button
             type="button"
             onClick={() => setActiveTab("groww")}
             className={`flex-1 py-1.5 rounded-lg font-semibold transition-colors ${
               activeTab === "groww"
                 ? "bg-violet-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
+                : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
             }`}
           >
             Groww Clipboard Text
@@ -92,7 +92,7 @@ export const OrderSheetModal: React.FC<OrderSheetModalProps> = ({
             className={`flex-1 py-1.5 rounded-lg font-semibold transition-colors ${
               activeTab === "zerodha"
                 ? "bg-violet-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
+                : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
             }`}
           >
             Zerodha Basket CSV
@@ -100,7 +100,7 @@ export const OrderSheetModal: React.FC<OrderSheetModalProps> = ({
         </div>
 
         {/* Order Preview Code Block */}
-        <div className="relative rounded-2xl bg-slate-950/80 border border-violet-500/20 p-3 font-mono text-xs text-slate-300 max-h-48 overflow-y-auto">
+        <div className="relative rounded-2xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] p-3 font-mono text-xs text-[var(--text-main)] max-h-48 overflow-y-auto">
           <pre className="whitespace-pre-wrap leading-relaxed text-[11px]">
             {activeTab === "groww" ? growwText : zerodhaCsv}
           </pre>

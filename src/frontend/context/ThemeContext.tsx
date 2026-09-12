@@ -50,7 +50,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    const fallbackTheme: Theme =
+      typeof document !== "undefined" &&
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+    return {
+      theme: fallbackTheme,
+      toggleTheme: () => {},
+      setTheme: () => {},
+    };
   }
   return context;
 }
