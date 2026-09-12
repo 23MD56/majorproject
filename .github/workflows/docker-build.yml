@@ -1,0 +1,51 @@
+name: Docker Build & Health Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker-compose.yml'
+      - 'src/**'
+      - 'package.json'
+      - 'pyproject.toml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker-compose.yml'
+      - 'src/**'
+      - 'package.json'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+jobs:
+  docker-build:
+    name: Build & Verify Production Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: quantniti:test
+          load: true
+
+      - name: Validate Container Startup & Healthcheck
+        run: |
+          docker run -d --name quantniti-test-instance -p 8000:8000 quantniti:test
+          sleep 10
+          docker logs quantniti-test-instance
+          curl --fail --retry 5 --retry-delay 3 http://localhost:8000/api/v1/health || exit 1
+          docker stop quantniti-test-instance

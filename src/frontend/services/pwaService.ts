@@ -4,6 +4,8 @@
  * and Web Push notification subscription.
  */
 
+import { apiUrl } from "../config";
+
 let deferredInstallPrompt: any = null;
 let isInitialized = false;
 
@@ -83,7 +85,7 @@ export async function subscribeUserToPush(): Promise<boolean> {
 
   try {
     const reg = await navigator.serviceWorker.ready;
-    const keyResp = await fetch("/api/v1/notifications/vapid-public-key");
+    const keyResp = await fetch(apiUrl("/api/v1/notifications/vapid-public-key"));
     if (!keyResp.ok) return false;
 
     const keyData = await keyResp.json();
@@ -97,7 +99,7 @@ export async function subscribeUserToPush(): Promise<boolean> {
     });
 
     const subJson = subscription.toJSON();
-    const subResp = await fetch("/api/v1/notifications/subscribe", {
+    const subResp = await fetch(apiUrl("/api/v1/notifications/subscribe"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

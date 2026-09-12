@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: quantniti
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: QUANTNITI_USE_VITE
+        value: "1"
+      - key: GEMINI_API_KEY
+        sync: false

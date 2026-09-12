@@ -9,6 +9,7 @@ import { ModalSheet } from "../ui/ModalSheet";
 import { GlassCard } from "../ui/GlassCard";
 import { AnimatedNumber } from "../ui/AnimatedNumber";
 import { RegimeBadge } from "../ui/RegimeBadge";
+import { apiUrl } from "../../config";
 
 export interface StockProfileModalProps {
   symbol: string | null;
@@ -46,7 +47,7 @@ export const StockProfileModal: React.FC<StockProfileModalProps> = ({
 
     setIsLoading(true);
 
-    fetch(`/api/explore/profile/${encodeURIComponent(symbol)}`, {
+    fetch(apiUrl(`/api/explore/profile/${encodeURIComponent(symbol)}`), {
       signal: controller.signal,
     })
       .then(async (res) => {

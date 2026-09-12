@@ -10,6 +10,7 @@ import {
 import { GlassCard } from "../ui/GlassCard";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import { SegmentedControl } from "../ui/SegmentedControl";
+import { apiUrl } from "../../config";
 
 const STRATEGIES = [
   { value: "MA_CROSSOVER", label: "MA Crossover" },
@@ -40,7 +41,7 @@ export const ProToolsBacktester: React.FC = () => {
   const handleRunBacktest = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/backtest/run", {
+      const response = await fetch(apiUrl("/api/backtest/run"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
